@@ -10,6 +10,66 @@
 <h2>What is Swiby?</h2>
 
 <p>Swiby is a blend of Swing and Ruby for truly rich distrubuted applications.</p>
+<p>Swing is an incredibly sophisticated UI technology for Java that can that can meet all your UI needs. Applications like JetBrain's Intellij IDEA are built on it.</p>
+<p>Ruby is very much a language of the moment. Popularised by Ruby on Rails, its proving that less is more for web application development.</p>
+<p>Best practice with Swiby is with a style of Ruby that is 'builder like'. Like this: </p>
+<pre>require 'swiby'
+
+class ButtonClickedModel
+	attr_accessor :buttonEnabled
+end
+
+model = ButtonClickedModel.new
+
+model.buttonEnabled = true
+
+
+Frame {
+	
+	title "Button Demo"
+	
+	content {
+		FlowPanel {
+			content [
+				Button {
+					text "Disable middle button"
+                    mnemonic "D"
+                    tooltip "Click this button to disable the middle button"
+                    icon "http://java.sun.com/docs/books/tutorial/uiswing/components/examples/images/right.gif"
+                    verticalTextPosition CENTER
+                    horizontalTextPosition LEADING
+					enabled bind { model.buttonEnabled }
+                    action {
+                         model.buttonEnabled = false
+                    }
+                },
+                Button {
+                    text "Middle button"
+                    mnemonic "M"
+                    tooltip "This middle button does nothing when you click it."
+                    icon "http://java.sun.com/docs/books/tutorial/uiswing/components/examples/images/middle.gif"
+                    verticalTextPosition BOTTOM
+                    horizontalTextPosition CENTER
+					enabled bind { model.buttonEnabled }
+                },
+                Button {
+                    text "Enable middle button"
+                    mnemonic "E"
+                    tooltip "Click this button to enable the middle button"
+                    icon "http://java.sun.com/docs/books/tutorial/uiswing/components/examples/images/left.gif"
+					enabled bind { not model.buttonEnabled }
+                    action {
+                         model.buttonEnabled = true
+                    }
+                }
+			]
+		}
+	}
+	
+	visible true
+	
+}</pre>
+<p>&nbsp;</p>
 <div class="section">
 <h3>Getting Started</h3>
 <p>Take a look at ...</p>
