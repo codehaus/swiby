@@ -1,13 +1,4 @@
 /*
- * Copyright (c) 2007, PicoContainer Organization. All rights reserved.
- * -------------------------------------------------------------------------
- * The software in this package is published under the terms of the BSD
- * style license a copy of which has been included with this distribution in
- * the LICENSE.txt file.
- *
- */
-
-/*
  
 Correctly handle PNG transparency in Win IE 5.5 & 6.
 http://homepage.ntlworld.com/bobosola. Updated 18-Jan-2006.
