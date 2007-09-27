@@ -2,6 +2,7 @@
     <section>
         <name>About</name>
         <page>index.html</page>
+        <page>prior-art.html</page>
     </section>
     <section>
          <name>Project Info</name>
