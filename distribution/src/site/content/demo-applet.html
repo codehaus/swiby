@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+<title>Applet Demo</title>
+</head>
+
+<body>
+<p>This is demo that leverages an Java applet. It not what we intend for ultimate deployment, but it works for now to illustrate our hopes.</p>
+<p>JRuby to run in the browser needs to have an extra permission. You'll need to approve this via a dialog before you can see the demo.</p>
+<table width="200" border="0">
+  <tr>
+    <td><img src="images/ff_header.jpg" width="401" height="56" alt="ff hdr" /></td>
+  </tr>
+  <tr>
+    <td><applet 
+	archive="jars/swiby.jar,jars/jruby-complete-1.0.1.signed.jar" 
+	code="org.alef1.swiby.SwibyApplet"
+	codebase="http://swiby.codehaus.org"
+	width="400" height="300">
+	<param name="script" value="samples/applet.rb">
+</applet></td>
+  </tr>
+  <tr>
+    <td><img src="images/ff_footer.jpg" width="401" height="18" alt="ff ftr" /></td>
+  </tr>
+</table>
+<p>The swiby source to this demo can be seen <a href="http://swiby.codehaus.org/samples/applet.rb">here</a></p>
+<p>&nbsp; </p>
+</body>
+</html>

@@ -5,6 +5,10 @@
         <page>prior-art.html</page>
     </section>
     <section>
+        <name>Demos</name>
+        <page>demo-applet.html</page>
+    </section>
+    <section>
          <name>Project Info</name>
          <page>team.html</page>
      </section>
