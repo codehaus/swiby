@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+<title>Decoration and Styling</title>
+<style type="text/css">
+<!--
+.code {
+	padding-left: 50px;
+}
+-->
+</style>
+</head>
+
+<body>
+
+<h2>Site decoration and styling</h2>
+
+<p>Sitemesh is well used in the pure Java world for webapps. It decorates pages on the server side so that a browser may see a set of pages with the same header, left and/or right nav bars and footers. Sitemesh's own site says it all in a single picture.</p>
+<p>In a similar way (to be coded) we will allow Swiby pages to be decorated. For example this ...</p>
+<div class="code">
+<pre>require 'swiby'
+
+	
+title "Hello Demo"
+	
+content {
+    label {
+        text &quot;hello&quot;    
+    } 
+}
+
+visible true
+</pre>
+</div>
+<p>gets Transformed into ...</p>
+<div class="code">
+<pre>require 'swiby'
+
+	
+title "Button Demo"
+	
+content {
+    BorderPanel {
+        north {
+            label {
+                text &quot;standard header&quot;    
+            }
+        }
+        center {
+            label {
+                text &quot;hello&quot;    
+            }
+        }
+        footer {
+            label {
+                text &quot;standard footer&quot;    
+            }
+        }
+    } 
+}
+
+visible true
+</pre>
+</div>
+<p>with this decorator page template ...</p>
+<div class="code">
+<pre>require 'swiby'
+
+	
+title = ${title}
+	
+content {
+    BorderPanel {
+        north {
+            label {
+                text &quot;standard header&quot;    
+            }
+        }
+        center {
+            ${content}
+        }
+        footer {
+            label {
+                text &quot;standard footer&quot;    
+            }
+        }
+    } 
+}
+${footer}
+</pre>
+</div>
+<h3>Style sheets</h3>
+<p>Similar to CSS (and yet to be done) a sheet like ...</p>
+<div class="code">
+<pre>label:
+bgcolor &quot;red&quot;</pre>
+</div>
+<p>will essentially make ...<br>
+</p>
+<div class="code">
+<pre>require 'swiby'
+require 'styles/style.swss'
+
+	
+title "Hello Demo"
+	
+content {
+    label {
+        text &quot;hello&quot;             
+    } 
+}
+
+visible true
+</pre>
+</div>
+<p>look like ....</p>
+<div class="code">
+<pre>require 'swiby'
+
+	
+title "Hello Demo"
+	
+content {
+    label {
+        text &quot;hello&quot;
+        bgcolor &quot;red&quot;             
+    } 
+}
+
+visible true
+</pre>
+</div>
+</body>
+</html>
