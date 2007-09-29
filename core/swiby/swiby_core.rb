@@ -30,7 +30,7 @@
 
 require 'java'
 
-module F3
+module Swiby
 
   include_class 'javax.swing.JScrollPane'
     

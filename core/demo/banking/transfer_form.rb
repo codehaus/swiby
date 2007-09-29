@@ -28,6 +28,41 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #++
 
-require 'java_swing'
+require 'sweb'
+require 'demo/banking/bank_model'
 
-include Swiby
+from_accounts = Account.find_from_accounts
+to_accounts = Account.find_to_accounts
+
+current = Transfer.new 0, from_accounts[2], to_accounts[0]
+
+title "Transfer Form"
+
+width 400
+
+content {
+	input "Date", Time.now
+	section
+	input "Amount", bind { current.amount }
+	next_line
+	section "From"
+	choice "Account", bind { from_accounts }, from_accounts[2]
+	input "Name", bind { current.account_from.owner }
+	input "Address", bind { current.account_from.address }
+	section "To"
+	input "Account", bind { current.account_to.number }
+	input "Name", bind { current.account_to.owner }
+	input "Address", bind { current.account_to.address }
+	next_line
+	button "Save"
+	button "Cancel"
+	next_line
+	button("Forward") {
+		 $context.forward
+	}
+	button("Back") {
+		 $context.back
+	}
+}
+    
+$context.start
