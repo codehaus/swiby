@@ -28,6 +28,72 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #++
 
-require 'java_swing'
+require 'swiby_form'
 
-include Swiby
+class Sweb
+	
+	attr_reader :container
+	
+	def start
+		@container.visible = true
+	end
+	
+	def goto page
+		@titles << @container.java_component.title #TODO must reslove problem @container.title conflicts with @container.title(x)
+		@container.setup
+		@history << @container.java_component.content_pane
+		@history_index += 1
+		load page
+	end
+	
+	def exit
+		# exit the application...
+	end
+	
+	def back
+		
+		return if @history_index == 0
+		
+		@history_index -= 1
+		@container.title @titles[@history_index]
+		@container.java_component.content_pane = @history[@history_index]
+		
+	end
+	
+	def forward
+		
+		return unless @history_index + 1 < @history.size
+		
+		@history_index += 1
+		@container.title @titles[@history_index]
+		@container.java_component.content_pane = @history[@history_index]
+		
+	end
+	
+	def initialize
+		@titles = []
+		@history = []
+		@container = Form.new
+		@history << @container.java_component.content_pane
+		@history_index = 0
+	end
+	
+end
+
+$context = Sweb.new
+
+def width w
+	$context.container.width w
+end
+
+def height h
+	$context.container.height h
+end
+
+def title t
+	$context.container.title t
+end
+
+def content &block
+	$context.container.instance_eval(&block)
+end

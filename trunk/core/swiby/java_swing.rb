@@ -32,13 +32,14 @@ require 'swiby_core'
 require 'java'
 require 'erb'
 
-module F3
+module Swiby
 
 	include_class ['HTMLEditorKit', 'StyleSheet'].map {|e| "javax.swing.text.html." + e}
 	include_class [
 			'Box',
 			'DefaultListModel',
 			'ImageIcon',
+			'JApplet',
 			'JButton',
 			'JComboBox',
 			'JFrame',
@@ -106,7 +107,7 @@ module F3
 		
 			@component = JFrame.new
 			
-			@component.setDefaultCloseOperation JFrame::EXIT_ON_CLOSE
+			@component.setDefaultCloseOperation JFrame::EXIT_ON_CLOSE unless $is_java_applet
 			
 		end
 	
@@ -184,7 +185,7 @@ module F3
 		end
 		
 		def dimension
-		
+
 			if @width
 				w = @width
 			else
@@ -249,6 +250,61 @@ module F3
 			
 		end
 		
+	end
+	
+	class Applet < Frame
+		
+		def initialize
+			
+			if $parent_applet.nil?
+
+				@parent_frame = JFrame.new
+				
+				@component = JApplet.new
+				
+				@parent_frame.content_pane.add @component, CENTER
+				
+				@parent_frame.setDefaultCloseOperation JFrame::EXIT_ON_CLOSE
+
+			else
+			
+				@component = $parent_applet
+				
+			end
+				
+			def @component.pack
+				@parent_frame.pack unless @parent_frame.nil?
+			end
+			
+		end
+		
+		def title= t
+		end
+
+		def visible=(flag)
+		
+			if @parent_frame.nil?
+				@component.validate
+				return
+			end
+			
+			@parent_frame.visible = flag
+			@parent_frame.pack
+			
+			w, h = dimension
+			
+			@parent_frame.setSize w, h
+			@parent_frame.pack
+			@parent_frame.validate
+			
+			w, h = dimension
+				
+			@parent_frame.setSize w, h
+			
+			@parent_frame.validate
+		
+		end
+			
 	end
 	
 	class Label < SwingBase
@@ -859,6 +915,7 @@ module F3
 	end
 	
 	component_factory :Frame
+	component_factory :Applet
 	component_factory :GridPanel
 	component_factory :FlowPanel
 	component_factory :Empty => :EmptyBorder
@@ -957,7 +1014,7 @@ module F3
 	
 	class IncrementalValue
 	
-		IGNORE = %w[Array Bignum Comparable Config Class Dir Enumerable ENV ERB F3 Fixnum Float Hash
+		IGNORE = %w[Array Bignum Comparable Config Class Dir Enumerable ENV ERB Swiby Fixnum Float Hash
 					IO Integer Kernel OptionParser Module Object Range Regexp String
 					Time].map{|x| Regexp.new(x)} + [/REXML::/]
 		

@@ -28,6 +28,68 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #++
 
-require 'java_swing'
+require 'swiby_form'
 
-include Swiby
+class Account
+    attr_accessor :owner, :number, :address
+    
+    def initialize owner, number, address
+        @owner = owner
+        @number = number
+        @address = address
+    end
+		
+		def humanize
+			"#{@number.to_s}"
+		end
+    
+end
+
+class Transfer
+    attr_accessor :amount, :account_from, :account_to
+    
+    def initialize amount, from, to
+        @amount = amount
+        @account_from = from
+        @account_to = to
+    end
+    
+end
+
+acc1 = Account.new 'Jean', '555123456733', 'Somewhere 200'
+acc2 = Account.new 'Jean (2)', '555765432136', 'Somewhere 200'
+acc3 = Account.new 'Jean (3)', '111765943218', 'Somewhere 200'
+acc4 = Account.new 'Max', '222764399497', 'There 14'
+
+my_accounts = [acc1, acc2, acc3]
+
+current = Transfer.new 200, acc1, acc4
+
+form = Form {
+    
+	title "Transfer Form"
+	
+	width 400
+	
+	content {
+		input "Date", Time.now
+		section
+		input "Amount", bind { current.amount }
+		next_line
+		section "From"
+		choice "Account", bind { my_accounts }, acc3
+		input "Name", bind { current.account_from.owner }
+		input "Address", bind { current.account_from.address }
+		section "To"
+		input "Account", bind { current.account_to.number }
+		input "Name", bind { current.account_to.owner }
+		input "Address", bind { current.account_to.address }
+		next_line
+		button "Save"
+		button "Cancel"
+		next_line
+	}
+    
+}
+
+form.visible = true

@@ -28,6 +28,32 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #++
 
-require 'java_swing'
+require 'sweb'
+require 'demo/banking/bank_model'
 
-include Swiby
+transfers = Transfer.find
+
+title "Banking System"
+
+width 400
+
+content {
+	section "Transfer List"
+	table ["From", "To", "Amount", "Date"], bind {transfers}
+	button("Add") {
+		$context.goto "demo/banking/transfer_form.rb"
+	}
+	button("Edit") {
+		$context.goto "demo/banking/transfer_form.rb"
+	}
+	next_line
+	button("Forward") {
+		 $context.forward
+	}
+	next_line
+	button("Exit") {
+		 $context.exit
+	}
+}
+
+$context.start
