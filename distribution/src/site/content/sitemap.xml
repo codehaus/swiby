@@ -3,6 +3,13 @@
         <name>About</name>
         <page>index.html</page>
         <page>prior-art.html</page>
+        <page>glass-ceiling.html</page>
+    </section>
+    <section>
+        <name>Standalone</name>
+    </section>
+    <section>
+        <name>The Sweb</name>
         <page>decoration.html</page>
     </section>
     <section>
