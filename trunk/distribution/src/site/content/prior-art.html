@@ -3,6 +3,11 @@
 <html>
 <head>
 <title>Prior Art</title>
+<style type="text/css">
+<!--
+.style1 {color: #FF0000}
+-->
+</style>
 </head>
 
 <body>
@@ -16,7 +21,7 @@
 <h3>Thicky</h3>
 <p>From 2004, and using an early Groovy (when it still had an interpreter) rather than JRuby. Thicky was a page-by-page interpreted UI markup language that leveraged the SwingBuilder than the Groovy team had made. Like one mode of Swiby, it provided a context/kernel for page navigation and similar 'browser' functions. The intenty was to use instead of  HTML &amp; Javascript for some applications.</p>
 <p>Here was are some screen shots of its browser-test frame and some pages rendered within it, with source for each:</p>
-<table width="100%" border="1">
+<table width="95%" border="1">
   <tr>
     <td width="50" valign="top">Page 1</td>
     <td valign="top"><img src="images/ThickyStandaloneClientScreenSnapz001.jpg" width="415" height="333" /></td>
@@ -43,7 +48,7 @@ class Page1 extends SwingPage implements Titled {
 
   Page1(ThickyContext context, BuilderSupport builder) {
     super(builder)
-    context.setBackPoint(true);
+    <span class="style1">context.setBackPoint(true);</span>
     body(border:new TitledBorder("A 2 by 3 table")) {
       tableLayout() {
         tr {
@@ -57,7 +62,7 @@ class Page1 extends SwingPage implements Titled {
         }
         tr {
           td() {
-            button(text:'Go to page 2', actionPerformed:{ context.goTo("Page2.groovy") })
+            button(text:'Go to page 2', actionPerformed:{ <span class="style1">context.goTo("Page2.groovy")</span> })
           }
           td() {
             comboBox(items:[new Fruit(context, 'apple','apple.gif'), new Fruit(context,
@@ -87,7 +92,7 @@ class Page1 extends SwingPage implements Titled {
 // These two should be general and standard one day.
 public class Fruit extends JLabel {
   public Fruit(ThickyContext context, String name, String image) {
-    super(name, new ImageIcon(context.makeAbsoluteURL(image)), JLabel.LEFT)
+    super(name, new ImageIcon(<span class="style1">context.makeAbsoluteURL(image)</span>), JLabel.LEFT)
   }
 }
 public class FruitRenderer implements ListCellRenderer {
@@ -122,9 +127,9 @@ class Page2 extends SwingPage implements Titled {
     super(builder)
     body() {
       button(text:'Go to page 3', actionPerformed:{ 
-            context.goTo("Page3.groovy") })
+            <span class="style1">context.goTo("Page3.groovy")</span> })
       button(text:'Go to BOGUS', actionPerformed:{ 
-            context.goTo("NoPage.groovy") })
+            <span class="style1">context.goTo("NoPage.groovy")</span> })
     }
   }
 
@@ -156,7 +161,7 @@ class Page3 extends SwingPage implements Titled {
     body() {
       label(text:'hello')
       button(text:'Go to page 1', actionPerformed:{ 
-            context.goTo("Page1.groovy") })
+            <span class="style1">context.goTo("Page1.groovy")</span> })
       def alphabet = ['a','b','c','d','e','f','g','h',
             'i','j','k','l','m','n','opqrstuvwxyz']
       def combo = comboBox()
