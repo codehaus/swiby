@@ -12,6 +12,7 @@
     <section>
         <name>The Sweb</name>
         <page>decoration.html</page>
+        <page>web-frameworks.html</page>
     </section>
     <section>
         <name>Demos</name>
