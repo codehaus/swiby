@@ -3,17 +3,32 @@
 <html>
 <head>
 <title>Overview</title>
-
 </head>
 
 <body>
 
 <h2>What is Swiby?</h2>
 
-<p>Swiby is a blend of Swing and Ruby for truly rich distrubuted applications.</p>
+<p>Swiby is a blend of Swing and Ruby for truly rich distributed applications.</p>
+<p>If is aiming to be:</p>
+<ul>
+  <li>as editable as possible in a design tool like DreamWeaver</li>
+  <li>as functional as Adobe's Flash, Microsoft's Silverlight and Sun's JavaFX</li>
+  <li>embedable as a binary in a web page (like the movie players in YouTube.com)</li>
+  <li>a cannot-get-any-richer page technology via browser plugin, as an alternate to HTML+Javascript<br />
+  </li>
+</ul>
+<h3>Why Swing?</h3>
 <p>Swing is an incredibly sophisticated UI technology for Java that can that can meet all your UI needs. Applications like JetBrain's Intellij IDEA are built on it.</p>
-<p>Ruby is very much a language of the moment. Popularised by Ruby on Rails, its proving that less is more for web application development.</p>
-<p>Best practice with Swiby is with a style of Ruby that is 'builder like'. Like this: </p>
+<h3>Why Ruby?</h3>
+<p>Ruby is an interpreted language that is very adaptable and capable. It has been popularised by Ruby on Rails in recent years, its proving that <strong>less is more</strong> for web application development. We want the same gains for 'The Sweb' so we have defined a builder-like style for the marking up of Swiby pages. This style of page will:</p>
+<ul>
+  <li>be editable by non-programmers</li>
+  <li>allow the builder style to be broken out of for advanced functionality</li>
+  <li>be editable by design tools, with round-trip capability</li>
+</ul>
+<p>Ruby, or more accurately JRuby will be fast to interpret each page that it processes. The is no compile stage that may invisibly slow rendering down.</p>
+<h3>Sample Page</h3>
 <div class="source">
 <pre>require 'swiby'
 
@@ -70,12 +85,8 @@ content {
 	
 visible true
 	
-}</pre>
-</div>
-<p>&nbsp;</p>
-<div class="section">
-<h3>Getting Started</h3>
-<p>Take a look at ...</p>
+}
+</pre>
 </div>
 </body>
 
