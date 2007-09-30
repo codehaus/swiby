@@ -3,13 +3,6 @@
 <html>
 <head>
 <title>Decoration and Styling</title>
-<style type="text/css">
-<!--
-.code {
-	padding-left: 50px;
-}
--->
-</style>
 </head>
 
 <body>
@@ -18,7 +11,7 @@
 
 <p>Sitemesh is well used in the pure Java world for webapps. It decorates pages on the server side so that a browser may see a set of pages with the same header, left and/or right nav bars and footers. Sitemesh's own site says it all in a single picture.</p>
 <p>In a similar way (to be coded) we will allow Swiby pages to be decorated. For example this ...</p>
-<div class="code">
+<div class="source">
 <pre>require 'swiby'
 
 	
@@ -34,7 +27,7 @@ visible true
 </pre>
 </div>
 <p>gets Transformed into ...</p>
-<div class="code">
+<div class="source">
 <pre>require 'swiby'
 
 	
@@ -64,7 +57,7 @@ visible true
 </pre>
 </div>
 <p>with this decorator page template ...</p>
-<div class="code">
+<div class="source">
 <pre>require 'swiby'
 
 	
@@ -92,13 +85,13 @@ ${footer}
 </div>
 <h3>Style sheets</h3>
 <p>Similar to CSS (and yet to be done) a sheet like ...</p>
-<div class="code">
+<div class="source">
 <pre>label:
 bgcolor &quot;red&quot;</pre>
 </div>
 <p>will essentially make ...<br>
 </p>
-<div class="code">
+<div class="source">
 <pre>require 'swiby'
 require 'styles/style.swss'
 
@@ -115,7 +108,7 @@ visible true
 </pre>
 </div>
 <p>look like ....</p>
-<div class="code">
+<div class="source">
 <pre>require 'swiby'
 
 	
