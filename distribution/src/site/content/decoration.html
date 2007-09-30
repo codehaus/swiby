@@ -18,7 +18,7 @@
 title "Hello Demo"
 	
 content {
-    label {
+    Label {
         text &quot;hello&quot;    
     } 
 }
@@ -26,7 +26,7 @@ content {
 visible true
 </pre>
 </div>
-<p>gets Transformed into ...</p>
+<p>gets transformed into ...</p>
 <div class="source">
 <pre>require 'swiby'
 
@@ -36,17 +36,17 @@ title "Button Demo"
 content {
     BorderPanel {
         north {
-            label {
+            Label {
                 text &quot;standard header&quot;    
             }
         }
         center {
-            label {
+            Label {
                 text &quot;hello&quot;    
             }
         }
-        footer {
-            label {
+        south {
+            Label {
                 text &quot;standard footer&quot;    
             }
         }
@@ -66,15 +66,15 @@ title = ${title}
 content {
     BorderPanel {
         north {
-            label {
+            Label {
                 text &quot;standard header&quot;    
             }
         }
         center {
             ${content}
         }
-        footer {
-            label {
+        south {
+            Label {
                 text &quot;standard footer&quot;    
             }
         }
@@ -99,7 +99,7 @@ require 'styles/style.swss'
 title "Hello Demo"
 	
 content {
-    label {
+    Label {
         text &quot;hello&quot;             
     } 
 }
@@ -115,7 +115,7 @@ visible true
 title "Hello Demo"
 	
 content {
-    label {
+    Label {
         text &quot;hello&quot;
         bgcolor &quot;red&quot;             
     } 
