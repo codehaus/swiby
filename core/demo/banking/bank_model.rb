@@ -66,6 +66,10 @@ class Account
 			@to_list = [acc1]
 			
 		end
+		
+		def table_row
+			[@owner.to_s, humanize, @address.to_s]
+		end
     
 end
 
