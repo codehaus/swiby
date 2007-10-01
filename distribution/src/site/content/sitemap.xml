@@ -4,6 +4,7 @@
         <page>index.html</page>
         <page>prior-art.html</page>
         <page>glass-ceiling.html</page>
+        <page>toolability.html</page>
     </section>
     <section>
         <name>Standalone</name>
@@ -11,6 +12,7 @@
     </section>
     <section>
         <name>The Sweb</name>
+        <page>the-sweb.html</page>
         <page>decoration.html</page>
         <page>web-frameworks.html</page>
     </section>
