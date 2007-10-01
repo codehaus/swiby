@@ -39,11 +39,11 @@ title "Banking System"
 width 400
 
 content {
-	section "Accounts"
-	table(["Owner", "Number", "Address"], bind {accounts}) {
-	  height 100
-	}
-	next_line
+	#section "Accounts"
+	#table(["Owner", "Number", "Address"], bind {accounts}) {
+	#  height 100
+	#}
+	#next_line
 	section "Transfer List"
 	table ["From", "To", "Amount", "Date"], bind {transfers}
 	button("Add") {
