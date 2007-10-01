@@ -25,17 +25,16 @@
 <p>Yet HTML does not support this. </p>
 <p>Well, not quite true. If you willing to abandon the pure-HTML drop-down field, and dive into a world of JavaScript, you can recreate something that effectively is a combo-box/drop-down to the end user. You may find a pre-existing Javsscript library that makes this possibility for you. You may even find one that works well in more InternetExplorer as well as Firefox. If you don't you are looking at many week's work, not half a day.</p>
 <h3>Summary</h3>
-<p>The glass ceiling of the web is that there are two languages; HTML and JavaScript. HTML is accessible to non technical people, but only to a certain degree. JavaScript library functions are quite common, but there is not getting away from the fact that it is a order more difficult to develop in than HTML. Its not just complexity, if the fact that you might get something working well to a certain level, but with a couple more feature requests, you're not extending that thing, you are scrapping the investment in it for a different technology.</p>
-<p>Swiby, by having a meld of JRuby and Swing aims to allow you to functionally improve applications without hitting the glass cielings that scar other tchnologies.</p>
-<p>Go from ...</p>
+<p>The glass ceiling of the web is that there are <strong>two languages</strong>; HTML and JavaScript. HTML is accessible to non technical people, but only to a certain degree. JavaScript library functions are quite common, but there is not getting away from the fact that it is a order more difficult to develop in than HTML. Its not just complexity, if the fact that you might get something working well to a certain level, but with a couple more feature requests, you're not extending that thing, you are scrapping the investment in it for a different technology.</p>
+<p>Swiby, by having a meld of JRuby and Swing aims to allow you to functionally improve applications without hitting the glass cielings that scar other tchnologies. And we feel that a single language is the key to success to punching through the glass ceiling. Swiby pages, look declarative. So much so in fact that in tests, non-developers feel they can edit the source form for modest changes to the site. <strong>Swiby pages only look declarative, in fact they are a procedural form, that takes advantage of the power of builder-syntax to make things look simple and elegant.</strong></p>
+<p>So for our case, the need to render the drop down differently, you can go from ...</p>
 <div class="source">
 <pre>content {
     combobox("pet") {
        list bind { inventory.pets }
 
     }
-}
-</pre>
+}</pre>
 </div>
 to ...
 <div class="source">
@@ -48,6 +47,7 @@ to ...
 //TODO - show pet_cell_renderer
 </pre>
 </div>
+<p>... with ease.</p>
 </body>
 
 
