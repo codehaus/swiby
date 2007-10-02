@@ -39,7 +39,6 @@ class Sweb
 	end
 	
 	def goto page
-		@titles << @container.java_component.title #TODO must reslove problem @container.title conflicts with @container.title(x)
 		@container.setup
 		@history << @container.java_component.content_pane
 		@history_index += 1
@@ -57,6 +56,7 @@ class Sweb
 		@history_index -= 1
 		@container.title @titles[@history_index]
 		@container.java_component.content_pane = @history[@history_index]
+		@container.java_component.validate
 		
 	end
 	
@@ -67,7 +67,17 @@ class Sweb
 		@history_index += 1
 		@container.title @titles[@history_index]
 		@container.java_component.content_pane = @history[@history_index]
+		@container.java_component.validate
 		
+	end
+	
+	def first_page?
+		@history_index == 0
+	end
+  
+	def register_title t
+		@container.title t
+		@titles[@history_index] = t
 	end
 	
 	def initialize
@@ -76,6 +86,7 @@ class Sweb
 		@container = Form.new
 		@history << @container.java_component.content_pane
 		@history_index = 0
+		@titles << ""
 	end
 	
 end
@@ -83,15 +94,15 @@ end
 $context = Sweb.new
 
 def width w
-	$context.container.width w
+	$context.container.width w if $context.first_page?
 end
 
 def height h
-	$context.container.height h
+	$context.container.height h if $context.first_page?
 end
 
 def title t
-	$context.container.title t
+	$context.register_title t
 end
 
 def content &block
