@@ -3,9 +3,26 @@
 <html>
 <head>
 <title>Overview</title>
+<style type="text/css">
+<!--
+#apDiv1 {
+	position:absolute;
+	left:764px;
+	top:92px;
+	width:214px;
+	height:76px;
+	z-index:1;
+	background-color: #66FF66;
+}
+-->
+</style>
 </head>
 
 <body>
+<div id="apDiv1">
+  <p align="center"><strong> Swiby is great for <br />
+    Intranet applications</strong>!</p>
+</div>
 <p>Swiby is a blend of Swing and Ruby for truly rich distributed applications.</p>
 <p>It is aiming to be:</p>
 <ul>
@@ -27,29 +44,27 @@
   <li>be editable by design tools, with round-trip capability</li>
 </ul>
 <p>Ruby, or more accurately JRuby will be fast to interpret each page that it processes. The is no compile stage that may invisibly slow rendering down.</p>
+<p>Sun's JavaFX technology is close. </p>
 <h3>Sample Swiby Web Application</h3>
+<p>Jean started a simple bank-account application. Its has Transfers Lists and the ability to make new transfers. There is no server side yet, but it will gove you a glimpse of the pseudo-declarative form that is easy for newbies to code. The source for the app is three ruby scripts (<strong>click on each image to see the source</strong>).</p>
 <table width="200" border="2">
   <tr>
     <th scope="col">Transfers List</th>
-    <th scope="col">new Transfer</th>
+    <th scope="col">New Transfer</th>
   </tr>
   <tr>
-    <td><a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/banking.rb">Source</a></td>
-    <td><a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/transfer_form.rb">Source</a></td>
-  </tr>
-  <tr>
-    <td><img src="images/transfers.jpg" width="474" height="641" /></td>
-    <td><img src="images/new-transfer.jpg" width="596" height="353" /></td>
+    <td><a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/banking.rb"><img src="images/transfers.jpg" width="474" height="641" /></a></td>
+    <td><a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/transfer_form.rb"><img src="images/new-transfer.jpg" width="596" height="353" /></a></td>
   </tr>
 </table>
-<p>The model, not a Swiby page per se, is <a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/bank_model.rb"> here</a></p>
+<p>The client-side model, not a Swiby page per se, is <a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/bank_model.rb"> here</a></p>
 <h2>Trying it out</h2>
-<p>Best from Subversion. From a command shell:</p>
+<p>Best to do this direct from Subversion. In a command shell:</p>
 <pre>  svn co http://svn.codehaus.org/swiby/trunk/core<br />  cd core<br />  jruby -Iswiby demo/banking/banking.rb
 
 Requires JRuby installed and 'jruby' in your PATH</pre>
 <h2>Getting involved</h2>
-<p>It is quite early days for the project.  Nothing is useable in any serious way yet, and we have a ton of work to do.  However if you're a swing loving Ruby convert or a C++ person with like of writing plugins think about helping us.  The <a href="http://xircles.codehaus.org/projects/swiby">management app</a> for Codehaus projects shows you where the mail lists (etc) are. </p>
+<p>It is quite early days for the project.  Nothing is useable in any serious way yet, and we have a ton of work to do. However if you're a swing loving Ruby convert or a C++ person with a like of writing browser plugins think about helping us.  The <a href="http://xircles.codehaus.org/projects/swiby">management app</a> for Codehaus projects shows you where the mail lists and issue tracker are. We're looking forward to patches in advance of taking committers on :-)</p>
 </body>
 
 
