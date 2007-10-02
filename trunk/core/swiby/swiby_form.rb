@@ -381,12 +381,10 @@ class AreaLayout
 		w = parent.size.width - (insets.left + insets.right) - @hgap
 		h = parent.size.height - (insets.top + insets.bottom) - @vgap
 
-		x = insets.left + @hgap
-		y = insets.top + @vgap
-    
 		heights = []
     cols_per_row = []
     
+    # [1] compute all sizes
     cols = 0
 		height_max = 0
     
@@ -418,6 +416,13 @@ class AreaLayout
 			heights.push height_max
 			cols_per_row.push cols
 		end
+    
+		# [2] optimize height
+		optimize_height h, heights
+    
+		#  [3] perform layout (resize and move compoments)
+		x = insets.left + @hgap
+		y = insets.top + @vgap
     
 		i = 0
 		
@@ -498,6 +503,45 @@ class AreaLayout
 
 	end
 	
+  def optimize_height parent_height, heights
+  
+    parent_height -= @vgap * heights.size
+    
+    last_chance = false
+    max_height = parent_height / heights.size
+    
+    used_height = 0
+    
+    while true
+    
+      big_guys = 0
+      
+      heights.each_index do |i|
+      
+        if heights[i] <= max_height
+          used_height += heights[i]
+        elsif last_chance
+          heights[i] = max_height
+        else
+          big_guys += 1
+        end
+        
+      end
+      
+      break if last_chance or big_guys == 0
+      
+      prev_max_height = max_height
+      
+      max_height = (parent_height - used_height) / big_guys if big_guys > 0
+
+      last_chance = max_height <= prev_max_height
+      
+      used_height = 0
+      
+    end
+		
+	end
+    
 end
 
 Swiby::component_factory :Form
