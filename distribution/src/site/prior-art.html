@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+<title>Prior Art</title>
+<style type="text/css">
+<!--
+.style1 {color: #FF0000}
+-->
+</style>
+</head>
+
+<body>
+
+<h2>Swiby is influenced by many things</h2>
+
+<h3>Flash</h3>
+<p>Macromedia / Adobe's incredibly pervasive fat-experience media-rich browser plugin. Youtube and other illustrate how transparent Flash can be. </p>
+<h3>JavaFX</h3>
+<p>JavaFX (formerly F3) is Sun's answer to Flash. It introduced a new language that was more friendly to designers and tools. Under the hood it was Java though and leverages Java technologies Swing and media libraries. Traditionally Java has been inaccessible to UI design specialists using tools, it remains to be seen whether JavaFX can cross the chasm.</p>
+<h3>Thicky</h3>
+<p>From 2004, and using an early Groovy (when it still had an interpreter) rather than JRuby. Thicky was a page-by-page interpreted UI markup language that leveraged the SwingBuilder than the Groovy team had made. Like one mode of Swiby, it provided a context/kernel for page navigation and similar 'browser' functions. The intenty was to use instead of  HTML &amp; Javascript for some applications.</p>
+<p>Here was are some screen shots of its browser-test frame and some pages rendered within it, with source for each:</p>
+<table width="95%" border="1">
+  <tr>
+    <td width="50" valign="top">Page 1</td>
+    <td valign="top"><img src="images/ThickyStandaloneClientScreenSnapz001.jpg" width="415" height="333" /></td>
+    <td>
+<div class="source">
+<pre>
+// Fairly standard imports.
+import groovy.util.BuilderSupport
+import org.thicky.client.SwingPage
+import org.thicky.client.Titled
+import org.thicky.client.ThickyContext
+
+// used by Page1
+import javax.swing.border.TitledBorder
+
+// used by inlined classes Fruit and FruitRenderer
+import javax.swing.JLabel
+import javax.swing.ImageIcon
+import javax.swing.JList
+import javax.swing.ListCellRenderer
+import java.awt.Component
+
+class Page1 extends SwingPage implements Titled {
+
+  Page1(ThickyContext context, BuilderSupport builder) {
+    super(builder)
+    <span class="style1">context.setBackPoint(true);</span>
+    body(border:new TitledBorder("A 2 by 3 table")) {
+      tableLayout() {
+        tr {
+          td {
+            label(text:'&lt;html>Unfortunately Images are not&lt;br>downloaded asynchronously.' +
+                  '&lt;br>A fix is needed to&lt;br>speed up the initial page load.&lt;/html>')
+          }
+          td() {
+            label(text:'AnotherLabel').setBorder(new TitledBorder("Fancy Border"))          
+          }
+        }
+        tr {
+          td() {
+            button(text:'Go to page 2', actionPerformed:{ <span class="style1">context.goTo("Page2.groovy")</span> })
+          }
+          td() {
+            comboBox(items:[new Fruit(context, 'apple','apple.gif'), new Fruit(context,
+                  'banana','banana.gif')]).setRenderer(new FruitRenderer())
+          }
+        }
+        tr {
+          td() {
+            lazyLabel(text:'Another Apple', imageUrl:'apple.gif')
+          }
+          td {
+
+          }
+        }
+      }
+    }
+  }
+
+  String getTitle() {
+    return "Page One";
+  }
+
+}
+
+// Inlined classes .........
+
+// These two should be general and standard one day.
+public class Fruit extends JLabel {
+  public Fruit(ThickyContext context, String name, String image) {
+    super(name, new ImageIcon(<span class="style1">context.makeAbsoluteURL(image)</span>), JLabel.LEFT)
+  }
+}
+public class FruitRenderer implements ListCellRenderer {
+    public Component getListCellRendererComponent( JList list, Object value, int index, 
+          boolean isSelected, boolean cellHasFocus) {
+        return (Fruit) value;
+    }
+}
+</pre>
+</div></td>
+  </tr>
+  <tr>
+    <td width="50" valign="top"><p>Page 1 with drop down pressed</p>
+    </td>
+    <td valign="top"><img src="images/ThickyStandaloneClientScreenSnapz003.jpg" alt="page 1" width="415" height="329" /></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="50" valign="top">Page 2</td>
+    <td valign="top"><img src="images/ThickyStandaloneClientScreenSnapz004.jpg" alt="page 2" width="416" height="333" /></td>
+    <td>
+<div class="source">
+<pre>
+import groovy.util.BuilderSupport
+import org.thicky.client.SwingPage
+import org.thicky.client.Titled
+import org.thicky.client.ThickyContext
+
+class Page2 extends SwingPage implements Titled {
+
+  Page2(ThickyContext context, BuilderSupport builder) {
+    super(builder)
+    body() {
+      button(text:'Go to page 3', actionPerformed:{ 
+            <span class="style1">context.goTo("Page3.groovy")</span> })
+      button(text:'Go to BOGUS', actionPerformed:{ 
+            <span class="style1">context.goTo("NoPage.groovy")</span> })
+    }
+  }
+
+  String getTitle() {
+    return "Page Two";
+  }
+
+}
+</pre>
+</div>
+    </td>
+  </tr>
+  <tr>
+    <td width="50" valign="top">Page 3</td>
+    <td valign="top"><img src="images/ThickyStandaloneClientScreenSnapz005.jpg" alt="page 3" width="415" height="331" /></td>
+    <td>
+<div class="source">
+<pre>
+import javax.swing.JComponent
+import groovy.util.BuilderSupport
+import org.thicky.client.SwingPage
+import org.thicky.client.Titled
+import org.thicky.client.ThickyContext
+
+class Page3 extends SwingPage implements Titled {
+
+  Page3(ThickyContext context, BuilderSupport builder) {
+    super(builder)
+    body() {
+      label(text:'hello')
+      button(text:'Go to page 1', actionPerformed:{ 
+            <span class="style1">context.goTo("Page1.groovy")</span> })
+      def alphabet = ['a','b','c','d','e','f','g','h',
+            'i','j','k','l','m','n','opqrstuvwxyz']
+      def combo = comboBox()
+      for(letter in alphabet) {
+        combo.addItem(letter)
+      }
+      comboBox(items:alphabet) {
+      }
+    }
+  }
+
+  String getTitle() {
+    return "Page Three";
+  }
+}
+</pre>
+</div>
+	</td>
+  </tr>
+</table>
+</body>
+</html>
