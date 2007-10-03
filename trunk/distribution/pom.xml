@@ -31,9 +31,9 @@
         <artifactId>xsite-maven-plugin</artifactId>
         <configuration>
           <sourceDirectoryPath>${basedir}/src/site</sourceDirectoryPath>
-          <sitemapPath>content/sitemap.xml</sitemapPath>
-          <skinPath>templates/skin.html</skinPath>
-          <resourcePaths>resources</resourcePaths>
+          <sitemapPath>sitemap.xml</sitemapPath>
+          <skinPath>skin.html</skinPath>
+          <resourcePaths>.</resourcePaths>
           <outputDirectoryPath>${project.build.directory}/site</outputDirectoryPath>
         </configuration>
         <executions>
