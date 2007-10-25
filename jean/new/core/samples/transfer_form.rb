@@ -65,7 +65,7 @@ my_accounts = [acc1, acc2, acc3]
 
 current = Transfer.new 200, acc1, acc4
 
-form = Form {
+transfer_form = form {
     
 	title "Transfer Form"
 	
@@ -75,7 +75,7 @@ form = Form {
 		input "Date", Time.now
 		section
 		input "Amount", bind { current.amount }
-		next_line
+		next_row
 		section "From"
 		choice "Account", bind { my_accounts }, acc3
 		input "Name", bind { current.account_from.owner }
@@ -84,12 +84,12 @@ form = Form {
 		input "Account", bind { current.account_to.number }
 		input "Name", bind { current.account_to.owner }
 		input "Address", bind { current.account_to.address }
-		next_line
+		next_row
 		button "Save"
 		button "Cancel"
-		next_line
+		next_row
 	}
     
 }
 
-form.visible = true
+transfer_form.visible = true

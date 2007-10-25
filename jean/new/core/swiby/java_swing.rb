@@ -29,6 +29,7 @@
 #++
 
 require 'swiby_core'
+require 'swiby_builder'
 require 'java'
 require 'erb'
 
@@ -49,9 +50,11 @@ module Swiby
 			'JMenu',
 			'JMenuBar',
 			'JMenuItem',
+      'JOptionPane',
 			'JPanel',
 			'JTabbedPane',
 			'JTextField',
+      'JToolBar',
 			'KeyStroke',
 			'UIManager',
 			'SwingConstants'
@@ -101,28 +104,18 @@ module Swiby
 	
 	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 	
-	class Frame < SwingBase
+  def message_box text
+    JOptionPane.showMessageDialog nil, text
+  end
+  
+	class Container < SwingBase
 		
-		def initialize
-		
-			@component = JFrame.new
-			
-			@component.setDefaultCloseOperation JFrame::EXIT_ON_CLOSE unless $is_java_applet
-			
-		end
-	
+    include Builder
+    
 		def content(&block)
-			self.content = block.call
+			block.call
 		end
 	
-		def dispose_on_close
-			@component.setDefaultCloseOperation JFrame::DISPOSE_ON_CLOSE
-		end
-		
-		def hide_on_close
-			@component.setDefaultCloseOperation JFrame::HIDE_ON_CLOSE
-		end
-		
 		def height=(h)
 			@height = h
 		end
@@ -133,32 +126,6 @@ module Swiby
 	
 		def height(h)
 			self.height = h
-		end
-		
-		def menus=(array)
-			addMenus array
-		end
-		
-		def menus(&array)
-			addMenus array.call
-		end
-	
-		def title=(t)
-			@component.title = t
-		end
-		
-		def title
-			@component.title
-		end
-		
-		def title(x)
-			
-			if x.instance_of? IncrementalValue
-				x.assign_to self, :title=
-			else
-				self.title = x
-			end
-
 		end
 		
 		def visible=(flag)
@@ -221,11 +188,100 @@ module Swiby
 		def width(w)
 			self.width = w
 		end
+    
+    def message_box text
+      JOptionPane.showMessageDialog @component, text
+    end
+	
+	end
+	
+  class Panel < Container
 		
-		def content=(child)
-			@component.content_pane.add child.java_component
+		def initialize
+			@component = JPanel.new
+		end
+		
+		def add(child)
+			@component.add child.java_component
+		end
+    
+  end
+  
+	class Frame < Container
+		
+		def initialize
+		
+			@component = JFrame.new
+			
+			@component.setDefaultCloseOperation JFrame::EXIT_ON_CLOSE unless $is_java_applet
+			
 		end
 	
+		def dispose_on_close
+			@component.setDefaultCloseOperation JFrame::DISPOSE_ON_CLOSE
+		end
+		
+		def hide_on_close
+			@component.setDefaultCloseOperation JFrame::HIDE_ON_CLOSE
+		end
+		
+		def add(child)
+			@component.content_pane.add child.java_component
+		end
+		
+    def toolbar &block
+    
+      if @tb_container.nil?
+        @tb_container = JPanel.new(AWT::FlowLayout.new(AWT::FlowLayout::LEFT))
+        @component.content_pane.add @tb_container, AWT::BorderLayout::NORTH
+      end
+      
+      tb = Toolbar.new
+
+      local_context = self.context()
+      
+      tb.instance_eval do
+      
+        @local_context = local_context
+        
+        def context()
+          @local_context
+        end
+        
+      end
+      
+      tb.instance_eval(&block)
+      
+      @tb_container.add tb.java_component
+      
+    end
+    
+		def menus=(array)
+			addMenus array
+		end
+		
+		def menus(&array)
+			addMenus array.call
+		end
+	
+		def title=(t)
+			@component.title = t
+		end
+		
+		def title
+			@component.title
+		end
+		
+		def title(x)
+			
+			if x.instance_of? IncrementalValue
+				x.assign_to self, :title=
+			else
+				self.title = x
+			end
+
+		end
+		
 		private
 		
 		def addMenus(array)
@@ -415,8 +471,8 @@ module Swiby
 		swing_attr_accessor :value => :text
 		swing_attr_accessor :columns
 		
-		def initialize
-			@component = JTextField.new
+		def initialize text = nil?
+			@component = text.nil? ? JTextField.new : JTextField.new(text)
 		end
 	
 		def install_listener iv
@@ -435,17 +491,38 @@ module Swiby
 		
 	end
 
+	def create_icon(url)
+  
+    if url =~ /http:\/\/.*/
+      url = java.net.URL.new(url)
+    elsif url =~ /file:\/\/.*/
+      url = url[7..-1]
+    elsif File.exist?(url)
+      url = "#{File.expand_path(url)}"
+    else
+      #TODO implement URL resolution using LOAD_PATH, for "local" files, URL like 'file://c:/..." does not work
+      #puts $LOAD_PATH
+      puts "url resolution not implemented"
+      return nil
+    end
+    
+    ImageIcon.new(url)
+    
+  end
+  
 	def createImageIcon(url)
-        
+
 		#TODO add cache, loading from JAR...
-		java.net.URL imgURL = java.net.URL.new(url)
+    if url =~ /http:\/\/.*/
+  		url = java.net.URL.new(url)
+    end
         
 		if imgURL.nil?
             #TODO handle the error?
 			puts "Couldn't find file: " + url
             nil
         else
-            ImageIcon.new(imgURL)
+            ImageIcon.new(url)
         end
 		
  	end
@@ -455,16 +532,38 @@ module Swiby
 		swing_attr_accessor :enabled
 		swing_attr_accessor :text
 		
-		def initialize
+		def initialize options = nil
+    
 			@component = JButton.new
-		end
+      
+      return unless options
+      
+      self.text = options[:text] if options[:text]
+      self.enabled_state = options[:enabled] unless options[:enabled].nil?
+
+      icon options[:icon] if options[:icon]
+      action &options[:action] if options[:action]
+
+    end
 	
-		def icon(url)
+    def enabled_state= value
 			
-			image = createImageIcon(url)
-			
-			@component.icon = image if not image.nil?
-			
+      if value.instance_of? IncrementalValue
+				value.assign_to self, :enabled=
+			else
+				self.enabled = value
+			end
+
+    end
+    
+		def icon(image)
+      
+      if not image.nil? and image.instance_of?(String)
+        image = Swiby::create_icon(image)
+      end
+
+			@component.icon = image unless image.nil?
+      
 		end
 		
 		def mnemonic(char)
@@ -591,6 +690,144 @@ module Swiby
 		end
 		
 	end
+  
+  class ComponentOptions
+    
+    def initialize name
+      @name = name
+      @options = {}
+      @valid_props = []
+    end
+    
+    def method_missing(meth, *args)
+    
+      raise "[#{@name}] Missing value for property '#{meth}'" if args.length == 0
+      raise "[#{@name}] Property '#{meth}' expects only one value but was #{args.length}" if args.length > 1
+    
+      self[meth] = args[0]
+      
+    end
+    
+    def [](key)
+      @options[key]
+    end
+    
+    def []=(key, value)
+    
+      if not @valid_props.include?(key)
+        raise "[#{@name}] Invalid property '#{key}' (of type #{key.class}). " \
+              "Valid set is #{@valid_props.join(', ')}"
+      end
+      
+      @options[key] = value
+      
+    end
+    
+    def <<(props)
+      
+      return if props.nil?
+      
+      props.each do |key, value|
+        self[key] = value
+      end
+      
+    end
+    
+    def to_s
+      @options.to_s
+    end
+    
+    protected
+    
+    def properties *props
+      @valid_props = @valid_props + props
+    end
+    
+    def self.define name, *valid_props
+    
+      valid_props = valid_props.collect {|x| ":#{x}"}
+      props_register = valid_props.join(',')
+      
+      bloc = proc do
+        %{
+        def initialize options = nil
+
+          super "#{name}"
+          
+          properties #{props_register}
+          
+          self << options unless options.nil?
+          
+        end
+        }
+      end
+      
+      class_eval bloc.call
+    
+    end
+    
+  end
+  
+  class ButtonOptions < ComponentOptions
+    define "Button", :text, :icon, :action, :enabled
+  end
+  
+  class Toolbar < SwingBase
+		
+		def initialize
+			@component = JToolBar.new
+		end
+    
+    def add child
+      @component.add child.java_component
+    end
+    
+    include Builder
+    
+    def input(label = nil, value = nil)
+
+      if value.nil?
+        jlabel = nil
+        jtext = create_text(label)
+      else
+        jtext = create_text(value)
+        jlabel = create_label(label)
+        jlabel.label_for = jtext
+      end
+
+      @component.add jlabel unless jlabel.nil?
+      @component.add jtext
+
+    end
+  
+    def create_label(label)
+
+      if label.instance_of? IncrementalValue
+        jlabel = JLabel.new(label.get_value.to_s)
+      else
+        jlabel = JLabel.new(label.to_s)
+      end
+
+      jlabel
+
+    end
+
+    def create_text(value)
+  		
+  		if value.instance_of? IncrementalValue
+  				jtext = JTextField.new
+          value.assign_to jtext, :text=
+  		elsif value.nil?
+  				jtext = JTextField.new
+  		else
+  				jtext = JTextField.new(value.to_s)
+  		end
+      
+      jtext
+      
+    end
+
+  end
 	
 	class Menu < SwingBase
 	
@@ -914,30 +1151,16 @@ module Swiby
 		
 	end
 	
-	component_factory :Frame
-	component_factory :Applet
-	component_factory :GridPanel
-	component_factory :FlowPanel
-	component_factory :Empty => :EmptyBorder
-	component_factory :Label
-	component_factory :SimpleLabel
-	component_factory :TextField
-	component_factory :Button
-	component_factory :ListBox
-	component_factory :ComboBox
-	component_factory :Menu
-	component_factory :MenuItem
-	component_factory :TabbedPane
-	component_factory :Tab
-	component_factory :BorderPanel
-	component_factory :RigidArea
+  component_factory :frame
+  component_factory :label
+	component_factory :input => :TextField
 
 	def bind(model = nil, getter = nil, &block)
 		
 		if model.nil?
 			IncrementalValue.new(block)
 		else
-			IncrementalValue.new(model, getter)
+			IncrementalValue.new(model, getter, block)
 		end
 		
 	end
@@ -1018,8 +1241,10 @@ module Swiby
 					IO Integer Kernel OptionParser Module Object Range Regexp String
 					Time].map{|x| Regexp.new(x)} + [/REXML::/]
 		
-		def initialize(model, getter = nil, setter = nil)
+		def initialize(model, getter = nil, setter = nil, updater = nil)
 		
+      @is_updater_block = false
+      
 			if model.instance_of? Proc
 				@block = model
 			else
@@ -1029,9 +1254,18 @@ module Swiby
 				
 				if setter.nil?
 					@setter = "#{getter}=".to_sym
+        elsif setter.instance_of? Proc
+					@setter = "#{getter}=".to_sym
+          @is_updater_block = true
+          @block = setter
 				else
 					@setter = setter
 				end
+        
+        unless updater.nil?
+          @is_updater_block = true
+          @block = updater
+        end
 				
 				add_setter_observer_to @model, @setter.to_s
 				
@@ -1045,7 +1279,9 @@ module Swiby
 		
 		def get_value
 		
-			if @block
+      if @is_updater_block
+        res = @block.call(@model)
+			elsif @block
 			
 				capture
 				res = @block.call
@@ -1090,7 +1326,9 @@ module Swiby
 			
 			return if @target.nil?
 
-			if @block
+      if @is_updater_block
+        new_value = @block.call(@model)
+			elsif @block
 				new_value = @block.call
 			else
 				new_value = @model.send @getter

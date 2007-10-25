@@ -44,7 +44,7 @@ content {
 	table(["Owner", "Number", "Address"], bind {accounts}) {
 	  height 100
 	}
-	next_line
+	next_row
 	section "Transfer List"
 	table ["From", "To", "Amount", "Date"], bind {transfers}
 	button("Add") {
@@ -52,14 +52,6 @@ content {
 	}
 	button("Edit") {
 		$context.goto "demo/banking/transfer_form.rb"
-	}
-	next_line
-	button("Forward") {
-		 $context.forward
-	}
-	next_line
-	button("Exit") {
-		 $context.exit
 	}
 }
 

@@ -32,17 +32,27 @@ require 'swiby_form'
 
 class Sweb
 	
-	attr_reader :container
+  attr_accessor :source
+	attr_reader :container, :top_container
 	
 	def start
-		@container.visible = true
+		@top_container.visible = true
 	end
 	
 	def goto page
-		@container.setup
-		@history << @container.java_component.content_pane
+		
+    @container = form(:as_panel)
+		@history << @container
+    @sources << page
 		@history_index += 1
 		load page
+		
+    self.source = page
+    
+    @top_container.java_component.content_pane.remove 1
+    @top_container.java_component.content_pane.add @container.java_component
+		@top_container.java_component.validate
+    
 	end
 	
 	def exit
@@ -51,42 +61,87 @@ class Sweb
 	
 	def back
 		
-		return if @history_index == 0
+		return if first_page?
 		
 		@history_index -= 1
-		@container.title @titles[@history_index]
-		@container.java_component.content_pane = @history[@history_index]
-		@container.java_component.validate
+    @container = @history[@history_index]
+		@top_container.title @titles[@history_index]
+    @top_container.java_component.content_pane.remove 1
+		@top_container.java_component.content_pane.add @container.java_component
+		@top_container.java_component.content_pane.validate
+    @top_container.java_component.repaint
 		
+    self.source = @sources[@history_index]
+    
 	end
 	
 	def forward
 		
-		return unless @history_index + 1 < @history.size
+		return if last_page?
 		
 		@history_index += 1
-		@container.title @titles[@history_index]
-		@container.java_component.content_pane = @history[@history_index]
-		@container.java_component.validate
+    @container = @history[@history_index]
+		@top_container.title @titles[@history_index]
+    @top_container.java_component.content_pane.remove 1
+		@top_container.java_component.content_pane.add @container.java_component
+		@top_container.java_component.validate
+    @top_container.java_component.repaint
 		
+    self.source = @sources[@history_index]
+    
 	end
 	
 	def first_page?
 		@history_index == 0
 	end
+	
+	def last_page?
+    @history_index + 1 >= @history.size
+	end
   
 	def register_title t
-		@container.title t
+		@top_container.title t
 		@titles[@history_index] = t
 	end
 	
 	def initialize
-		@titles = []
-		@history = []
-		@container = Form.new
-		@history << @container.java_component.content_pane
+		
 		@history_index = 0
+    
+    @titles = []
+    @sources = []
+		@history = []
+    
+    @source = $0
+    
+    @container = form(:as_panel)
+    
+		@top_container = frame do
+      
+      toolbar do
+        button do
+          icon "swiby/images/go-previous.png"
+          enabled bind(context, :source) {|context| not context.first_page?}
+          action proc {$context.back}
+        end
+        button create_icon("swiby/images/go-next.png"), :more_options do
+          enabled bind(context, :source) {|context| not context.last_page?}
+          action proc {$context.forward}
+        end
+      end
+      
+      toolbar do
+        input bind(context, :source)
+      end
+
+    end
+    
+    @top_container.java_component.content_pane.add @container.java_component
+		
+    @history << @container
 		@titles << ""
+    @sources << @source
+    
 	end
 	
 end

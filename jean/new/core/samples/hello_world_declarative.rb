@@ -1,13 +1,13 @@
 require 'swiby'
 
-Frame {
+frame {
 	
 	title "Hello World F3"
 	
 	width 200
 	
 	content {
-		Label {
+		label {
 			text "Hello World"
 		}
 	}

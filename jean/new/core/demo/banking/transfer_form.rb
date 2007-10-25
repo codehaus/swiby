@@ -44,7 +44,7 @@ content {
 	input "Date", Time.now
 	section
 	input "Amount", bind { current.amount }
-	next_line
+	next_row
 	section "From"
 	choice "Account", bind { from_accounts }, from_accounts[2]
 	input "Name", bind { current.account_from.owner }
@@ -53,16 +53,9 @@ content {
 	input "Account", bind { current.account_to.number }
 	input "Name", bind { current.account_to.owner }
 	input "Address", bind { current.account_to.address }
-	next_line
+	next_row
 	button "Save"
 	button "Cancel"
-	next_line
-	button("Forward") {
-		 $context.forward
-	}
-	button("Back") {
-		 $context.back
-	}
 }
     
 $context.start
