@@ -28,7 +28,6 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #++
 
-#TODO improve layout managers (glitches when resizong and use of preferred sometimes results in bad layouts
 require 'swiby'
 require 'swiby_layouts'
 
@@ -66,8 +65,6 @@ module Swiby
 
   end
 
-  #TODO  bind half-implemented and bad!
-  #TODO  check for lot of duplication code
   module Form
 
     def initialize
@@ -136,51 +133,16 @@ module Swiby
       section if @section.nil?
     end
 
-    def layout_input label, text 
-      @layout.add_field label.java_component, text.java_component
-    end
-    
     def layout_button comp = nil
       @layout.add_command comp.java_component
     end
 
-    def choice label, values, selected = nil
-
-      section if @section.nil?
-
-      jlabel = create_label(label)
-
-      combo = create_combo
-
-      if values.instance_of? IncrementalValue
-        values = values.get_value
-      end
-
-      select_index = -1
-
-      values.each do |value|
-
-        if value.respond_to? :humanize
-          display = value.humanize
-        elsif value.respond_to? :name
-          display = value.name
-        else
-          display = value.to_s
-        end
-
-        combo.addItem display
-
-        select_index = combo.item_count - 1 if value == selected
-
-      end
-
-      combo.selected_index = select_index unless select_index == -1
-
-      @section.add jlabel
-      @section.add combo
-
-      @layout.add_field jlabel, combo
-
+    def layout_input label, text 
+      @layout.add_field label.java_component, text.java_component
+    end
+    
+    def layout_list label, list
+      @layout.add_component label.java_component, list.java_component
     end
 
     def table headers, values
@@ -222,78 +184,6 @@ module Swiby
       @section.add pane
 
       @layout.add_panel pane
-
-    end
-
-    def list label, values, selected = nil
-
-      section if @section.nil?
-
-      jlabel = create_label(label)
-
-      model = DefaultListModel.new
-
-      list = create_list
-      list.model = model
-
-      if values.instance_of? IncrementalValue
-        values = values.get_value
-      end
-
-      select_index = -1
-
-      values.each do |value|
-
-        if value.respond_to? :humanize
-          display = value.humanize
-        elsif value.respond_to? :name
-          display = value.name
-        else
-          display = value.to_s
-        end
-
-        model.addElement display
-
-        select_index = model.size - 1 if value == selected
-
-      end
-
-      list.selected_index = select_index unless select_index == -1
-
-      pane = JScrollPane.new(list)
-
-      @section.add jlabel
-      @section.add pane
-
-      @layout.add_component jlabel, pane
-
-    end
-
-    def create_label(label)
-
-      if label.instance_of? IncrementalValue
-        jlabel = JLabel.new(label.get_value.to_s)
-      else
-        jlabel = JLabel.new(label.to_s)
-      end
-
-      jlabel
-
-    end
-
-    def create_list
-
-      list = JList.new
-
-      list
-
-    end
-
-    def create_combo
-
-      combo = JComboBox.new
-
-      combo
 
     end
 

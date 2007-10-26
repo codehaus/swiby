@@ -1,6 +1,7 @@
 
 require 'swiby'
 
+##---------------------------------------------
 f = frame do
 
   title "Syntax: button title &action"
@@ -17,6 +18,7 @@ end
 
 f.visible = true
 
+##---------------------------------------------
 f = frame do
 
   title "Syntax: button icon &action"
@@ -33,6 +35,7 @@ end
 
 f.visible = true
 
+##---------------------------------------------
 f = frame do
 
   title "Syntax: button text, icon &action"
@@ -49,6 +52,7 @@ end
 
 f.visible = true
 
+##---------------------------------------------
 f = frame do
 
   title "Syntax: button &options"
@@ -67,6 +71,7 @@ end
 
 f.visible = true
 
+##---------------------------------------------
 f = frame do
 
   title "Syntax: button hash &action"
@@ -83,6 +88,7 @@ end
 
 f.visible = true
 
+##---------------------------------------------
 f = frame do
 
   title "Syntax: button text, :more_options &options"

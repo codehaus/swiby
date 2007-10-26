@@ -46,7 +46,7 @@ content {
   input "Amount", bind { current.amount }
   next_row
   section "From"
-  choice "Account", bind { from_accounts }, from_accounts[2]
+  combo "Account", bind { from_accounts }, from_accounts[2]
   input "Name", bind { current.account_from.owner }
   input "Address", bind { current.account_from.address }
   section "To"

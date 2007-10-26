@@ -108,6 +108,71 @@ module Swiby
     JOptionPane.showMessageDialog nil, text
   end
 
+  def create_layout(layout)
+
+    case layout
+    when :left_flow
+      layout = AWT::FlowLayout.new(AWT::FlowLayout::LEFT)
+    when :center_flow
+      layout = AWT::FlowLayout.new(AWT::FlowLayout::CENTER)
+    when :rigth_flow
+      layout = AWT::FlowLayout.new(AWT::FlowLayout::RIGHT)
+    else
+      layout = nil
+    end
+
+    layout
+    
+  end
+  
+  def create_icon(url)
+
+    if url =~ /http:\/\/.*/
+      url = java.net.URL.new(url)
+    elsif url =~ /file:\/\/.*/
+      url = url[7..-1]
+    elsif File.exist?(url)
+      url = "#{File.expand_path(url)}"
+    else
+      #TODO implement URL resolution using LOAD_PATH, for "local" files, URL like 'file://c:/..." does not work
+      #puts $LOAD_PATH
+      puts "url resolution not implemented"
+      return nil
+    end
+
+    ImageIcon.new(url)
+
+  end
+
+  def createImageIcon(url)
+
+    #TODO add cache, loading from JAR...
+    if url =~ /http:\/\/.*/
+      url = java.net.URL.new(url)
+    end
+
+    if imgURL.nil?
+      #TODO handle the error?
+      puts "Couldn't find file: " + url
+      nil
+    else
+      ImageIcon.new(url)
+    end
+
+  end
+  
+  def to_human_readable(value)
+    
+    if value.respond_to? :humanize
+      value.humanize
+    elsif value.respond_to? :name
+      value.name
+    else
+      value.to_s
+    end
+
+  end
+
   class Container < SwingBase
 
     include Builder
@@ -455,7 +520,7 @@ module Swiby
       return unless options
 
       self.text = options[:label] if options[:label]
-      field = options[:field_component] if options[:field_component] # TODO self.field syntax fails? (wrong # of arguments(2 for 1) (ArgumentError))
+      field = options[:input_component] if options[:input_component] # TODO self.field syntax fails? (wrong # of arguments(2 for 1) (ArgumentError))
       
     end
     
@@ -496,7 +561,7 @@ module Swiby
       
       return unless options
       
-      options[:field_component] = self
+      options[:input_component] = self
       
       x = options[:text]
       
@@ -520,59 +585,6 @@ module Swiby
 
     def value=(t)
       @component.text = t.to_s
-    end
-
-  end
-
-  def create_layout(layout)
-
-    case layout
-    when :left_flow
-      layout = AWT::FlowLayout.new(AWT::FlowLayout::LEFT)
-    when :center_flow
-      layout = AWT::FlowLayout.new(AWT::FlowLayout::CENTER)
-    when :rigth_flow
-      layout = AWT::FlowLayout.new(AWT::FlowLayout::RIGHT)
-    else
-      layout = nil
-    end
-
-    layout
-    
-  end
-  
-  def create_icon(url)
-
-    if url =~ /http:\/\/.*/
-      url = java.net.URL.new(url)
-    elsif url =~ /file:\/\/.*/
-      url = url[7..-1]
-    elsif File.exist?(url)
-      url = "#{File.expand_path(url)}"
-    else
-      #TODO implement URL resolution using LOAD_PATH, for "local" files, URL like 'file://c:/..." does not work
-      #puts $LOAD_PATH
-      puts "url resolution not implemented"
-      return nil
-    end
-
-    ImageIcon.new(url)
-
-  end
-
-  def createImageIcon(url)
-
-    #TODO add cache, loading from JAR...
-    if url =~ /http:\/\/.*/
-      url = java.net.URL.new(url)
-    end
-
-    if imgURL.nil?
-      #TODO handle the error?
-      puts "Couldn't find file: " + url
-      nil
-    else
-      ImageIcon.new(url)
     end
 
   end
@@ -646,9 +658,59 @@ module Swiby
 
   class ComboBox < SwingBase
 
-    container :cells
     swing_attr_accessor :selection => :selected_index
 
+    def initialize options = nil
+      
+      @component = create_list_component
+      
+      return unless options
+      
+      options[:input_component] = self
+      
+      values = options[:values]
+      selected = options[:selected]
+
+      if values.instance_of? IncrementalValue
+        values = values.get_value
+      end
+
+      select_index = -1
+
+      values.each do |value|
+
+        self.add_item to_human_readable(value)
+
+        select_index = self.item_count - 1 if value == selected
+
+      end
+
+      self.selection = select_index unless select_index == -1
+      
+      @values = values
+      
+      action(&options[:action]) if options[:action]
+      
+    end
+    
+    def create_list_component
+      JComboBox.new
+    end
+
+    def action(&block)
+
+      listener = ActionListener.new
+
+      @component.addActionListener(listener)
+
+      listener.register do
+        
+        block.call(@values[@component.selected_index])
+        
+      end
+      
+    end
+    
     def install_listener iv
 
       listener = ActionListener.new
@@ -664,29 +726,51 @@ module Swiby
     def selection=(index)
       @component.selected_index = index.to_i
     end
-
-    def initialize
-      @component = JComboBox.new
+    
+    def item_count
+      @component.item_count
     end
-
-    #TODO ListBox has similar addComponents method, diff is addItem replace by model.addElement
-    #     should use same approach, replacing DefaultListModel with javax.swing.DefaultComboBoxModel
-    #TODO is addComponents the right name to add items to a list/combobox? => the name is set by the 'container' method
-    def addComponents components
-
-      if components.is_a? IncrementalValue
-        components = components.get_value self
-      end
-
-      components.each do |x|
-        @component.addItem x
-      end
-
+    
+    def add_item value
+      @component.add_item value
     end
 
   end
 
   class ListBox < ComboBox
+
+    def initialize options = nil
+
+      super options
+      
+      scrollable
+
+    end
+    
+    def create_list_component
+
+      @model = DefaultListModel.new
+
+      comp = JList.new
+      comp.model = @model
+      
+      comp
+
+    end
+
+    def action(&block)
+
+      listener = ListSelectionListener.new
+
+      @component.addListSelectionListener(listener)
+
+      listener.register do
+        
+        block.call(@values[@component.selected_index])
+        
+      end
+      
+    end
 
     def install_listener iv
 
@@ -699,43 +783,12 @@ module Swiby
       end
 
     end
-
-    def initialize
-
-      @model = DefaultListModel.new
-
-      @component = JList.new
-      @component.model = @model
-
-      scrollable
-
+    
+    def item_count
+      @model.size
     end
-
-    def addComponents components
-
-      if components.is_a? IncrementalValue
-
-        components.validate_as_field_binding
-
-        array = components.get_value
-
-        add_array_observers array, self
-
-        components = array
-
-      end
-
-      components.each do |x|
-        @model.addElement x
-      end
-
-    end
-
-    def delete_at index
-      @model.removeElementAt index
-    end
-
-    def push value
+    
+    def add_item value
       @model.addElement value
     end
 
@@ -823,7 +876,11 @@ module Swiby
   end
 
   class InputOptions < ComponentOptions
-    define "Input", :text, :label, :enabled, :field_component
+    define "Input", :text, :label, :enabled, :input_component
+  end
+
+  class ListOptions < ComponentOptions
+    define "List", :label, :values, :selected, :action, :enabled, :input_component
   end
 
   class Toolbar < SwingBase

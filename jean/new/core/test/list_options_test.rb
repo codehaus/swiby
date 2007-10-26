@@ -1,0 +1,94 @@
+
+require 'swiby'
+
+colors = [:black, :blue, :green, :pink, :red, :white, :yellow]
+
+##---------------------------------------------
+f = frame :left_flow do
+
+  title "Syntax: list label, values, selected &action"
+
+  content do
+    list 'Color:', colors, :blue do |color|
+      message_box "Selected #{color}"
+    end
+  end
+
+  width 400
+
+end
+
+f.visible = true
+
+##---------------------------------------------
+f = frame :left_flow do
+
+  title "Syntax: list label, values &action"
+
+  content do
+    list 'Color:', colors do |color|
+      message_box "Selected #{color}"
+    end
+  end
+
+  width 400
+
+end
+
+f.visible = true
+
+##---------------------------------------------
+f = frame :left_flow do
+
+  title "Syntax: list values &action"
+
+  content do
+    list colors do |color|
+      message_box "Selected #{color}"
+    end
+  end
+
+  width 400
+
+end
+
+f.visible = true
+
+##---------------------------------------------
+f = frame :left_flow do
+
+  title "Syntax: list &option"
+
+  content do
+    list do
+      label "Color:"
+      values colors
+      selected :blue
+      action proc { |color|
+        message_box "Selected #{color}"
+      }
+    end
+  end
+
+  width 400
+
+end
+
+f.visible = true
+
+##---------------------------------------------
+f = frame :left_flow do
+
+  title "Syntax: list hash &action"
+
+  content do
+    list :label => "Color:", :values => colors, :selected => :blue do |color|
+        message_box "Selected #{color}"
+    end
+  end
+
+  width 400
+
+end
+
+f.visible = true

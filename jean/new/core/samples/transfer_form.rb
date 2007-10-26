@@ -77,7 +77,7 @@ transfer_form = form {
     input "Amount", bind { current.amount }
     next_row
     section "From"
-    choice "Account", bind { my_accounts }, acc3
+    combo "Account", bind { my_accounts }, acc3
     input "Name", bind { current.account_from.owner }
     input "Address", bind { current.account_from.address }
     section "To"

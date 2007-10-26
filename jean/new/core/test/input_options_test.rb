@@ -1,6 +1,7 @@
 
 require 'swiby'
 
+##---------------------------------------------
 f = frame :left_flow do
 
   title "Syntax: input label, value"
@@ -15,6 +16,7 @@ end
 
 f.visible = true
 
+##---------------------------------------------
 f = frame :left_flow do
 
   title "Syntax: input value"
@@ -29,6 +31,7 @@ end
 
 f.visible = true
 
+##---------------------------------------------
 f = frame :left_flow do
 
   title "Syntax: input &options"
@@ -46,6 +49,7 @@ end
 
 f.visible = true
 
+##---------------------------------------------
 f = frame :left_flow do
 
   title "Syntax: input hash"
@@ -60,6 +64,7 @@ end
 
 f.visible = true
 
+##---------------------------------------------
 f = frame :left_flow do
 
   title "Syntax: input value &options"
