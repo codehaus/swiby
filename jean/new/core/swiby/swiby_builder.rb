@@ -4,8 +4,19 @@ module Swiby
 
   module Builder
 
+    def ensure_section
+    end
+    
+    def layout_button comp
+    end
+    
+    def layout_input label, text 
+    end
+    
     def button text = nil, image = nil, options = nil, &block
 
+      ensure_section
+      
       block_options = nil
 
       if image.instance_of? Hash
@@ -61,6 +72,58 @@ module Swiby
       but = Button.new(x)
 
       add but
+      layout_button but
+
+    end
+
+    def input label = nil, text = nil, &block_options
+
+      ensure_section
+      
+      options = nil
+      
+      if text.nil? and !label.nil?
+        text = label
+        label = nil
+      end
+      
+      if text.instance_of? Hash
+        options = text
+        text = nil
+      end
+      
+      options = {} unless options
+
+      options[:text] = text if text
+      options[:label] = label if label
+
+      x = InputOptions.new
+
+      local_context = context
+
+      x.instance_eval do
+
+        @local_context = local_context
+
+        def context()
+          @local_context
+        end
+
+      end
+
+      x << options
+
+      x.instance_eval(&block_options) if block_options
+
+      field = TextField.new(x)
+
+      if x[:label]
+        label = SimpleLabel.new(x)
+        add label
+      end
+
+      add field
+      layout_input label, field
 
     end
 

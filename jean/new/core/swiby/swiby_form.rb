@@ -80,6 +80,18 @@ module Swiby
 
     def setup is_panel = false
 
+      local_context = self #TODO pattern repeated at several places!
+
+      self.instance_eval do
+
+        @local_context = local_context
+
+        def context()
+          @local_context
+        end
+
+      end
+      
       @section = nil
 
       if is_panel
@@ -98,6 +110,11 @@ module Swiby
       block.call
     end
 
+    def next_row
+      @section = nil
+      @main_layout.add_area :next_row
+    end
+
     def section(title = nil)
 
       @layout = FormLayout.new(10, 5)
@@ -111,43 +128,20 @@ module Swiby
 
     end
 
-    def input(label, value)
-
+    def add child
+      @section.add child.java_component
+    end
+    
+    def ensure_section()
       section if @section.nil?
-
-      jlabel = create_label(label)
-      jtext = create_text(value)
-
-      jlabel.label_for = jtext
-
-      @section.add jlabel
-      @section.add jtext
-
-      @layout.add_field jlabel, jtext
-
     end
 
-    def next_row
-      @section = nil
-      @main_layout.add_area :next_row
+    def layout_input label, text 
+      @layout.add_field label.java_component, text.java_component
     end
-
-    def button title, &block
-
-      section if @section.nil?
-
-      jbutton = create_button(title)
-
-      @section.add jbutton
-
-      @layout.add_command jbutton
-
-      listener = ActionListener.new
-
-      jbutton.addActionListener(listener)
-
-      listener.register &block
-
+    
+    def layout_button comp = nil
+      @layout.add_command comp.java_component
     end
 
     def choice label, values, selected = nil
@@ -284,30 +278,6 @@ module Swiby
       end
 
       jlabel
-
-    end
-
-    def create_text(value)
-
-      if value.instance_of? IncrementalValue
-        jtext = JTextField.new(value.get_value.to_s)
-      else
-        jtext = JTextField.new(value.to_s)
-      end
-
-      jtext
-
-    end
-
-    def create_button(title)
-
-      if title.instance_of? IncrementalValue
-        jbutton = JButton.new(title.get_value.to_s)
-      else
-        jbutton = JButton.new(title.to_s)
-      end
-
-      jbutton
 
     end
 

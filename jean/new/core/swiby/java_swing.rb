@@ -209,12 +209,20 @@ module Swiby
 
   class Frame < Container
 
-    def initialize
+    def initialize layout = nil
 
       @component = JFrame.new
 
       @component.setDefaultCloseOperation JFrame::EXIT_ON_CLOSE unless $is_java_applet
 
+      if layout
+        
+        layout = create_layout(layout)
+        
+        @component.content_pane.layout = layout if layout
+        
+      end
+      
     end
 
     def dispose_on_close
@@ -238,7 +246,7 @@ module Swiby
 
       tb = Toolbar.new
 
-      local_context = self.context()
+      local_context = self.context() #TODO pattern repeated at several places!
 
       tb.instance_eval do
 
@@ -440,8 +448,19 @@ module Swiby
 
   class SimpleLabel < SwingBase
 
-    def initialize
+    def initialize options = nil
+      
       @component = JLabel.new
+      
+      return unless options
+
+      self.text = options[:label] if options[:label]
+      field = options[:field_component] if options[:field_component] # TODO self.field syntax fails? (wrong # of arguments(2 for 1) (ArgumentError))
+      
+    end
+    
+    def field=(comp)
+      @component.label_for comp.java_component
     end
 
     def text=(t)
@@ -471,8 +490,22 @@ module Swiby
     swing_attr_accessor :value => :text
     swing_attr_accessor :columns
 
-    def initialize text = nil?
-      @component = text.nil? ? JTextField.new : JTextField.new(text)
+    def initialize options = nil
+      
+      @component = JTextField.new
+      
+      return unless options
+      
+      options[:field_component] = self
+      
+      x = options[:text]
+      
+      if x.instance_of? IncrementalValue
+        x.assign_to self, :value=
+      else
+        self.value = x.to_s if x
+      end
+      
     end
 
     def install_listener iv
@@ -491,6 +524,23 @@ module Swiby
 
   end
 
+  def create_layout(layout)
+
+    case layout
+    when :left_flow
+      layout = AWT::FlowLayout.new(AWT::FlowLayout::LEFT)
+    when :center_flow
+      layout = AWT::FlowLayout.new(AWT::FlowLayout::CENTER)
+    when :rigth_flow
+      layout = AWT::FlowLayout.new(AWT::FlowLayout::RIGHT)
+    else
+      layout = nil
+    end
+
+    layout
+    
+  end
+  
   def create_icon(url)
 
     if url =~ /http:\/\/.*/
@@ -772,6 +822,10 @@ module Swiby
     define "Button", :text, :icon, :action, :enabled
   end
 
+  class InputOptions < ComponentOptions
+    define "Input", :text, :label, :enabled, :field_component
+  end
+
   class Toolbar < SwingBase
 
     def initialize
@@ -783,49 +837,6 @@ module Swiby
     end
 
     include Builder
-
-    def input(label = nil, value = nil)
-
-      if value.nil?
-        jlabel = nil
-        jtext = create_text(label)
-      else
-        jtext = create_text(value)
-        jlabel = create_label(label)
-        jlabel.label_for = jtext
-      end
-
-      @component.add jlabel unless jlabel.nil?
-      @component.add jtext
-
-    end
-
-    def create_label(label)
-
-      if label.instance_of? IncrementalValue
-        jlabel = JLabel.new(label.get_value.to_s)
-      else
-        jlabel = JLabel.new(label.to_s)
-      end
-
-      jlabel
-
-    end
-
-    def create_text(value)
-
-      if value.instance_of? IncrementalValue
-        jtext = JTextField.new
-        value.assign_to jtext, :text=
-      elsif value.nil?
-        jtext = JTextField.new
-      else
-        jtext = JTextField.new(value.to_s)
-      end
-
-      jtext
-
-    end
 
   end
 
@@ -1152,8 +1163,6 @@ module Swiby
   end
 
   component_factory :frame
-  component_factory :label
-  component_factory :input => :TextField
 
   def bind(model = nil, getter = nil, &block)
 
@@ -1392,31 +1401,31 @@ module Swiby
 
       eval %{
 
-				class << obj
+      class << obj
 
-					alias_method :#{alias_name}, :#{method}
+        alias_method :#{alias_name}, :#{method}
 
-					def #{observersSym}
+        def #{observersSym}
 
-						@#{observersSym} = [] if @#{observersSym}.nil?
+          @#{observersSym} = [] if @#{observersSym}.nil?
 
-						@#{observersSym}
+          @#{observersSym}
 
-					end
+        end
 
-					def #{method}(value)
+        def #{method}(value)
 
-						#{alias_name} value
+          #{alias_name} value
 
-						if @#{observersSym}
-							@#{observersSym}.each do |observer|
-								observer.changed
-							end
-						end
+          if @#{observersSym}
+            @#{observersSym}.each do |observer|
+              observer.changed
+            end
+          end
 
-					end
+        end
 
-				end
+      end
 
       }
 
@@ -1448,31 +1457,31 @@ module Swiby
 
       eval %{
 
-				class << array
+      class << array
 
-					alias_method :#{alias_name}, :#{method}
+        alias_method :#{alias_name}, :#{method}
 
-					def #{observersSym}
+        def #{observersSym}
 
-						@#{observersSym} = [] if @#{observersSym}.nil?
+          @#{observersSym} = [] if @#{observersSym}.nil?
 
-						@#{observersSym}
+          @#{observersSym}
 
-					end
+        end
 
-					def #{method}(value)
+        def #{method}(value)
 
-						#{alias_name} value
+          #{alias_name} value
 
-						if @#{observersSym}
-							@#{observersSym}.each do |observer|
-								observer.#{method} value
-							end
-						end
+          if @#{observersSym}
+            @#{observersSym}.each do |observer|
+              observer.#{method} value
+            end
+          end
 
-					end
+        end
 
-				end
+      end
 
       }
 

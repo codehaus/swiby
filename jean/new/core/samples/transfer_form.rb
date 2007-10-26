@@ -85,7 +85,9 @@ transfer_form = form {
     input "Name", bind { current.account_to.owner }
     input "Address", bind { current.account_to.address }
     next_row
-    button "Save"
+    button "Save" do
+      message_box("Save data!")
+    end
     button "Cancel"
     next_row
   }
