@@ -281,7 +281,7 @@ module Swiby
       x = insets.right + w
       y = insets.top + h - @vgap - bi.maxHeight
 		
-      @commands.each do |c|
+      @commands.reverse_each do |c|
 
         next if !c.visible?
 			
