@@ -31,6 +31,18 @@
 require 'swiby'
 require 'swiby_layouts'
 
+class Symbol
+
+  def / other_sym
+
+    raise TypeError.new("Expected Symbol but was #{other_sym.class}") unless other_sym.instance_of?(Symbol)
+
+    AccessorPath.new(self, other_sym)
+
+  end
+
+end
+
 module Swiby
 
   module Swing
@@ -106,10 +118,42 @@ module Swiby
     def content(&block)
       block.call
     end
+    
+    def data obj
+      @data = obj
+    end
 
     def next_row
       @section = nil
       @main_layout.add_area :next_row
+    end
+    
+    def apply_restore
+      
+      button "Apply" do
+        
+        if @updaters
+          
+          @updaters.each do |proc|
+            proc.call false
+          end
+          
+        end
+        
+      end
+      
+      button "Restore" do
+        
+        if @updaters
+          
+          @updaters.each do |proc|
+            proc.call true
+          end
+          
+        end
+        
+      end
+
     end
 
     def section(title = nil)

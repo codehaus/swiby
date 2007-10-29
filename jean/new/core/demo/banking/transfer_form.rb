@@ -29,33 +29,34 @@
 #++
 
 require 'sweb'
-require 'demo/banking/bank_model'
+require 'demo/banking/transfer'
 
 from_accounts = Account.find_from_accounts
 to_accounts = Account.find_to_accounts
 
-current = Transfer.new 0, from_accounts[2], to_accounts[0]
+current = Transfer.new 0.dollars, from_accounts[2], to_accounts[0]
 
 title "Transfer Form"
 
 width 400
 
 content {
+  data current
   input "Date", Time.now
   section
-  input "Amount", bind { current.amount }
+  input "Amount", :amount
   next_row
   section "From"
-  combo "Account", bind { from_accounts }, from_accounts[2]
-  input "Name", bind { current.account_from.owner }
-  input "Address", bind { current.account_from.address }
+  combo "Account", from_accounts, current.account_from
+  input "Name", :account_from / :owner
+  input "Address", :account_from / :address
   section "To"
-  input "Account", bind { current.account_to.number }
-  input "Name", bind { current.account_to.owner }
-  input "Address", bind { current.account_to.address }
+  input "Account", :account_to / :number
+  input "Name", :account_to / :owner
+  input "Address", :account_to / :address
+  button "Save beneficiary"
   next_row
-  button "Save"
-  button "Cancel"
+  apply_restore
 }
 
 $context.start

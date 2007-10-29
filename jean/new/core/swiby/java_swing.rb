@@ -35,6 +35,8 @@ require 'erb'
 
 module Swiby
 
+  include_class 'java.lang.System'
+
   include_class ['HTMLEditorKit', 'StyleSheet'].map {|e| "javax.swing.text.html." + e}
   include_class [
     'Box',
@@ -43,6 +45,7 @@ module Swiby
     'JApplet',
     'JButton',
     'JComboBox',
+    'JFormattedTextField',
     'JFrame',
     'JEditorPane',
     'JLabel',
@@ -76,6 +79,7 @@ module Swiby
     include_class 'java.awt.BorderLayout'
     include_class 'java.awt.event.KeyEvent'
     include_class 'java.awt.event.InputEvent'
+    include_class 'java.awt.event.WindowAdapter'
     include_class 'java.awt.event.ActionListener'
     include_class 'java.awt.event.AWTEventListener'
   end
@@ -83,6 +87,12 @@ module Swiby
   module Border
     include_class 'javax.swing.border.EmptyBorder'
   end
+  
+  include_class 'java.util.Locale'
+  include_class 'java.text.NumberFormat'
+  include_class 'javax.swing.text.MaskFormatter'
+  include_class 'javax.swing.text.NumberFormatter'
+  include_class 'javax.swing.text.DefaultFormatterFactory'
 
   ALT = AWT::InputEvent::ALT_MASK
   CTL = AWT::KeyEvent::CTRL_DOWN_MASK
@@ -107,7 +117,11 @@ module Swiby
   def message_box text
     JOptionPane.showMessageDialog nil, text
   end
-
+  
+  def exit (exit_code = 0)
+    System::exit(exit_code)
+  end
+  
   def create_layout(layout)
 
     case layout
@@ -144,23 +158,6 @@ module Swiby
 
   end
 
-  def createImageIcon(url)
-
-    #TODO add cache, loading from JAR...
-    if url =~ /http:\/\/.*/
-      url = java.net.URL.new(url)
-    end
-
-    if imgURL.nil?
-      #TODO handle the error?
-      puts "Couldn't find file: " + url
-      nil
-    else
-      ImageIcon.new(url)
-    end
-
-  end
-  
   def to_human_readable(value)
     
     if value.respond_to? :humanize
@@ -302,6 +299,16 @@ module Swiby
       @component.content_pane.add child.java_component
     end
 
+    def on_close &block
+
+      listener = WindowCloseListener.new
+
+      @component.addWindowListener(listener)
+
+      listener.register(&block)
+
+    end
+    
     def toolbar &block
 
       if @tb_container.nil?
@@ -552,12 +559,11 @@ module Swiby
 
   class TextField < SwingBase
 
-    swing_attr_accessor :value => :text
     swing_attr_accessor :columns
 
     def initialize options = nil
       
-      @component = JTextField.new
+      @component = JFormattedTextField.new
       
       return unless options
       
@@ -568,7 +574,7 @@ module Swiby
       if x.instance_of? IncrementalValue
         x.assign_to self, :value=
       else
-        self.value = x.to_s if x
+        self.value = x if x
       end
       
     end
@@ -583,8 +589,59 @@ module Swiby
 
     end
 
-    def value=(t)
-      @component.text = t.to_s
+    def value
+      @component.value
+    end
+
+    def value=(val)
+      
+      plug_formatter_for val
+      
+      @component.value = val
+      
+    end
+    
+    def plug_formatter_for value
+
+      if value.respond_to?(:plug_input_formatter)
+        value.plug_input_formatter self
+      end
+      
+    end
+
+    def input_mask mask, placeholder = "_"
+      
+      formatter = MaskFormatter.new
+
+      formatter.mask = mask
+
+      formatter.placeholder_character = placeholder[0]
+      formatter.value_contains_literal_characters = false
+
+      self.formatter_factory = DefaultFormatterFactory.new(formatter)
+
+    end
+    
+    def currency cur
+      
+      #TODO add support for country as string or symbol
+      case cur
+      when :euro
+        locale = Locale::FRANCE
+      when :dollar
+        locale = Locale::US
+      end
+
+      fmt = NumberFormat::getCurrencyInstance(locale)
+
+      self.formatter_factory = DefaultFormatterFactory.new(NumberFormatter.new(fmt))
+      
+      @component.horizontal_alignment = JTextField::RIGHT
+
+    end
+    
+    def formatter_factory= factory
+      @component.formatter_factory = factory
     end
 
   end
@@ -1231,6 +1288,18 @@ module Swiby
 
   end
 
+  class WindowCloseListener < AWT::WindowAdapter
+    
+    def register(&handler)
+      @handler = handler
+    end
+
+    def windowClosing(evt)
+      @handler.call
+    end
+
+  end
+  
   class EnterAction
 
     include AWT::AWTEventListener

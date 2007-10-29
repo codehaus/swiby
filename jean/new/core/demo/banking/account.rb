@@ -28,31 +28,56 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #++
 
-require 'sweb'
-require 'demo/banking/transfer'
+class Account
+  attr_accessor :owner, :number, :address
 
-transfers = Transfer.find
-accounts = Account.find_from_accounts
+  def initialize owner, number, address
+    @owner = owner
+    @number = number
+    @address = address
+    
+    class << @number
+        
+      def plug_input_formatter field
+        field.input_mask '###-#######-##'
+      end
 
-title "Banking System"
+    end
+    
+  end
 
-width 400
-height 500
+  def humanize
 
-content {
-  section "Accounts"
-  table(["Owner", "Number", "Address"], bind {accounts}) {
-    height 100
-  }
-  next_row
-  section "Transfer List"
-  table ["From", "To", "Amount", "Date"], bind {transfers}
-  button("Add") {
-    $context.goto "demo/banking/transfer_form.rb"
-  }
-  button("Edit") {
-    $context.goto "demo/banking/transfer_form.rb"
-  }
-}
+    s = @number.to_s
 
-$context.start
+    "#{s[0..2]}-#{s[3..9]}-#{s[10..11]}"
+
+  end
+
+  def self.find_from_accounts
+
+    return @from_list if not @from_list.nil?
+
+    acc1 = Account.new 'Jean', '555123456733', 'Somewhere 200'
+    acc2 = Account.new 'Jean (2)', '555765432136', 'Somewhere 200'
+    acc3 = Account.new 'Jean (3)', '111765943218', 'Somewhere 200'
+
+    @from_list = [acc1, acc2, acc3]
+
+  end
+
+  def self.find_to_accounts
+
+    return @to_list if not @to_list.nil?
+
+    acc1 = Account.new 'Max', '222764399497', 'There 14'
+
+    @to_list = [acc1]
+
+  end
+
+  def table_row
+    [@owner.to_s, humanize, @address.to_s]
+  end
+
+end

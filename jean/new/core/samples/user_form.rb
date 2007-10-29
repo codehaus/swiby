@@ -28,82 +28,52 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #++
 
-class Account
-  attr_accessor :owner, :number, :address
+require 'swiby_form'
 
-  def initialize owner, number, address
-    @owner = owner
-    @number = number
-    @address = address
+class User
+  
+  attr_accessor :first_name, :last_name, :login, :password
+
+  def initialize login, password, first_name, last_name
+    @login = login
+    @password = password
+    @first_name = first_name
+    @last_name = last_name
   end
 
   def humanize
-
-    s = @number.to_s
-
-    "#{s[0..2]}-#{s[3..9]}-#{s[10..11]}"
-
-  end
-
-  def self.find_from_accounts
-
-    return @from_list if not @from_list.nil?
-
-    acc1 = Account.new 'Jean', '555123456733', 'Somewhere 200'
-    acc2 = Account.new 'Jean (2)', '555765432136', 'Somewhere 200'
-    acc3 = Account.new 'Jean (3)', '111765943218', 'Somewhere 200'
-
-    @from_list = [acc1, acc2, acc3]
-
-  end
-
-  def self.find_to_accounts
-
-    return @to_list if not @to_list.nil?
-
-    acc1 = Account.new 'Max', '222764399497', 'There 14'
-
-    @to_list = [acc1]
-
-  end
-
-  def table_row
-    [@owner.to_s, humanize, @address.to_s]
+    "#{@first_name} #{@last_name}"
   end
 
 end
 
-class Transfer
-  attr_accessor :amount, :account_from, :account_to, :value_date
+bond = User.new 'james', '007', 'James', 'Bond'
 
-  def initialize amount, from, to, value_date = Time.now
-    @amount = amount
-    @account_from = from
-    @account_to = to
-    @value_date = value_date
-  end
+user_form = form {
 
-  def table_row
-    [@account_from.humanize, @account_to.humanize, @amount.to_s, @value_date.to_s]
-  end
+  title "User Form"
 
-  def humanize
-    "#{@amount} to #{@account_to.humanize}"
-  end
+  width 400
+  height 260
 
-  def self.find
+  content {
+    data bond
+    section "Credentials"
+    input "Login", :login
+    input "Password", :password
+    next_row
+    section "Personal Data"
+    input "First Name", :first_name
+    input "Last Name", :last_name
+    next_row
+    button "Save" do
+      message_box("Save data!")
+    end
+    button "Cancel" do
+      exit
+    end
+  }
 
-    return @list if not @list.nil?
+}
 
-    from = Account.find_from_accounts
-    to = Account.find_to_accounts
-
-    @list = [
-      Transfer.new(200, from[0], to[0]),
-      Transfer.new(14, from[0], from[1]),
-      Transfer.new(130, from[1], to[0])
-    ]
-
-  end
-
-end
+user_form.visible = true

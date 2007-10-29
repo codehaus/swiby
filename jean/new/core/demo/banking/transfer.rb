@@ -28,31 +28,39 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #++
 
-require 'sweb'
-require 'demo/banking/transfer'
+require 'demo/banking/account'
 
-transfers = Transfer.find
-accounts = Account.find_from_accounts
+class Transfer
+  attr_accessor :amount, :account_from, :account_to, :value_date
 
-title "Banking System"
+  def initialize amount, from, to, value_date = Time.now
+    @amount = amount
+    @account_from = from
+    @account_to = to
+    @value_date = value_date
+  end
 
-width 400
-height 500
+  def table_row
+    [@account_from.humanize, @account_to.humanize, @amount.to_s, @value_date.to_s]
+  end
 
-content {
-  section "Accounts"
-  table(["Owner", "Number", "Address"], bind {accounts}) {
-    height 100
-  }
-  next_row
-  section "Transfer List"
-  table ["From", "To", "Amount", "Date"], bind {transfers}
-  button("Add") {
-    $context.goto "demo/banking/transfer_form.rb"
-  }
-  button("Edit") {
-    $context.goto "demo/banking/transfer_form.rb"
-  }
-}
+  def humanize
+    "#{@amount} to #{@account_to.humanize}"
+  end
 
-$context.start
+  def self.find
+
+    return @list if not @list.nil?
+
+    from = Account.find_from_accounts
+    to = Account.find_to_accounts
+
+    @list = [
+      Transfer.new(200.dollars, from[0], to[0]),
+      Transfer.new(14.dollars, from[0], from[1]),
+      Transfer.new(130.dollars, from[1], to[0])
+    ]
+
+  end
+
+end

@@ -29,6 +29,7 @@
 #++
 
 require 'swiby_form'
+require 'swiby_data'
 
 class Sweb
 

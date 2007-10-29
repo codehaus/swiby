@@ -2,6 +2,54 @@ require 'swiby'
 
 module Swiby
 
+  class AccessorPath
+
+    def initialize root_sym, sym = nil
+      
+      @path = [root_sym]
+      
+      @path << sym if sym
+      
+    end
+
+    def / sym
+      @path << sym
+    end
+
+    def resolve obj
+    
+      value = obj
+      
+      @path.each do |sym|
+        value = value.send(sym)
+      end
+      
+      value
+      
+    end
+  
+    def update obj, value
+      
+      unless @update_path
+        
+        @update_path = Array.new(@path)
+        
+        last = @update_path.pop
+        
+        @update_symbol = "#{last}=".to_sym
+        
+      end
+      
+      @update_path.each do |sym|
+        obj = obj.send(sym)
+      end
+      
+      obj.send(@update_symbol, value)
+      
+    end
+    
+  end
+
   module Builder
 
     def ensure_section
@@ -90,9 +138,17 @@ module Swiby
         label = nil
       end
 
+      accessor = nil
+      
       if text.instance_of? Hash
         options = text
         text = nil
+      elsif text.instance_of?(Symbol)
+        accessor = AccessorPath.new(text)
+        text = @data.send(text)
+      elsif text.instance_of?(AccessorPath)
+        accessor = text
+        text = accessor.resolve(@data)
       end
 
       options = {} unless options
@@ -120,6 +176,20 @@ module Swiby
 
       field = TextField.new(x)
 
+      if accessor
+        
+        add_updater do |restore|
+          
+          if restore
+            field.value = accessor.resolve(@data)
+          else
+            accessor.update @data, field.value
+          end
+          
+        end
+        
+      end
+      
       if x[:label]
         label = SimpleLabel.new(x)
         add label
@@ -168,6 +238,14 @@ module Swiby
 
     protected
 
+    def add_updater &block
+      
+      @updaters = [] unless @updaters
+      
+      @updaters << block
+      
+    end
+    
     def create_list_like_options label = nil, values = nil, selected = nil, &block
 
       options = nil
@@ -194,6 +272,10 @@ module Swiby
           values = []
         end
 
+      elsif values.instance_of?(Symbol)
+        values = @data.send(values)
+      elsif values.instance_of?(AccessorPath)
+        values = values.resolve(@data)
       end
 
       options = {} unless options

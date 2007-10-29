@@ -29,23 +29,35 @@
 #++
 
 require 'swiby_form'
+require 'swiby_data'
 
 class Account
+  
   attr_accessor :owner, :number, :address
 
   def initialize owner, number, address
     @owner = owner
     @number = number
     @address = address
+    
+    class << @number
+        
+      def plug_input_formatter field
+        field.input_mask '###-#######-##'
+      end
+
+    end
   end
 
   def humanize
-    "#{@number.to_s}"
+    s = "#{@number.to_s}"
+    "#{s[0..2]}-#{s[3..9]}-#{s[10..11]}"
   end
 
 end
 
 class Transfer
+  
   attr_accessor :amount, :account_from, :account_to
 
   def initialize amount, from, to
@@ -54,6 +66,13 @@ class Transfer
     @account_to = to
   end
 
+  def summary
+    "<html><pre>" +
+      "<b>Transfer</b> $#{@amount}<br>" +
+      "    <b>From</b> #{@account_from.humanize} (#{@account_from.owner})<br>" +
+      "      <b>To</b> #{@account_to.humanize} (#{@account_to.owner})</pre></html>"
+  end
+  
 end
 
 acc1 = Account.new 'Jean', '555123456733', 'Somewhere 200'
@@ -63,35 +82,37 @@ acc4 = Account.new 'Max', '222764399497', 'There 14'
 
 my_accounts = [acc1, acc2, acc3]
 
-current = Transfer.new 200, acc1, acc4
+current = Transfer.new 200.dollars, acc1, acc4
 
-transfer_form = form {
+transfer_form = form do
 
   title "Transfer Form"
 
   width 400
 
-  content {
+  content do
+    data current
     input "Date", Time.now
     section
-    input "Amount", bind { current.amount }
+    input "Amount", :amount
     next_row
     section "From"
-    combo "Account", bind { my_accounts }, acc3
-    input "Name", bind { current.account_from.owner }
-    input "Address", bind { current.account_from.address }
+    combo "Account", my_accounts, current.account_from
+    input "Name", :account_from / :owner
+    input "Address", :account_from / :address
     section "To"
-    input "Account", bind { current.account_to.number }
-    input "Name", bind { current.account_to.owner }
-    input "Address", bind { current.account_to.address }
+    input "Account", :account_to / :number
+    input "Name", :account_to / :owner
+    input "Address", :account_to / :address
+    button "Save beneficiary"
     next_row
-    button "Save" do
-      message_box("Save data!")
-    end
-    button "Cancel"
-    next_row
-  }
+    apply_restore
+  end
+  
+  on_close do
+    message_box(current.summary)
+  end
 
-}
+end
 
 transfer_form.visible = true
