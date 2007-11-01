@@ -1,3 +1,12 @@
+#--
+# Copyright (C) Swiby Committers. All rights reserved.
+# 
+# The software in this package is published under the terms of the BSD
+# style license a copy of which has been included with this distribution in
+# the LICENSE.txt file.
+#
+#++
+
 require 'swiby'
 
 module Swiby
@@ -55,7 +64,10 @@ module Swiby
     def ensure_section
     end
 
-    def layout_button comp
+    def layout_button button
+    end
+
+    def layout_label label
     end
 
     def layout_input label, text
@@ -68,57 +80,7 @@ module Swiby
 
       ensure_section
 
-      block_options = nil
-
-      if image.instance_of? Hash
-        options = image
-        image = nil
-      elsif image == :more_options
-        block_options = block
-        block = nil
-        image = nil
-      end
-
-      if text.instance_of? Hash
-        options = text
-        text = nil?
-      elsif text.instance_of? ImageIcon
-        image = text
-        text = nil
-      elsif text == :more_options
-        block_options = block
-        block = nil
-        text = nil
-      end
-
-      if text.nil? and image.nil? and options.nil?
-        block_options = block
-        block = nil
-      end
-
-      options = {} unless options
-
-      options[:text] = text if text
-      options[:icon] = image if image
-      options[:action] = block if block
-
-      x = ButtonOptions.new
-
-      local_context = context #TODO pattern repeated at several places!
-
-      x.instance_eval do
-
-        @local_context = local_context
-
-        def context()
-          @local_context
-        end
-
-      end
-
-      x << options
-
-      x.instance_eval(&block_options) if block_options
+      x = ButtonOptions.new(context, text, image, options, &block)
 
       but = Button.new(x)
 
@@ -127,52 +89,36 @@ module Swiby
 
     end
 
-    def input label = nil, text = nil, &block_options
+    def label text = nil, &block
 
       ensure_section
 
-      options = nil
+      x = LabelOptions.new(context, text, &block)
 
-      if text.nil? and !label.nil?
-        text = label
-        label = nil
-      end
+      label = SimpleLabel.new(x)
+      
+      add label
+      layout_label label
 
+    end
+
+    def input label = nil, text = nil, &block
+
+      ensure_section
+
+      x = InputOptions.new(context, label, text, &block)
+      
       accessor = nil
       
-      if text.instance_of? Hash
-        options = text
-        text = nil
-      elsif text.instance_of?(Symbol)
+      text = x[:text]
+      
+      if text.instance_of?(Symbol)
         accessor = AccessorPath.new(text)
-        text = @data.send(text)
+        x[:text] = @data.send(text)
       elsif text.instance_of?(AccessorPath)
         accessor = text
-        text = accessor.resolve(@data)
+        x[:text] = accessor.resolve(@data)
       end
-
-      options = {} unless options
-
-      options[:text] = text if text
-      options[:label] = label if label
-
-      x = InputOptions.new
-
-      local_context = context #TODO pattern repeated at several places!
-
-      x.instance_eval do
-
-        @local_context = local_context
-
-        def context()
-          @local_context
-        end
-
-      end
-
-      x << options
-
-      x.instance_eval(&block_options) if block_options
 
       field = TextField.new(x)
 
@@ -204,7 +150,7 @@ module Swiby
 
       ensure_section
 
-      x = create_list_like_options(label, values, selected, &block)
+      x = ListOptions.new(context, label, values, selected, &block)
 
       comp = ComboBox.new(x)
 
@@ -222,7 +168,7 @@ module Swiby
 
       ensure_section
 
-      x = create_list_like_options(label, values, selected, &block)
+      x = ListOptions.new(context, label, values, selected, &block)
 
       comp = ListBox.new(x)
 
@@ -246,67 +192,6 @@ module Swiby
       
     end
     
-    def create_list_like_options label = nil, values = nil, selected = nil, &block
-
-      options = nil
-      block_options = nil
-
-      if label.instance_of? Hash
-        options = label
-        label = nil
-      elsif values.nil? and label.nil? and selected.nil?
-
-        if block.nil?
-          values = []
-        else
-          block_options = block
-          block = nil
-        end
-
-      elsif values.nil?
-
-        if label.respond_to?(:each)
-          values = label
-          label = nil
-        else
-          values = []
-        end
-
-      elsif values.instance_of?(Symbol)
-        values = @data.send(values)
-      elsif values.instance_of?(AccessorPath)
-        values = values.resolve(@data)
-      end
-
-      options = {} unless options
-
-      options[:label] = label if label
-      options[:values] = values if values
-      options[:selected] = selected if selected
-      options[:action] = block if block
-
-      x = ListOptions.new
-
-      local_context = context #TODO pattern repeated at several places!
-
-      x.instance_eval do
-
-        @local_context = local_context
-
-        def context()
-          @local_context
-        end
-
-      end
-
-      x << options
-
-      x.instance_eval(&block_options) if block_options
-
-      x
-
-    end
-
   end
 
 end

@@ -1,34 +1,13 @@
 #--
-# BSD license
+# Copyright (C) Swiby Committers. All rights reserved.
+# 
+# The software in this package is published under the terms of the BSD
+# style license a copy of which has been included with this distribution in
+# the LICENSE.txt file.
 #
-# Copyright (c) 2007, Jean Lazarou
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
-#
-# Redistributions of source code must retain the above copyright notice, this list
-# of conditions and the following disclaimer.
-# Redistributions in binary form must reproduce the above copyright notice, this
-# list of conditions and the following disclaimer in the documentation and/or other
-# materials provided with the distribution.
-# Neither the name of the null nor the names of its contributors may be
-# used to endorse or promote products derived from this software without specific
-# prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-# IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-# OF THE POSSIBILITY OF SUCH DAMAGE.
 #++
 
-require 'swiby_core'
+require 'swiby_base'
 require 'swiby_builder'
 require 'java'
 require 'erb'
@@ -75,7 +54,6 @@ module Swiby
     include_class 'java.awt.AWTEvent'
     include_class 'java.awt.Dimension'
     include_class 'java.awt.GridLayout'
-    include_class 'java.awt.FlowLayout'
     include_class 'java.awt.BorderLayout'
     include_class 'java.awt.event.KeyEvent'
     include_class 'java.awt.event.InputEvent'
@@ -113,62 +91,6 @@ module Swiby
   SCROLL = JTabbedPane::SCROLL_TAB_LAYOUT
 
   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
-
-  def message_box text
-    JOptionPane.showMessageDialog nil, text
-  end
-  
-  def exit (exit_code = 0)
-    System::exit(exit_code)
-  end
-  
-  def create_layout(layout)
-
-    case layout
-    when :left_flow
-      layout = AWT::FlowLayout.new(AWT::FlowLayout::LEFT)
-    when :center_flow
-      layout = AWT::FlowLayout.new(AWT::FlowLayout::CENTER)
-    when :rigth_flow
-      layout = AWT::FlowLayout.new(AWT::FlowLayout::RIGHT)
-    else
-      layout = nil
-    end
-
-    layout
-    
-  end
-  
-  def create_icon(url)
-
-    if url =~ /http:\/\/.*/
-      url = java.net.URL.new(url)
-    elsif url =~ /file:\/\/.*/
-      url = url[7..-1]
-    elsif File.exist?(url)
-      url = "#{File.expand_path(url)}"
-    else
-      #TODO implement URL resolution using LOAD_PATH, for "local" files, URL like 'file://c:/..." does not work
-      #puts $LOAD_PATH
-      puts "url resolution not implemented"
-      return nil
-    end
-
-    ImageIcon.new(url)
-
-  end
-
-  def to_human_readable(value)
-    
-    if value.respond_to? :humanize
-      value.humanize
-    elsif value.respond_to? :name
-      value.name
-    else
-      value.to_s
-    end
-
-  end
 
   class Container < SwingBase
 
@@ -295,6 +217,10 @@ module Swiby
       @component.setDefaultCloseOperation JFrame::HIDE_ON_CLOSE
     end
 
+    def content= child
+      add child
+    end
+    
     def add(child)
       @component.content_pane.add child.java_component
     end
@@ -526,7 +452,18 @@ module Swiby
       
       return unless options
 
-      self.text = options[:label] if options[:label]
+      if options[:label]
+        
+        x = options[:label] 
+        
+        if x.instance_of? IncrementalValue
+          x.assign_to self, :text=
+        else
+          self.text = x
+        end
+        
+      end
+
       field = options[:input_component] if options[:input_component] # TODO self.field syntax fails? (wrong # of arguments(2 for 1) (ArgumentError))
       
     end
@@ -851,93 +788,69 @@ module Swiby
 
   end
 
-  class ComponentOptions
-
-    def initialize name
-      @name = name
-      @options = {}
-      @valid_props = []
-    end
-
-    def method_missing(meth, *args)
-
-      raise "[#{@name}] Missing value for property '#{meth}'" if args.length == 0
-      raise "[#{@name}] Property '#{meth}' expects only one value but was #{args.length}" if args.length > 1
-
-      self[meth] = args[0]
-
-    end
-
-    def [](key)
-      @options[key]
-    end
-
-    def []=(key, value)
-
-      if not @valid_props.include?(key)
-        raise "[#{@name}] Invalid property '#{key}' (of type #{key.class}). " \
-        "Valid set is #{@valid_props.join(', ')}"
-      end
-
-      @options[key] = value
-
-    end
-
-    def <<(props)
-
-      return if props.nil?
-
-      props.each do |key, value|
-        self[key] = value
-      end
-
-    end
-
-    def to_s
-      @options.to_s
-    end
-
-    protected
-
-    def properties *props
-      @valid_props = @valid_props + props
-    end
-
-    def self.define name, *valid_props
-
-      valid_props = valid_props.collect {|x| ":#{x}"}
-      props_register = valid_props.join(',')
-
-      bloc = proc do
-        %{
-        def initialize options = nil
-
-          super "#{name}"
-
-          properties #{props_register}
-
-          self << options unless options.nil?
-
-        end
-        }
-      end
-
-      class_eval bloc.call
-
-    end
-
-  end
-
   class ButtonOptions < ComponentOptions
-    define "Button", :text, :icon, :action, :enabled
+    
+    define "Button" do
+      
+      declare :text, [String, Symbol], true
+      declare :icon, [ImageIcon, String], true
+      declare :action, [Proc], true
+      declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
+      
+      overload :text
+      overload :icon
+      overload :text, :icon
+      overload :text, :icon, :enabled
+      
+    end
+    
   end
 
+  class LabelOptions < ComponentOptions
+      
+    define "Label" do
+      
+      declare :label, [String, Symbol, IncrementalValue]
+      
+      overload :label
+
+    end
+    
+  end
+  
   class InputOptions < ComponentOptions
-    define "Input", :text, :label, :enabled, :input_component
+    
+    define "Input" do
+      
+      declare :label, [String, Symbol], true
+      declare :text, [Object]
+      declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
+      declare :input_component, [Object], true
+      
+      overload :text
+      overload :label, :text
+      
+    end
+    
   end
 
   class ListOptions < ComponentOptions
-    define "List", :label, :values, :selected, :action, :enabled, :input_component
+    
+    define "List" do
+      
+      declare :label, [String, Symbol], true
+      declare :values, [Array, AccessorPath]
+      declare :selected, [Object], true
+      declare :action, [Proc], true
+      declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
+      declare :input_component, [Object], true
+      
+      overload :values
+      overload :label, :values
+      overload :label, :values, :selected
+      
+    end
+
   end
 
   class Toolbar < SwingBase
@@ -1366,253 +1279,6 @@ module Swiby
       if e.event_type == Swing::HyperlinkEvent::EventType::ACTIVATED
         @handler.call(e.description)
       end
-    end
-
-  end
-
-  class IncrementalValue
-
-    IGNORE = %w[Array Bignum Comparable Config Class Dir Enumerable ENV ERB Swiby Fixnum Float Hash
-					IO Integer Kernel OptionParser Module Object Range Regexp String
-					Time].map{|x| Regexp.new(x)} + [/REXML::/]
-
-    def initialize(model, getter = nil, setter = nil, updater = nil)
-
-      @is_updater_block = false
-
-      if model.instance_of? Proc
-        @block = model
-      else
-
-        @model = model
-        @getter = getter
-
-        if setter.nil?
-          @setter = "#{getter}=".to_sym
-        elsif setter.instance_of? Proc
-          @setter = "#{getter}=".to_sym
-          @is_updater_block = true
-          @block = setter
-        else
-          @setter = setter
-        end
-
-        unless updater.nil?
-          @is_updater_block = true
-          @block = updater
-        end
-
-        add_setter_observer_to @model, @setter.to_s
-
-      end
-
-    end
-
-    def validate_as_field_binding
-      raise "Bound value cannot be a block" if not @block.nil?
-    end
-
-    def get_value
-
-      if @is_updater_block
-        res = @block.call(@model)
-      elsif @block
-
-        capture
-        res = @block.call
-        set_trace_func nil
-
-      else
-        res = @model.send @getter
-      end
-
-      res
-
-    end
-
-    def assign_to target, setter
-
-      res = get_value
-
-      @target = target
-      @target_setter = setter
-
-      @target.send @target_setter, res
-
-    end
-
-    def block
-      @block
-    end
-
-    def replaceBlock(&b)
-      @block = b
-    end
-
-    def change new_value
-
-      if @model
-        @model.send @setter, new_value
-      end
-
-    end
-
-    def changed
-
-      return if @target.nil?
-
-      if @is_updater_block
-        new_value = @block.call(@model)
-      elsif @block
-        new_value = @block.call
-      else
-        new_value = @model.send @getter
-      end
-
-      @target.send @target_setter, new_value
-
-    end
-
-    private
-
-    def capture
-
-      set_trace_func lambda { |event, file, line, id, binding, classname|
-
-        case event
-        when 'call', 'c-call'
-          if not IGNORE.any?{|re| re =~ classname.to_s }
-
-            binding = eval("self", binding)
-
-            instance_var = '@' + id.to_s
-
-            if binding.instance_variables.include?(instance_var) and binding.send(id).is_a? Array
-              #TODO also observe ([], last, first, ...)
-              #puts "add_observer: #{binding}.#{id} => delete_at"
-              #add_modifier_observer_to binding.send(id), "delete_at"
-            end
-
-            if binding.respond_to? "#{id}="
-              puts "add_observer: #{binding} => #{id}"
-              add_setter_observer_to binding, "#{id}="
-            end
-          end
-        end
-
-      }
-
-    end
-
-    def add_setter_observer_to obj, setter
-
-      #TODO must check if getter and setter (instance_variable_defined?(:@x))
-
-      observersSym = "observers_#{setter}"[0...-1].to_sym
-      real_setter = "real_setter_#{setter}"[0...-1]
-
-      add_observer_to obj, setter, observersSym, real_setter
-
-    end
-
-    def add_observer_to obj, method, observersSym, alias_name
-
-      if obj.respond_to? observersSym
-        observers = obj.send(observersSym)
-        observers << self if not observers.include? self
-        return
-      end
-
-      #TODO remove observers
-
-      eval %{
-
-      class << obj
-
-        alias_method :#{alias_name}, :#{method}
-
-        def #{observersSym}
-
-          @#{observersSym} = [] if @#{observersSym}.nil?
-
-          @#{observersSym}
-
-        end
-
-        def #{method}(value)
-
-          #{alias_name} value
-
-          if @#{observersSym}
-            @#{observersSym}.each do |observer|
-              observer.changed
-            end
-          end
-
-        end
-
-      end
-
-      }
-
-      obj.send(observersSym) << self
-
-    end
-
-  end
-
-  def add_array_observers array, observer
-    #TODO also observe (delete, delete_at, delete_if, <<, []=, push, pop, insert, shift, replace, uniq!, sort!, compact!, collect!)
-    #     << and []= cannot be used as is to build the observers collection name and alias name
-    #     how to limit them? so much method changes the array object
-
-    [:delete_at, :push].each do |method|
-
-      observersSym = "array_observers_#{method}".to_sym
-      alias_name = "real_#{method}"
-
-      if array.respond_to? observersSym
-        observers = array.send(observersSym)
-        observers << observer if not observers.include? observer
-        return
-      end
-
-      puts "add_observer: #{array} => #{method}"
-
-      #TODO remove observers
-
-      eval %{
-
-      class << array
-
-        alias_method :#{alias_name}, :#{method}
-
-        def #{observersSym}
-
-          @#{observersSym} = [] if @#{observersSym}.nil?
-
-          @#{observersSym}
-
-        end
-
-        def #{method}(value)
-
-          #{alias_name} value
-
-          if @#{observersSym}
-            @#{observersSym}.each do |observer|
-              observer.#{method} value
-            end
-          end
-
-        end
-
-      end
-
-      }
-
-      array.send(observersSym) << self
-
     end
 
   end

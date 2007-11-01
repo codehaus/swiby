@@ -16,7 +16,7 @@ frame {
 
   content {
     label {
-      text bind(model, :saying)
+      label bind(model, :saying)
     }
   }
 

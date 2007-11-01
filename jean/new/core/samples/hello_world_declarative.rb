@@ -8,7 +8,7 @@ frame {
 
   content {
     label {
-      text "Hello World"
+      label "Hello World"
     }
   }
 
