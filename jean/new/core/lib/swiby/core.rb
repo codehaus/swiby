@@ -265,46 +265,6 @@ module Swiby
 
   end
 
-  def self.component_factory(method) #TODO find a better name like create_method...something
-    class_name = ""
-    code = Proc.new do
-      %{
-      def #{method}(*args, &block)
-
-        x = args.length == 0 ? ::#{class_name}.new : ::#{class_name}.new(*args)
-
-        local_context = self
-
-        x.instance_eval do
-
-          @local_context = local_context
-
-          def context()
-            @local_context
-          end
-
-        end
-
-        x.instance_eval(&block) unless block.nil?
-
-        x
-
-      end
-      }
-    end
-
-    if method.is_a? Symbol or method.is_a? String
-      class_name = method.to_s.capitalize
-      eval code.call
-    elsif method.is_a? Hash
-      method.each do |method, class_name|
-        eval code.call
-      end
-    else
-      raise RuntimeError, "#{method} should be a Symbol or a Hash"
-    end
-  end
-  
   class IncrementalValue
 
     IGNORE = %w[Array Bignum Comparable Config Class Dir Enumerable ENV ERB Swiby Fixnum Float Hash

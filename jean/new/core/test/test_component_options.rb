@@ -7,10 +7,10 @@
 #
 #++
 
-$:.unshift File.join(File.dirname(__FILE__), '..', 'swiby')
+$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'test/unit'
-require 'swiby_core'
+require 'swiby/core'
 
 module Swiby
 

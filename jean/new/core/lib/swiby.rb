@@ -7,6 +7,6 @@
 #
 #++
 
-require 'java_swing'
+require 'swiby/swing'
 
 include Swiby

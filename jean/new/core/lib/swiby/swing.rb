@@ -7,8 +7,10 @@
 #
 #++
 
-require 'swiby_base'
-require 'swiby_builder'
+require 'swiby/swing/base'
+require 'swiby/swing/event'
+require 'swiby/builder'
+
 require 'java'
 require 'erb'
 
@@ -42,24 +44,12 @@ module Swiby
     'SwingConstants'
   ].map {|e| "javax.swing." + e}
 
-  module Swing
-    include_class 'javax.swing.event.HyperlinkEvent'
-    include_class 'javax.swing.event.HyperlinkListener'
-    include_class 'javax.swing.event.ListSelectionListener'
-  end
-
   module AWT
     include_class 'java.awt.Color'
-    include_class 'java.awt.Toolkit'
-    include_class 'java.awt.AWTEvent'
     include_class 'java.awt.Dimension'
     include_class 'java.awt.GridLayout'
     include_class 'java.awt.BorderLayout'
-    include_class 'java.awt.event.KeyEvent'
     include_class 'java.awt.event.InputEvent'
-    include_class 'java.awt.event.WindowAdapter'
-    include_class 'java.awt.event.ActionListener'
-    include_class 'java.awt.event.AWTEventListener'
   end
 
   module Border
@@ -92,14 +82,81 @@ module Swiby
 
   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
+  module ComponentAccesssor
+
+    def [] index
+
+      if index.instance_of?(Fixnum)
+        @kids[index]
+      else
+        @kids_by_name[index.to_s]
+      end
+      
+    end
+    
+    def []= key, value
+      @kids_by_name[key.to_s] = value
+    end
+    
+    # The component is registered but not added to the Swing structure
+    def << component
+      @kids << component
+    end
+    
+    def each type = nil, &block
+      
+      if type.nil?
+        
+        @kids.each(&block)
+        
+      else
+        
+        @kids.each do |x|
+          yield(x) if x.kind_of?(type)
+        end
+        
+      end
+      
+    end
+    
+    def select condition = nil, &block
+      
+      if condition.nil?
+        
+        @kids.select(&block)
+        
+      else
+        
+        @kids.select do |x|
+          
+          if x.respond_to?(:text)
+            x.text == condition
+          else
+            x.value == condition
+          end
+
+        end
+        
+      end
+      
+    end
+
+  end
+  
   class Container < SwingBase
 
     include Builder
+    include ComponentAccesssor
 
+    def initialize *args
+      @kids = []
+      @kids_by_name = {}
+    end
+    
     def content(&block)
       block.call
     end
-
+    
     def height=(h)
       @height = h
     end
@@ -182,6 +239,7 @@ module Swiby
   class Panel < Container
 
     def initialize
+      super
       @component = JPanel.new
     end
 
@@ -195,6 +253,8 @@ module Swiby
 
     def initialize layout = nil
 
+      super
+      
       @component = JFrame.new
 
       @component.setDefaultCloseOperation JFrame::EXIT_ON_CLOSE unless $is_java_applet
@@ -369,6 +429,33 @@ module Swiby
 
   end
 
+  class Section < SwingBase
+    
+    def initialize title
+
+      @component = JPanel.new
+      @component.border = Swing::BorderFactory.createTitledBorder(title) unless title.nil?
+
+    end
+    
+    def layout= layout_manager
+      @component.layout = layout_manager
+    end
+    
+    def add child
+      @component.add child.java_component
+    end
+    
+    def text
+      @component.border.title unless @component.border.nil?
+    end
+    
+    def text= t
+      @component.border.title = t
+    end
+    
+  end
+  
   class Label < SwingBase
 
     swing_attr_accessor :text
@@ -464,38 +551,43 @@ module Swiby
         
       end
 
-      field = options[:input_component] if options[:input_component] # TODO self.field syntax fails? (wrong # of arguments(2 for 1) (ArgumentError))
+      self.linked_field = options[:input_component] if options[:input_component]
+      self.name = options[:name].to_s if options[:input_component].nil? && options[:name]
       
     end
     
-    def field=(comp)
-      @component.label_for comp.java_component
+    def linked_field=(comp)
+      comp.linked_label = self
+      @linked_field = comp
+      @component.set_label_for(comp.java_component)
+    end
+    
+    def linked_field
+      @linked_field
     end
 
     def text=(t)
+
+      #TODO is here the right place for this decision? (using IncrementalValue, raw value or HTML)
+      if t.instance_of? IncrementalValue
+        t.assign_to self, :text=
+      elsif t.instance_of? String
+        t = ERB.new(t).result #TODO use if HTML not only in Label + maybe ERB is too much if simple string?
+      end
+      
       @component.text = t
+      
     end
 
     def text
       @component.text
     end
 
-    def text(x)
-
-      if x.instance_of? IncrementalValue
-        x.assign_to self, :text=
-      elsif x.instance_of? String
-        self.text = ERB.new(x).result #TODO use if HTML not only in Label + maybe ERB is too much if simple string?
-      else
-        self.text = x
-      end
-
-    end
-
   end
 
   class TextField < SwingBase
 
+    attr_accessor :linked_label
     swing_attr_accessor :columns
 
     def initialize options = nil
@@ -514,6 +606,8 @@ module Swiby
         self.value = x if x
       end
       
+      self.name = options[:name].to_s if options[:name]
+      
     end
 
     def install_listener iv
@@ -526,13 +620,23 @@ module Swiby
 
     end
 
+    def on_change &block
+            
+      listener = PropertyChangeListener.new
+
+      listener.register(&block)
+
+      @component.addPropertyChangeListener('value', listener)
+  
+    end
+    
     def value
       @component.value
     end
 
     def value=(val)
       
-      plug_formatter_for val
+      plug_formatter_for val unless @formatter_set
       
       @component.value = val
       
@@ -543,6 +647,8 @@ module Swiby
       if value.respond_to?(:plug_input_formatter)
         value.plug_input_formatter self
       end
+      
+      @formatter_set = true
       
     end
 
@@ -572,9 +678,9 @@ module Swiby
       fmt = NumberFormat::getCurrencyInstance(locale)
 
       self.formatter_factory = DefaultFormatterFactory.new(NumberFormatter.new(fmt))
-      
-      @component.horizontal_alignment = JTextField::RIGHT
 
+      @component.horizontal_alignment = JTextField::RIGHT
+        
     end
     
     def formatter_factory= factory
@@ -596,6 +702,7 @@ module Swiby
 
       self.text = options[:text] if options[:text]
       self.enabled_state = options[:enabled] unless options[:enabled].nil?
+      self.name = options[:name].to_s if options[:name]
 
       icon options[:icon] if options[:icon]
       action(&options[:action]) if options[:action]
@@ -652,6 +759,7 @@ module Swiby
 
   class ComboBox < SwingBase
 
+    attr_accessor :linked_label
     swing_attr_accessor :selection => :selected_index
 
     def initialize options = nil
@@ -679,6 +787,7 @@ module Swiby
 
       end
 
+      self.name = options[:name].to_s if options[:name]
       self.selection = select_index unless select_index == -1
       
       @values = values
@@ -725,6 +834,16 @@ module Swiby
       @component.item_count
     end
     
+    def value
+      
+      index = selection
+      
+      @values[index] if index >= 0
+      
+    end
+    
+    protected
+    
     def add_item value
       @component.add_item value
     end
@@ -733,6 +852,8 @@ module Swiby
 
   class ListBox < ComboBox
 
+    attr_accessor :linked_label
+    
     def initialize options = nil
 
       super options
@@ -792,6 +913,7 @@ module Swiby
     
     define "Button" do
       
+      declare :name, [String, Symbol], true
       declare :text, [String, Symbol], true
       declare :icon, [ImageIcon, String], true
       declare :action, [Proc], true
@@ -810,6 +932,7 @@ module Swiby
       
     define "Label" do
       
+      declare :name, [String, Symbol], true
       declare :label, [String, Symbol, IncrementalValue]
       
       overload :label
@@ -822,6 +945,7 @@ module Swiby
     
     define "Input" do
       
+      declare :name, [String, Symbol], true
       declare :label, [String, Symbol], true
       declare :text, [Object]
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
@@ -838,6 +962,7 @@ module Swiby
     
     define "List" do
       
+      declare :name, [String, Symbol], true
       declare :label, [String, Symbol], true
       declare :values, [Array, AccessorPath]
       declare :selected, [Object], true
@@ -1188,8 +1313,20 @@ module Swiby
     end
 
   end
+  
+  def frame layout = nil, &block
 
-  component_factory :frame
+    x = layout ? ::Frame.new(layout) : ::Frame.new
+
+    def x.context()
+      self
+    end
+    
+    x.instance_eval(&block) unless block.nil?
+
+    x
+
+  end
 
   def bind(model = nil, getter = nil, &block)
 
@@ -1197,88 +1334,6 @@ module Swiby
       IncrementalValue.new(block)
     else
       IncrementalValue.new(model, getter, block)
-    end
-
-  end
-
-  class WindowCloseListener < AWT::WindowAdapter
-    
-    def register(&handler)
-      @handler = handler
-    end
-
-    def windowClosing(evt)
-      @handler.call
-    end
-
-  end
-  
-  class EnterAction
-
-    include AWT::AWTEventListener
-
-    def register(&handler)
-
-      AWT::Toolkit.getDefaultToolkit().addAWTEventListener(self, AWT::AWTEvent::KEY_EVENT_MASK)
-
-      @handler = handler
-
-    end
-
-    def eventDispatched(evt)
-
-      if evt.is_a? AWT::KeyEvent
-
-        if evt.getID() == AWT::KeyEvent::KEY_PRESSED and evt.key_code == AWT::KeyEvent::VK_ENTER
-          @handler.call
-        end
-
-      end
-
-    end
-
-  end
-
-  class ActionListener
-
-    include AWT::ActionListener
-
-    def register(&handler)
-      @handler = handler
-    end
-
-    def actionPerformed(evt)
-      @handler.call
-    end
-
-  end
-
-  class ListSelectionListener
-
-    include Swing::ListSelectionListener
-
-    def register(&handler)
-      @handler = handler
-    end
-
-    def valueChanged(e)
-      @handler.call
-    end
-
-  end
-
-  class HyperlinkListener
-
-    include Swing::HyperlinkListener
-
-    def register(&handler)
-      @handler = handler
-    end
-
-    def hyperlinkUpdate(e)
-      if e.event_type == Swing::HyperlinkEvent::EventType::ACTIVATED
-        @handler.call(e.description)
-      end
     end
 
   end

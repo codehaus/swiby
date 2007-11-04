@@ -7,7 +7,7 @@
 #
 #++
 
-require 'swiby_core'
+require 'swiby/core'
 
 require 'java'
 
@@ -103,6 +103,18 @@ module Swiby
       @scroll_pane = JScrollPane.new @component
     end
 
+    def visible?
+      @component.visible?
+    end
+    
+    def visible= visible
+      @component.visible = visible
+    end
+    
+    def setBounds x, y, w, h
+      @component.setBounds x, y, w, h
+    end
+
     def install_listener iv
     end
 
@@ -152,17 +164,9 @@ module Swiby
             @component.#{javaName} = val
           end
 
-          def #{symbol}(val = nil, &block)
-            if val.instance_of? IncrementalValue
-              val.assign_to self, :#{symbol}=
-              install_listener val
-            else
-              if val.nil?
-                val = block.call if not block.nil?
-              end
-              self.#{symbol} = val
-            end
-           end
+          def #{symbol}
+            @component.#{javaName}
+          end
 
         }
       end
@@ -178,6 +182,10 @@ module Swiby
         @component.add array.java_component
       end
     end
+    
+    swing_attr_accessor :name
+    swing_attr_accessor :preferred_size
+    
   end
 
 end

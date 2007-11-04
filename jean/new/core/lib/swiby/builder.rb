@@ -21,6 +21,10 @@ module Swiby
       
     end
 
+    def to_s
+      @path.join('.')
+    end
+    
     def / sym
       @path << sym
     end
@@ -84,7 +88,10 @@ module Swiby
 
       but = Button.new(x)
 
+      context[x[:name].to_s] = but if x[:name]
+      
       add but
+      context << but
       layout_button but
 
     end
@@ -96,8 +103,11 @@ module Swiby
       x = LabelOptions.new(context, text, &block)
 
       label = SimpleLabel.new(x)
+
+      context[x[:name].to_s] = label if x[:name]
       
       add label
+      context << label
       layout_label label
 
     end
@@ -114,9 +124,11 @@ module Swiby
       
       if text.instance_of?(Symbol)
         accessor = AccessorPath.new(text)
+        x[:name] = text.to_s
         x[:text] = @data.send(text)
       elsif text.instance_of?(AccessorPath)
         accessor = text
+        x[:name] = text.to_s
         x[:text] = accessor.resolve(@data)
       end
 
@@ -139,9 +151,13 @@ module Swiby
       if x[:label]
         label = SimpleLabel.new(x)
         add label
+        context << label
       end
 
+      context[x[:name].to_s] = field if x[:name]
+      
       add field
+      context << field
       layout_input label, field
 
     end
@@ -157,9 +173,13 @@ module Swiby
       if x[:label]
         label = SimpleLabel.new(x)
         add label
+        context << label
       end
 
+      context[x[:name].to_s] = comp if x[:name]
+      
       add comp
+      context << comp
       layout_input label, comp
 
     end
@@ -175,9 +195,13 @@ module Swiby
       if x[:label]
         label = SimpleLabel.new(x)
         add label
+        context << label
       end
 
+      context[x[:name].to_s] = comp if x[:name]
+      
       add comp
+      context << label
       layout_list label, comp
 
     end

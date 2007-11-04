@@ -9,6 +9,8 @@
 
 require 'swiby'
 
+image = File.join(File.dirname(__FILE__), '..', 'lib', 'swiby', 'images', 'go-previous.png')
+
 ##---------------------------------------------
 f = frame do
 
@@ -32,7 +34,7 @@ f = frame do
   title "Syntax: button icon &action"
 
   content do
-    button create_icon("swiby/images/go-previous.png") do
+    button create_icon(image) do
       message_box 'Hello'
     end
   end
@@ -49,7 +51,7 @@ f = frame do
   title "Syntax: button text, icon &action"
 
   content do
-    button "Push Me", create_icon("swiby/images/go-previous.png") do
+    button "Push Me", create_icon(image) do
       message_box 'Hello'
     end
   end
@@ -68,7 +70,7 @@ f = frame do
   content do
     button do
       text "Push Me"
-      icon "swiby/images/go-previous.png"
+      icon image
       action proc {message_box 'Hello'}
     end
   end
@@ -85,7 +87,7 @@ f = frame do
   title "Syntax: button hash &action"
 
   content do
-    button :text => "Push Me", :icon => create_icon("swiby/images/go-previous.png") do
+    button :text => "Push Me", :icon => create_icon(image) do
       message_box 'Hello'
     end
   end
@@ -103,7 +105,7 @@ f = frame do
 
   content do
     button "Push Me", :more_options do
-      icon "swiby/images/go-previous.png"
+      icon image
       action proc {message_box 'Hello'}
     end
   end

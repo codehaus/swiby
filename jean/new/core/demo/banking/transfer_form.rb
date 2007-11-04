@@ -7,7 +7,7 @@
 #
 #++
 
-require 'sweb'
+require 'swiby/sweb'
 require 'demo/banking/transfer'
 
 from_accounts = Account.find_from_accounts

@@ -7,8 +7,12 @@
 #
 #++
 
-require 'swiby_form'
-require 'swiby_data'
+require 'swiby/form'
+require 'swiby/data'
+
+def image_path image
+  File.join(File.dirname(__FILE__), 'images', image)
+end
 
 class Sweb
 
@@ -83,8 +87,10 @@ class Sweb
     @top_container.title t
     @titles[@history_index] = t
   end
-
+  
   def initialize
+
+    browser = self
 
     @history_index = 0
 
@@ -95,23 +101,23 @@ class Sweb
     @source = $0
 
     @container = form(:as_panel)
-
+    
     @top_container = frame do
 
       toolbar do
         button do
-          icon "swiby/images/go-previous.png"
-          enabled bind(context, :source) {|context| not context.first_page?}
+          icon image_path("go-previous.png")
+          enabled bind(browser, :source) {|context| not context.first_page?}
           action proc {$context.back}
         end
-        button create_icon("swiby/images/go-next.png"), :more_options do
-          enabled bind(context, :source) {|context| not context.last_page?}
+        button create_icon(image_path("go-next.png")), :more_options do
+          enabled bind(browser, :source) {|context| not context.last_page?}
           action proc {$context.forward}
         end
       end
 
       toolbar do
-        input bind(context, :source)
+        input bind(browser, :source)
       end
 
     end
@@ -142,4 +148,5 @@ end
 
 def content &block
   $context.container.instance_eval(&block)
+  $context.container.complete
 end

@@ -7,7 +7,7 @@
 #
 #++
 
-require 'sweb'
+require 'swiby/sweb'
 require 'demo/banking/transfer'
 
 transfers = Transfer.find

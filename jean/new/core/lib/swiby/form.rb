@@ -8,7 +8,7 @@
 #++
 
 require 'swiby'
-require 'swiby_layouts'
+require 'swiby/swing/layout'
 
 class Symbol
 
@@ -58,14 +58,6 @@ module Swiby
 
   module Form
 
-    def initialize
-
-      super
-
-      setup
-
-    end
-
     def setup is_panel = false
 
       local_context = self #TODO pattern repeated at several places!
@@ -95,7 +87,11 @@ module Swiby
     end
 
     def content(&block)
+      
       block.call
+      
+      complete
+      
     end
     
     def data obj
@@ -109,7 +105,7 @@ module Swiby
     
     def apply_restore
       
-      button "Apply" do
+      button "Apply", :name => :apply_but do
         
         if @updaters
           
@@ -121,7 +117,7 @@ module Swiby
         
       end
       
-      button "Restore" do
+      button "Restore", :name => :restore_but  do
         
         if @updaters
           
@@ -133,23 +129,28 @@ module Swiby
         
       end
 
+      context[:apply_but].enabled = false
+      context[:restore_but].enabled = false
+
     end
 
     def section(title = nil)
 
       @layout = FormLayout.new(10, 5)
-
-      @section = JPanel.new
+      
+      @section = Section.new title
       @section.layout = @layout
-      @section.border = Swing::BorderFactory.createTitledBorder(title) unless title.nil?
-      @content_pane.add @section
+      
+      context << @section
+      
+      @content_pane.add @section.java_component
 
       @main_layout.add_area @section
 
     end
 
     def add child
-      @section.add child.java_component
+      @section.add child
     end
     
     def ensure_section()
@@ -168,6 +169,26 @@ module Swiby
       @layout.add_component label.java_component, list.java_component
     end
 
+    def complete
+      
+      unless context[:apply_but].nil?
+      
+        context.each(TextField) do |tf|
+
+          tf.on_change do
+            context[:apply_but].enabled = true
+            context[:restore_but].enabled = true
+          end
+          
+        end
+        
+        context[:apply_but].enabled = false
+        context[:restore_but].enabled = false
+          
+      end
+      
+    end
+    
     def table headers, values
 
       section if @section.nil?
@@ -203,6 +224,11 @@ module Swiby
       table.selection_model.selection_mode = javax.swing.ListSelectionModel::SINGLE_SELECTION
 
       pane = JScrollPane.new(table)
+      
+      #TODO create a Swiby::ScrollPane?
+      def pane.java_component
+        self
+      end
 
       @section.add pane
 
