@@ -114,6 +114,9 @@ module Swiby
           end
           
         end
+
+        context[:apply_but].enabled = false
+        context[:restore_but].enabled = false
         
       end
       
@@ -126,11 +129,11 @@ module Swiby
           end
           
         end
+
+        context[:apply_but].enabled = false
+        context[:restore_but].enabled = false
         
       end
-
-      context[:apply_but].enabled = false
-      context[:restore_but].enabled = false
 
     end
 
