@@ -96,11 +96,11 @@ module Swiby
 
     end
 
-    def label text = nil, &block
+    def label text = nil, options = nil, &block
 
       ensure_section
 
-      x = LabelOptions.new(context, text, &block)
+      x = LabelOptions.new(context, text, options, &block)
 
       label = SimpleLabel.new(x)
 
@@ -112,11 +112,11 @@ module Swiby
 
     end
 
-    def input label = nil, text = nil, &block
+    def input label = nil, text = nil, options = nil, &block
 
       ensure_section
 
-      x = InputOptions.new(context, label, text, &block)
+      x = InputOptions.new(context, label, text, options, &block)
       
       accessor = nil
       
@@ -141,7 +141,7 @@ module Swiby
           if restore
             field.value = accessor.resolve(@data)
           else
-            accessor.update @data, field.value
+            accessor.update @data, field.value if field.editable?
           end
           
         end
@@ -162,13 +162,41 @@ module Swiby
 
     end
 
-    def combo label = nil, values = nil, selected = nil, &block
+    def combo label = nil, values = nil, selected = nil, options = nil, &block
 
       ensure_section
 
-      x = ListOptions.new(context, label, values, selected, &block)
+      x = ListOptions.new(context, label, values, selected, options, &block)
+      
+      accessor = nil
+      
+      selected = x[:selected]
+      
+      if selected.instance_of?(Symbol)
+        accessor = AccessorPath.new(selected)
+        x[:name] = selected.to_s
+        x[:selected] = @data.send(selected)
+      elsif selected.instance_of?(AccessorPath)
+        accessor = selected
+        x[:name] = selected.to_s
+        x[:selected] = accessor.resolve(@data)
+      end
 
       comp = ComboBox.new(x)
+
+      if accessor
+        
+        add_updater do |restore|
+          
+          if restore
+            comp.value = accessor.resolve(@data)
+          else
+            accessor.update @data, comp.value
+          end
+          
+        end
+        
+      end
 
       if x[:label]
         label = SimpleLabel.new(x)
@@ -184,11 +212,11 @@ module Swiby
 
     end
 
-    def list label = nil, values = nil, selected = nil, &block
+    def list label = nil, values = nil, selected = nil, options = nil, &block
 
       ensure_section
 
-      x = ListOptions.new(context, label, values, selected, &block)
+      x = ListOptions.new(context, label, values, selected, options, &block)
 
       comp = ListBox.new(x)
 

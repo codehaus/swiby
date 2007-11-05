@@ -58,7 +58,9 @@ module Swiby
   
   include_class 'java.util.Locale'
   include_class 'java.text.NumberFormat'
+  include_class 'java.text.SimpleDateFormat'
   include_class 'javax.swing.text.MaskFormatter'
+  include_class 'javax.swing.text.DateFormatter'
   include_class 'javax.swing.text.NumberFormatter'
   include_class 'javax.swing.text.DefaultFormatterFactory'
 
@@ -588,7 +590,7 @@ module Swiby
   class TextField < SwingBase
 
     attr_accessor :linked_label
-    swing_attr_accessor :columns
+    swing_attr_accessor :columns, :editable
 
     def initialize options = nil
       
@@ -607,9 +609,14 @@ module Swiby
       end
       
       self.name = options[:name].to_s if options[:name]
+      self.editable = !options[:readonly] if options[:readonly]
       
     end
 
+    def editable?
+      editable
+    end
+    
     def install_listener iv
 
       ea = EnterAction.new
@@ -665,6 +672,16 @@ module Swiby
 
     end
     
+    def date mask = nil
+
+      return unless mask
+      
+      fmt = DateFormatter.new(SimpleDateFormat.new(mask))
+
+      self.formatter_factory = DefaultFormatterFactory.new(fmt)
+
+    end
+    
     def currency cur
       
       #TODO add support for country as string or symbol
@@ -691,7 +708,7 @@ module Swiby
 
   class Button < SwingBase
 
-    swing_attr_accessor :enabled
+    swing_attr_accessor :enabled, :editable
     swing_attr_accessor :text
 
     def initialize options = nil
@@ -707,6 +724,10 @@ module Swiby
       icon options[:icon] if options[:icon]
       action(&options[:action]) if options[:action]
 
+    end
+
+    def editable?
+      editable
     end
 
     def enabled_state= value
@@ -760,7 +781,7 @@ module Swiby
   class ComboBox < SwingBase
 
     attr_accessor :linked_label
-    swing_attr_accessor :selection => :selected_index
+    swing_attr_accessor :editable, :selection => :selected_index
 
     def initialize options = nil
       
@@ -776,24 +797,19 @@ module Swiby
       if values.instance_of? IncrementalValue
         values = values.get_value
       end
-
-      select_index = -1
-
-      values.each do |value|
-
-        self.add_item to_human_readable(value)
-
-        select_index = self.item_count - 1 if value == selected
-
-      end
-
-      self.name = options[:name].to_s if options[:name]
-      self.selection = select_index unless select_index == -1
       
       @values = values
+
+      self.value = selected
+
+      self.name = options[:name].to_s if options[:name]
       
       action(&options[:action]) if options[:action]
       
+    end
+
+    def editable?
+      editable
     end
     
     def create_list_component
@@ -832,6 +848,22 @@ module Swiby
     
     def item_count
       @component.item_count
+    end
+    
+    def value= x
+
+      select_index = -1
+
+      @values.each do |value|
+
+        self.add_item to_human_readable(value)
+
+        select_index = self.item_count - 1 if value == x
+
+      end
+
+      self.selection = select_index unless select_index == -1
+      
     end
     
     def value
@@ -949,6 +981,7 @@ module Swiby
       declare :label, [String, Symbol], true
       declare :text, [Object]
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
+      declare :readonly, [TrueClass, FalseClass, IncrementalValue], true
       declare :input_component, [Object], true
       
       overload :text

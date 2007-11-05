@@ -24,3 +24,16 @@ class Fixnum
   end
   
 end
+
+class Time
+  
+  def input_mask= mask
+    @input_mask = mask.to_s
+    self
+  end
+  
+  def plug_input_formatter field
+    field.date(@input_mask) if @input_mask
+  end
+  
+end

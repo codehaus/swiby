@@ -21,14 +21,17 @@ width 400
 
 content {
   data current
-  input "Date", Time.now
+  input "Date", :value_date
   section
   input "Amount", :amount
   next_row
   section "From"
-  combo "Account", from_accounts, current.account_from
-  input "Name", :account_from / :owner
-  input "Address", :account_from / :address
+  combo "Account", from_accounts, :account_from do |selection| 
+      context['account_from.owner'].value = selection.owner
+      context['account_from.address'].value = selection.address
+  end
+  input "Name", :account_from / :owner, :readonly => true
+  input "Address", :account_from / :address, :readonly => true
   section "To"
   input "Account", :account_to / :number
   input "Name", :account_to / :owner

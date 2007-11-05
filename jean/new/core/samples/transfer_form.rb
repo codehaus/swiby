@@ -37,12 +37,13 @@ end
 
 class Transfer
   
-  attr_accessor :amount, :account_from, :account_to
+  attr_accessor :amount, :account_from, :account_to, :date
 
   def initialize amount, from, to
     @amount = amount
     @account_from = from
     @account_to = to
+    @date = Time.new
   end
 
   def summary
@@ -61,7 +62,7 @@ acc4 = Account.new 'Max', '222764399497', 'There 14'
 
 my_accounts = [acc1, acc2, acc3]
 
-current = Transfer.new 200.dollars, acc1, acc4
+current = Transfer.new 200.dollars, acc3, acc4
 
 transfer_form = form do
 
@@ -71,14 +72,17 @@ transfer_form = form do
 
   content do
     data current
-    input "Date", Time.now
+    input "Date", :date
     section
     input "Amount", :amount
     next_row
     section "From"
-    combo "Account", my_accounts, current.account_from
-    input "Name", :account_from / :owner
-    input "Address", :account_from / :address
+    combo "Account", my_accounts, :account_from do |selection| 
+      context['account_from.owner'].value = selection.owner
+      context['account_from.address'].value = selection.address
+    end
+    input "Name", :account_from / :owner, :readonly => true
+    input "Address", :account_from / :address, :readonly => true
     section "To"
     input "Account", :account_to / :number
     input "Name", :account_to / :owner
