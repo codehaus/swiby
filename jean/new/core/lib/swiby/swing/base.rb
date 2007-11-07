@@ -123,6 +123,9 @@ module Swiby
       @scroll_pane
     end
 
+    def apply_styles
+    end
+    
     #TODO remove private because some calls to 'addComponents' were forbidden (with JRuby 1.0.1)
     #private
 

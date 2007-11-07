@@ -8,6 +8,7 @@
 #++
 
 require 'swiby'
+require 'swiby/styles'
 
 module Swiby
 
@@ -104,6 +105,8 @@ module Swiby
 
       label = SimpleLabel.new(x)
 
+      label.apply_styles
+      
       context[x[:name].to_s] = label if x[:name]
       
       add label
@@ -133,6 +136,8 @@ module Swiby
       end
 
       field = TextField.new(x)
+      
+      field.apply_styles
 
       if accessor
         
@@ -150,6 +155,7 @@ module Swiby
       
       if x[:label]
         label = SimpleLabel.new(x)
+        label.apply_styles
         add label
         context << label
       end
@@ -200,6 +206,7 @@ module Swiby
 
       if x[:label]
         label = SimpleLabel.new(x)
+        label.apply_styles
         add label
         context << label
       end
@@ -222,6 +229,7 @@ module Swiby
 
       if x[:label]
         label = SimpleLabel.new(x)
+        label.apply_styles
         add label
         context << label
       end

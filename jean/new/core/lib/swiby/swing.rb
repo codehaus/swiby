@@ -10,6 +10,7 @@
 require 'swiby/swing/base'
 require 'swiby/swing/event'
 require 'swiby/builder'
+require 'swiby/style_resolver'
 
 require 'java'
 require 'erb'
@@ -279,6 +280,10 @@ module Swiby
       @component.setDefaultCloseOperation JFrame::HIDE_ON_CLOSE
     end
 
+    def close
+      @component.dispose
+    end
+    
     def content= child
       add child
     end
@@ -557,6 +562,16 @@ module Swiby
       self.name = options[:name].to_s if options[:input_component].nil? && options[:name]
       
     end
+
+    def apply_styles
+      
+      font = StyleResolver.font(:label)
+      @component.font = font if font
+      
+      color = StyleResolver.color(:label)
+      @component.foreground = color if color
+      
+    end
     
     def linked_field=(comp)
       comp.linked_label = self
@@ -610,6 +625,19 @@ module Swiby
       
       self.name = options[:name].to_s if options[:name]
       self.editable = !options[:readonly] if options[:readonly]
+      
+    end
+
+    def apply_styles
+      
+      font = StyleResolver.font(:input)
+      @component.font = font if font
+      
+      color = StyleResolver.color(:input)
+      @component.foreground = color if color
+      
+      color = StyleResolver.background_color(:input)
+      @component.background = color if color
       
     end
 

@@ -7,8 +7,14 @@
 #
 #++
 
+$:.unshift File.join(File.dirname(__FILE__))
+$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+
 require 'swiby/form'
 require 'swiby/data'
+
+require 'styles'
+require 'console.rb'
 
 class Account
   
@@ -90,6 +96,10 @@ transfer_form = form do
     button "Save beneficiary"
     next_row
     apply_restore
+    next_row
+    button "Console" do
+      open_console self
+    end
   end
   
   on_close do

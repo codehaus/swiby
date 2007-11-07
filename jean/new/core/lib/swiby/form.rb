@@ -8,6 +8,7 @@
 #++
 
 require 'swiby'
+require 'swiby/styles'
 require 'swiby/swing/layout'
 
 class Symbol
@@ -26,6 +27,7 @@ module Swiby
 
   module Swing
     include_class 'javax.swing.JTable'
+    include_class 'javax.swing.JEditorPane'
     include_class 'javax.swing.BorderFactory'
     include_class 'javax.swing.table.DefaultTableModel'
   end
@@ -190,6 +192,30 @@ module Swiby
           
       end
       
+    end
+    
+    def editor w, h #TODO quick implementation to add editor...
+
+      section if @section.nil?
+      
+      pane = Swing::JEditorPane.new
+      
+      pane.preferred_size = AWT::Dimension.new(w, h)
+      
+      pane = JScrollPane.new(pane)
+
+      def pane.java_component
+        self
+      end
+      def pane.text
+        self.viewport.view.text
+      end
+
+      context << pane
+      
+      @section.add pane
+      @layout.add_panel pane
+
     end
     
     def table headers, values
