@@ -31,21 +31,25 @@ ${head}
 
 <body class="composite">
 
-<div id="banner"><img src="images/swiby-logo.png"
-  alt="Swiby" />
+<div id="banner">
+<p><img src="images/SwibyTextLogo.png"
+  alt="Swiby" /> What JavaFX Script should have been...</p>
 <div class="clear">
 <hr />
 </div>
 </div>
 <div id="breadcrumbs">
-<div class="left">Last Published: Oct 2, 2007</div>
+<div class="left">Last Published: Nov 7, 2007</div>
 <div class="clear">
 <hr />
 </div>
 </div>
 
 <div id="leftColumn">
-<div id="navColumn"><#list sitemap.sections as section>
+<div id="navColumn">
+<img src="images/Swiby-Logo.png"
+  alt="Swiby" width="126" height="204" />
+<#list sitemap.sections as section>
 <h1>${section.name}</h1>
 <ul>
   <#list section.pages as otherPage> <#if otherPage = page>
