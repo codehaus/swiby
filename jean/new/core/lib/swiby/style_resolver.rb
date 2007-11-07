@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/styles'
+
 module Swiby
 
   module AWT
@@ -17,9 +19,9 @@ module Swiby
 
     def self.resolve component_type
 
-      root = styles.root
+      root = styles.root if styles.exist?(:root)
 
-      x = styles.send(component_type)
+      x = styles.send(component_type) if styles.exist?(component_type)
 
       x = root unless x
 
