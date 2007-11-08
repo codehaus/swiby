@@ -9,7 +9,7 @@
 #breadcrumbs {
 	border: 1px solid;
 	background-color: #C5341D;
-	color: #fff;
+	color: #FFFFFF;
 }
 
 #navColumn {
@@ -65,9 +65,9 @@
 }
 
 #content {
-  margin: 0 auto 0 auto;
-  margin-left: 30px;
-  text-align: left;
+	margin: 0 auto 0 auto;
+	margin-left: 30px;
+	text-align: left;
 }
 
 #left {
@@ -93,7 +93,7 @@ body {
 
 body,td,select,input,li {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 24px;
+	font-size: 13px;
 }
 
 div.section {
