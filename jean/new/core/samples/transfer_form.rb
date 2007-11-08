@@ -7,9 +7,6 @@
 #
 #++
 
-$:.unshift File.join(File.dirname(__FILE__))
-$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
-
 require 'swiby/form'
 require 'swiby/data'
 
@@ -35,7 +32,28 @@ class Account
   end
 
   def humanize
-    s = "#{@number.to_s}"
+    Account.format(@number)
+  end
+  
+  def self.valid? acc_number
+    
+    return false if !acc_number.instance_of?(String)
+
+    check_digit = acc_number[-2..-1].to_i
+    acc_number = acc_number[0...-2].to_i
+
+    cd = acc_number % 97
+
+    if cd == 0
+      return check_digit == 97
+    else
+      return check_digit == cd
+    end
+    
+  end
+  
+  def self.format acc_number
+    s = "#{acc_number.to_s}"
     "#{s[0..2]}-#{s[3..9]}-#{s[10..11]}"
   end
 
@@ -74,7 +92,7 @@ transfer_form = form do
 
   title "Transfer Form"
 
-  width 400
+  width 420
 
   content do
     data current
@@ -95,7 +113,22 @@ transfer_form = form do
     input "Address", :account_to / :address
     button "Save beneficiary"
     next_row
-    apply_restore
+    command :ok, :cancel do
+      
+      def on_validate
+        
+        acc_number = values['account_to.number'].value
+        
+        if Account.valid?(acc_number)
+          true
+        else
+          message_box "#{Account.format(acc_number)} is not a valid account number"
+          false
+        end
+        
+      end
+      
+    end
     next_row
     button "Console" do
       open_console self

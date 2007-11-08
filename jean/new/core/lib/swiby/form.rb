@@ -105,35 +105,124 @@ module Swiby
       @main_layout.add_area :next_row
     end
     
-    def apply_restore
+    def command *args, &block
       
-      button "Apply", :name => :apply_but do
+      if block
         
-        if @updaters
-          
-          @updaters.each do |proc|
-            proc.call false
+        block.instance_eval(&block)
+
+        the_form = self
+        
+        block.instance_eval do
+
+          @the_form = the_form
+        
+          def block.data
+            @the_form.data
           end
-          
+
+          def block.values
+            @the_form
+          end
+        
         end
 
-        context[:apply_but].enabled = false
-        context[:restore_but].enabled = false
-        
       end
       
-      button "Restore", :name => :restore_but  do
-        
-        if @updaters
+      args.each do |arg|
+      
+        case arg
+        when :ok
+      
+          button "Ok", :name => :ok_but do
+
+            valid = true
+            
+            if block.respond_to?(:on_validate)
+              valid = block.on_validate
+            end
+            
+            if block.respond_to?(:on_ok)
+              block.on_ok
+            elsif valid
+              
+              if @updaters
+
+                @updaters.each do |proc|
+                  proc.call false
+                end
+
+              end
+
+              close
+
+            end
+            
+          end
           
-          @updaters.each do |proc|
-            proc.call true
+        when :cancel
+      
+          button "Cancel", :name => :cancel_but do
+            if block.respond_to?(:on_cancel)
+              block.on_cancel
+            else
+              close
+            end
+          end
+          
+        when :apply
+      
+          button "Apply", :name => :apply_but do
+
+            valid = true
+            
+            if block.respond_to?(:on_validate)
+              valid = !block.on_validate
+            end
+            
+            if valid
+              
+              if block.respond_to?(:on_apply)
+                block.on_apply
+              else
+                if @updaters
+
+                  @updaters.each do |proc|
+                    proc.call false
+                  end
+
+                end
+              end
+
+              context[:apply_but].enabled = false
+              context[:restore_but].enabled = false if context[:restore_but]
+
+            end
+
+          end
+
+        when :restore
+      
+          button "Restore", :name => :restore_but  do
+
+            if block.respond_to?(:on_restore)
+              block.on_restore
+            else
+              if @updaters
+
+                @updaters.each do |proc|
+                  proc.call true
+                end
+
+              end
+            end
+            
+            context[:apply_but].enabled = false if context[:apply_but]
+            context[:restore_but].enabled = false
+
           end
           
         end
-
-        context[:apply_but].enabled = false
-        context[:restore_but].enabled = false
         
       end
 
@@ -176,19 +265,19 @@ module Swiby
 
     def complete
       
-      unless context[:apply_but].nil?
+      if context[:apply_but] or context[:restore_but]
       
         context.each(TextField) do |tf|
 
           tf.on_change do
-            context[:apply_but].enabled = true
-            context[:restore_but].enabled = true
+            context[:apply_but].enabled = true if context[:apply_but]
+            context[:restore_but].enabled = true if context[:restore_but]
           end
           
         end
         
-        context[:apply_but].enabled = false
-        context[:restore_but].enabled = false
+        context[:apply_but].enabled = false if context[:apply_but]
+        context[:restore_but].enabled = false if context[:restore_but]
           
       end
       

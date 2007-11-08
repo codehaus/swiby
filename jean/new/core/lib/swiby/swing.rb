@@ -281,7 +281,11 @@ module Swiby
     end
 
     def close
+      
+      @on_close_block.call if @on_close_block
+      
       @component.dispose
+      
     end
     
     def content= child
@@ -299,6 +303,8 @@ module Swiby
       @component.addWindowListener(listener)
 
       listener.register(&block)
+      
+      @on_close_block = block
 
     end
     
