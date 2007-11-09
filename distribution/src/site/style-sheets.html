@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+<title>Style Sheets</title>
+</head>
+
+<body>
+<p>Like HTML, swiby has a style sheet concept. It works in a very similar way, but is a lot more powerful.</p>
+<p>Consider the unstyled and styled versions of a 'transfer form' :</p>
+<p><img src="images/unstyled_transferform.jpg" alt="unstyled" width="428" height="344" /><img src="images/styled_transferform.jpg" alt="styled" width="428" height="338" /></p>
+<p>The only difference between the two is the presence of the following at the top of the swiby page:</p>
+<div class="source">
+<pre>
+  require 'styles'</pre>
+</div>
+<p>The stylesheet itself (styles.rb) would look like:</p>
+<div class="source">
+<pre>
+  styles {
+    root(
+      :font_family => Styles::VERDANA,
+      :font_style => :normal,
+      :font_size => 10
+    )
+    label(
+      :font_style => :italic,
+      :font_size => 12,
+      :color => 0xAA0000
+    )
+    input(
+      :font_family => Styles::COURIER,
+      :font_style => :normal,
+      :font_size => 12,
+      :background_color => 0xFFFFC6
+    )
+    button(
+      :font_weight => :bold
+    )
+  }
+</pre>
+</div>
+<p>The current implementation is quite simple. We are going to allow the matching by class. What is a plus is that this is a ruby script - you are going to be able to do leverage simple things like variables used multiple times, and custom functions if you want to (its Turing complete, not just a list of values).</p>
+</body>
+
+
+
+</html>

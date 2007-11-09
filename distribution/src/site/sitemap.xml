@@ -5,17 +5,22 @@
         <page>prior-art.html</page>
         <page>glass-ceiling.html</page>
         <page>toolability.html</page>
+        <page>quotes.html</page>
         <!--<page>faq.html</page>-->
     </section>
     <section>
-        <name>Standalone</name>
-        <page>standalone.html</page>
+        <name>Blob mode</name>
+        <page>blob-mode.html</page>
     </section>
     <section>
-        <name>The Sweb</name>
-        <page>the-sweb.html</page>
+        <name>Web mode</name>
+        <page>web-mode.html</page>
         <page>decoration.html</page>
         <page>web-frameworks.html</page>
+    </section>
+    <section>
+        <name>Both modes</name>
+        <page>style-sheets.html</page>
     </section>
     <section>
         <name>Demos</name>
