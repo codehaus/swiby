@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Overview</title>
 <style type="text/css">
@@ -26,8 +26,8 @@
 <p>Swiby is a blend of Swing and Ruby for truly rich distributed applications.</p>
 <p>It is aiming to be:</p>
 <ul>
-  <li>a truly rich client-side page technology via a browser plugin - think lazy-loaded Flash (see '<a href="the-sweb.html">the sweb</a>')</li>
-  <li>alternatively embedable as a big-up-front-download in a web page - much like the movie players in YouTube (see '<a href="standalone.html">standalone</a>')</li>
+  <li>a truly rich client-side page technology via a browser plugin - think lazy-loaded Flash (see '<a href="web-mode.html">web - mode</a>')</li>
+  <li>alternatively embedable as a big-up-front-download in a web page - much like the movie players in YouTube (see '<a href="blob-mode.html">blob mode</a>')</li>
   <li>as editable as possible in design tools like DreamWeaver (see <a href="toolability.html">toolability</a>)</li>
   <li>as functional as Adobe's Flash, Microsoft's Silverlight and Sun's JavaFX</li>
   <li>a single language as opposed to two-language compromises like HTML+Javascript (refer <a href="glass-ceiling.html">glass ceiling</a>)</li>
@@ -44,7 +44,7 @@
   <li>be editable by design tools, with round-trip capability</li>
 </ul>
 <p>Ruby, or more accurately JRuby will be fast to interpret each page that it processes. The is no compile stage that may invisibly slow rendering down.</p>
-<p>Sun's JavaFX technology is closest to Swiby.</p>
+<p>Sun's <a href="http://www.sun.com/software/javafx/script/">JavaFX Script</a> technology is closest to Swiby.</p>
 <h3>Sample Swiby Web Application</h3>
 <p>Jean started a simple bank-account application. Its has Transfers Lists and the ability to make new transfers. There is no server side yet, but it will gove you a glimpse of the pseudo-declarative form that is easy for newbies to code. The source for the app is three ruby scripts (<strong>click on each image to see the source</strong>).</p>
 <table width="200" border="2">
@@ -53,8 +53,8 @@
     <th scope="col">New Transfer</th>
   </tr>
   <tr>
-    <td><a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/banking.rb"><img src="images/transfers.jpg" width="474" height="641" /></a></td>
-    <td><a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/transfer_form.rb"><img src="images/new-transfer.jpg" width="596" height="353" /></a></td>
+    <td><a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/banking.rb"><img src="images/transfers.jpg" width="474" height="641" alt="transfers image"/></a></td>
+    <td><a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/transfer_form.rb"><img src="images/new-transfer.jpg" width="596" height="353" alt="transfer image"/></a></td>
   </tr>
 </table>
 <p>The client-side model, not a Swiby page per se, is <a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/bank_model.rb"> here</a></p>
