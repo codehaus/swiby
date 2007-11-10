@@ -15,12 +15,13 @@
     <section>
         <name>Web mode</name>
         <page>web-mode.html</page>
-        <page>decoration.html</page>
         <page>web-frameworks.html</page>
     </section>
     <section>
         <name>Both modes</name>
+        <page>decoration.html</page>
         <page>style-sheets.html</page>
+        <page>look-and-feel.html</page>
     </section>
     <section>
         <name>Demos</name>
