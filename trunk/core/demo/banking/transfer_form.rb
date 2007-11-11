@@ -38,7 +38,7 @@ content {
   input "Address", :account_to / :address
   button "Save beneficiary"
   next_row
-  apply_restore
+  command :apply, :restore
 }
 
 $context.start
