@@ -8,15 +8,15 @@ model = HelloWorldModel.new
 
 model.saying = "Hello World"
 
-Frame {
+frame {
 	
 	title bind {"#{model.saying} F3"}
 	
 	width 200
 	
 	content {
-		TextField {
-			value bind(model, :saying)
+		input {
+			text bind(model, :saying)
 		}
 	}
 	

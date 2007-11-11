@@ -8,15 +8,15 @@ model = HelloWorldModel.new
 
 model.saying = "Hello World"
 
-Frame {
+frame {
 	
 	title "Hello World F3"
 	
 	width 200
 	
 	content {
-		Label {
-			text bind { model.saying }
+		label {
+			label bind { model.saying }
 		}
 	}
 	

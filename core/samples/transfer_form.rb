@@ -1,59 +1,82 @@
 #--
-# BSD license
+# Copyright (C) Swiby Committers. All rights reserved.
 # 
-# Copyright (c) 2007, Jean Lazarou
-# All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or without modification, 
-# are permitted provided that the following conditions are met:
-# 
-# Redistributions of source code must retain the above copyright notice, this list 
-# of conditions and the following disclaimer. 
-# Redistributions in binary form must reproduce the above copyright notice, this 
-# list of conditions and the following disclaimer in the documentation and/or other
-# materials provided with the distribution. 
-# Neither the name of the null nor the names of its contributors may be 
-# used to endorse or promote products derived from this software without specific 
-# prior written permission. 
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-# IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
-# OF THE POSSIBILITY OF SUCH DAMAGE.
+# The software in this package is published under the terms of the BSD
+# style license a copy of which has been included with this distribution in
+# the LICENSE.txt file.
+#
 #++
 
-require 'swiby_form'
+require 'swiby/form'
+require 'swiby/data'
+
+require 'styles'
+require 'console.rb'
 
 class Account
-    attr_accessor :owner, :number, :address
+  
+  attr_accessor :owner, :number, :address
+
+  def initialize owner, number, address
+    @owner = owner
+    @number = number
+    @address = address
     
-    def initialize owner, number, address
-        @owner = owner
-        @number = number
-        @address = address
+    class << @number
+        
+      def plug_input_formatter field
+        field.input_mask '###-#######-##'
+      end
+
     end
-		
-		def humanize
-			"#{@number.to_s}"
-		end
+  end
+
+  def humanize
+    Account.format(@number)
+  end
+  
+  def self.valid? acc_number
     
+    return false if !acc_number.instance_of?(String)
+
+    check_digit = acc_number[-2..-1].to_i
+    acc_number = acc_number[0...-2].to_i
+
+    cd = acc_number % 97
+
+    if cd == 0
+      return check_digit == 97
+    else
+      return check_digit == cd
+    end
+    
+  end
+  
+  def self.format acc_number
+    s = "#{acc_number.to_s}"
+    "#{s[0..2]}-#{s[3..9]}-#{s[10..11]}"
+  end
+
 end
 
 class Transfer
-    attr_accessor :amount, :account_from, :account_to
-    
-    def initialize amount, from, to
-        @amount = amount
-        @account_from = from
-        @account_to = to
-    end
-    
+  
+  attr_accessor :amount, :account_from, :account_to, :date
+
+  def initialize amount, from, to
+    @amount = amount
+    @account_from = from
+    @account_to = to
+    @date = Time.new
+  end
+
+  def summary
+    "<html><pre>" +
+      "<b>Transfer</b> $#{@amount}<br>" +
+      "    <b>From</b> #{@account_from.humanize} (#{@account_from.owner})<br>" +
+      "      <b>To</b> #{@account_to.humanize} (#{@account_to.owner})</pre></html>"
+  end
+  
 end
 
 acc1 = Account.new 'Jean', '555123456733', 'Somewhere 200'
@@ -63,33 +86,59 @@ acc4 = Account.new 'Max', '222764399497', 'There 14'
 
 my_accounts = [acc1, acc2, acc3]
 
-current = Transfer.new 200, acc1, acc4
+current = Transfer.new 200.dollars, acc3, acc4
 
-form = Form {
-    
-	title "Transfer Form"
-	
-	width 400
-	
-	content {
-		input "Date", Time.now
-		section
-		input "Amount", bind { current.amount }
-		next_line
-		section "From"
-		choice "Account", bind { my_accounts }, acc3
-		input "Name", bind { current.account_from.owner }
-		input "Address", bind { current.account_from.address }
-		section "To"
-		input "Account", bind { current.account_to.number }
-		input "Name", bind { current.account_to.owner }
-		input "Address", bind { current.account_to.address }
-		next_line
-		button "Save"
-		button "Cancel"
-		next_line
-	}
-    
-}
+transfer_form = form do
 
-form.visible = true
+  title "Transfer Form"
+
+  width 420
+
+  content do
+    data current
+    input "Date", :date
+    section
+    input "Amount", :amount
+    next_row
+    section "From"
+    combo "Account", my_accounts, :account_from do |selection| 
+      context['account_from.owner'].value = selection.owner
+      context['account_from.address'].value = selection.address
+    end
+    input "Name", :account_from / :owner, :readonly => true
+    input "Address", :account_from / :address, :readonly => true
+    section "To"
+    input "Account", :account_to / :number
+    input "Name", :account_to / :owner
+    input "Address", :account_to / :address
+    button "Save beneficiary"
+    next_row
+    command :ok, :cancel do
+      
+      def on_validate
+        
+        acc_number = values['account_to.number'].value
+        
+        if Account.valid?(acc_number)
+          true
+        else
+          message_box "#{Account.format(acc_number)} is not a valid account number"
+          false
+        end
+        
+      end
+      
+    end
+    next_row
+    button "Console" do
+      open_console self
+    end
+  end
+  
+  on_close do
+    message_box(current.summary)
+  end
+
+end
+
+transfer_form.visible = true
