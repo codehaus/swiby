@@ -81,6 +81,9 @@ module Swiby
     def layout_list label, list
     end
 
+    def layout_panel panel
+    end
+
     def button text = nil, image = nil, options = nil, &block
 
       ensure_section

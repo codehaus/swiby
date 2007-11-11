@@ -14,7 +14,12 @@ require 'java'
 module Swiby
 
   module AWT
+    include_class 'java.awt.EventQueue'
     include_class 'java.awt.FlowLayout'
+  end
+  
+  module JAVA
+    include_class 'java.lang.Runnable'
   end
   
   include_class 'javax.swing.JScrollPane'
@@ -75,6 +80,20 @@ module Swiby
 
   end
 
+  class Runnable
+
+    include JAVA::Runnable
+
+    def initialize &run
+      @run = run
+    end
+
+    def run
+      @run.call
+    end
+
+  end
+  
   class SwingBase
 
     def self.swing_attr_accessor(symbol, *args)
@@ -124,6 +143,11 @@ module Swiby
     end
 
     def apply_styles
+    end
+    
+    def invoke_later &block
+      runnable = Runnable.new(&block)
+      AWT::EventQueue::invokeLater runnable
     end
     
     #TODO remove private because some calls to 'addComponents' were forbidden (with JRuby 1.0.1)

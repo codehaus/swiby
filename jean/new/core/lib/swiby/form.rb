@@ -27,7 +27,6 @@ module Swiby
 
   module Swing
     include_class 'javax.swing.JTable'
-    include_class 'javax.swing.JEditorPane'
     include_class 'javax.swing.BorderFactory'
     include_class 'javax.swing.table.DefaultTableModel'
   end
@@ -263,6 +262,10 @@ module Swiby
       @layout.add_component label.java_component, list.java_component
     end
 
+    def layout_panel panel
+      @layout.add_panel panel.java_component
+    end
+    
     def complete
       
       if context[:apply_but] or context[:restore_but]
@@ -283,27 +286,19 @@ module Swiby
       
     end
     
-    def editor w, h #TODO quick implementation to add editor...
+    def editor w = nil, h = nil, options = nil, &block
 
-      section if @section.nil?
+      ensure_section
       
-      pane = Swing::JEditorPane.new
+      x = EditorOptions.new(context, w, h, options, &block)
       
-      pane.preferred_size = AWT::Dimension.new(w, h)
+      pane = Editor.new(x)
       
-      pane = JScrollPane.new(pane)
-
-      def pane.java_component
-        self
-      end
-      def pane.text
-        self.viewport.view.text
-      end
-
+      context[x[:name].to_s] = pane if x[:name]
+      
+      add pane
       context << pane
-      
-      @section.add pane
-      @layout.add_panel pane
+      layout_panel pane
 
     end
     
