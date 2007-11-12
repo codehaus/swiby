@@ -46,15 +46,16 @@
 <p>Ruby, or more accurately JRuby will be fast to interpret each page that it processes. The is no compile stage that may invisibly slow rendering down.</p>
 <p>Sun's <a href="http://www.sun.com/software/javafx/script/">JavaFX Script</a> technology is closest to Swiby.</p>
 <h3>Sample Swiby Web Application</h3>
-<p>Jean started a simple bank-account application. Its has Transfers Lists and the ability to make new transfers. There is no server side yet, but it will gove you a glimpse of the pseudo-declarative form that is easy for newbies to code. The source for the app is three ruby scripts (<strong>click on each image to see the source</strong>).</p>
+<p>Jean started a simple bank-account application. Its has Transfers Lists and the ability to make new transfers. There is no server side yet, but it will gove you a glimpse of the pseudo-declarative form that is easy for newbies to code. The source for the app is two ruby scripts (<strong>click on each image to see the source</strong>).</p>
 <p><strong>Transfers List ..</strong></p>
 <p><a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/banking.rb"><img src="images/transfers.jpg" width="554" height="595" alt="transfers image"/></a></p>
 <p><strong>Editing a Transfer ..</strong></p>
 <p><a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/transfer_form.rb"><img src="images/new-transfer.jpg" width="554" height="595" alt="transfer image"/></a></p>
+<p>Note the back button - like the web it will take you to the previous page.</p>
 <p>The client-side model, not a Swiby page per se, is <a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/bank_model.rb"> here</a></p>
 <h2>Trying it out</h2>
 <p>Best to do this direct from Subversion. In a command shell:</p>
-<pre>  svn co http://svn.codehaus.org/swiby/trunk/core<br />  cd core<br />  jruby -Iswiby demo/banking/banking.rb
+<pre>  svn co http://svn.codehaus.org/swiby/trunk/core<br />  cd core<br />  jruby -Ilib demo/banking/banking.rb
 
 Requires JRuby installed and 'jruby' in your PATH</pre>
 <h2>Getting involved</h2>
