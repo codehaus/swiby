@@ -27,7 +27,7 @@
 <p>It is aiming to be:</p>
 <ul>
   <li>a truly rich client-side page technology via a browser plugin - think lazy-loaded Flash (see '<a href="web-mode.html">web - mode</a>')</li>
-  <li>alternatively embedable as a big-up-front-download in a web page - much like the movie players in YouTube (see '<a href="blob-mode.html">blob mode</a>')</li>
+  <li>alternatively embeddable as a big-up-front-download in a web page - much like the movie players in YouTube (see '<a href="blob-mode.html">blob mode</a>')</li>
   <li>as editable as possible in design tools like DreamWeaver (see <a href="toolability.html">toolability</a>)</li>
   <li>as functional as Adobe's Flash, Microsoft's Silverlight and Sun's JavaFX</li>
   <li>a single language as opposed to two-language compromises like HTML+Javascript (refer <a href="glass-ceiling.html">glass ceiling</a>)</li>
@@ -52,7 +52,7 @@
 <p><strong>Editing a Transfer ..</strong></p>
 <p><a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/transfer_form.rb"><img src="images/new-transfer.jpg" width="554" height="595" alt="transfer image"/></a></p>
 <p>Note the back button - like the web it will take you to the previous page.</p>
-<p>The client-side model, not a Swiby page per se, is <a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/bank_model.rb"> here</a></p>
+<p>The client-side model, not a Swiby page per se, are ruby classes <a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/account.rb">Account</a> and <a href="http://svn.codehaus.org/swiby/trunk/core/demo/banking/transfer.rb">Transfer</a></p>
 <h2>Trying it out</h2>
 <p>Best to do this direct from Subversion. In a command shell:</p>
 <pre>  svn co http://svn.codehaus.org/swiby/trunk/core<br />  cd core<br />  jruby -Ilib demo/banking/banking.rb
