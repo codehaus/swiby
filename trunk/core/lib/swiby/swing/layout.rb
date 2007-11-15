@@ -349,6 +349,8 @@ module Swiby
 	
     def layoutContainer(parent)
 		
+      return if @areas.length == 0
+      
       insets = full_insets(parent)
 
       w = parent.size.width - (insets.left + insets.right) - @hgap
