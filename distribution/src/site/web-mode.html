@@ -2,7 +2,8 @@
 
 <html>
 <head>
-<title>Web Mode</title></head>
+<title>Web Mode</title>
+</head>
 
 <body>
 <p>Web mode for Swiby is just web you know today, but with a different technology for the rendering of pages.</p>
@@ -23,6 +24,23 @@
   </li>
   <li>unlike web pages, are a single language (JRuby) rather than two (HTML + JavaScript)</li>
 </ul>
+<h2>Context API</h2>
+<p>Pages interact with the browser for a number of operations using a context API. There are a number of functions the page can invoke:</p>
+<p>goto &lt;page&gt; - causes the current page to be dispensed with and &lt;page&gt; to be loaded instead (via HTTP GET)</p>
+<p>exit - the browser will quit the current page</p>
+<p>back - the browser will go back to the page displayed before the current one</p>
+<p>forward - the browser will dispense with the current page, and go one 'forward' from it (the user must have pressed the back button for this to make sense).</p>
+<p>first_page? - returns true if this is the first Swiby page that the browser has dislayed</p>
+<p>last_page? - returns true if this is the last Swiby page that the browser has dislayed (the user must have pressed the back button for this to be false).</p>
+<p>register_title &lt;t&gt; - sets the title of a page, for use after the page has been displayed</p>
+<p>width &lt;w&gt; - sets the width of the page</p>
+<p>height &lt;h&gt; - sets the height of the page</p>
+<p>title &lt;t&gt; - sets the title of the page on initial load</p>
+<h2>Open Questions</h2>
+<p>HTML browsers have  back, forward, stop, reload buttons for navigation. With Swiby we are trying to emulate that set of buttons and browser operations.</p>
+<p>We are, though, considering some alternatives for the context API:</p>
+<p><strong>Exit hooks</strong> - Pages as well as specifying content, can specify a function that would allow for last minute actions - &quot;you have not saved this data&quot;. That implies the possibility of vetoing the exit of the page. If that is possible, then the browser needs to expose the exit button in the tool to allow the user to leave a potentially malicious application that keeps vetoing page changes.</p>
+<p><strong>A push / pop model </strong>- The context has functions push and pop. push takes a page argument, and pop does not. Its a true stack model, that would be kinder to breadcrumb style applications. </p>
 </body>
 
 
