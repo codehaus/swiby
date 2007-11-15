@@ -9,9 +9,9 @@
 
 require 'swiby/form'
 require 'swiby/data'
+require 'swiby/tools/console.rb'
 
 require 'styles'
-require 'console.rb'
 
 class Account
   
@@ -88,23 +88,23 @@ my_accounts = [acc1, acc2, acc3]
 
 current = Transfer.new 200.dollars, acc3, acc4
 
-transfer_form = form do
+transfer_form = form {
 
   title "Transfer Form"
 
   width 420
 
-  content do
+  content {
     data current
     input "Date", :date
     section
     input "Amount", :amount
     next_row
     section "From"
-    combo "Account", my_accounts, :account_from do |selection| 
+    combo("Account", my_accounts, :account_from) { |selection| 
       context['account_from.owner'].value = selection.owner
       context['account_from.address'].value = selection.address
-    end
+    }
     input "Name", :account_from / :owner, :readonly => true
     input "Address", :account_from / :address, :readonly => true
     section "To"
@@ -113,7 +113,7 @@ transfer_form = form do
     input "Address", :account_to / :address
     button "Save beneficiary"
     next_row
-    command :ok, :cancel do
+    command(:ok, :cancel) {
       
       def on_validate
         
@@ -128,17 +128,17 @@ transfer_form = form do
         
       end
       
-    end
+    }
     next_row
-    button "Console" do
+    button("Console") {
       open_console self
-    end
-  end
+    }
+  }
   
-  on_close do
+  on_close {
     message_box(current.summary)
-  end
+  }
 
-end
+}
 
 transfer_form.visible = true
