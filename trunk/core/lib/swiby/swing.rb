@@ -57,6 +57,29 @@ module Swiby
     include_class 'javax.swing.border.EmptyBorder'
   end
   
+  #TODO move to swing directory?
+  module Swing
+    
+    include_class 'javax.swing.plaf.basic.BasicComboBoxRenderer'
+    
+    class SwibyComboBoxRender < BasicComboBoxRenderer
+      
+      def getListCellRendererComponent list, value, index, is_selected, has_focus
+        
+        if value.respond_to?(:display_icon)
+          set_icon value.display_icon
+        end
+
+        value = to_human_readable(value)
+
+        super
+        
+      end
+      
+    end
+    
+  end
+  
   include_class 'java.util.Locale'
   include_class 'java.text.NumberFormat'
   include_class 'java.text.SimpleDateFormat'
@@ -823,6 +846,8 @@ module Swiby
       
       @component = create_list_component
       
+      @component.set_renderer Swing::SwibyComboBoxRender.new
+      
       return unless options
       
       options[:input_component] = self
@@ -892,7 +917,7 @@ module Swiby
 
       @values.each do |value|
 
-        self.add_item to_human_readable(value)
+        self.add_item value
 
         select_index = self.item_count - 1 if value == x
 

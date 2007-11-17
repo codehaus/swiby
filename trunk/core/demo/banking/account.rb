@@ -8,9 +8,10 @@
 #++
 
 class Account
-  attr_accessor :owner, :number, :address
+  attr_accessor :owner, :number, :address, :type
 
-  def initialize owner, number, address
+  def initialize type, owner, number, address
+    @type = type
     @owner = owner
     @number = number
     @address = address
@@ -33,13 +34,29 @@ class Account
 
   end
 
+  def display_icon
+    
+    unless @savings_icon
+      @current_icon = create_icon File.join(File.dirname(__FILE__), 'images', 'bundle.png')
+      @savings_icon = create_icon File.join(File.dirname(__FILE__), 'images', 'piggy-bank.png')
+    end
+
+    case @type
+    when :current
+      return @current_icon
+    when :savings
+      return @savings_icon
+    end
+    
+  end
+  
   def self.find_from_accounts
 
     return @from_list if not @from_list.nil?
 
-    acc1 = Account.new 'Jean', '555123456733', 'Somewhere 200'
-    acc2 = Account.new 'Jean (2)', '555765432136', 'Somewhere 200'
-    acc3 = Account.new 'Jean (3)', '111765943218', 'Somewhere 200'
+    acc1 = Account.new :current, 'Jean / Current', '555123456733', 'Somewhere 200'
+    acc2 = Account.new :current, 'Jean / Current (2)', '555765432136', 'Somewhere 200'
+    acc3 = Account.new :savings, 'Jean / Savings', '111765943218', 'Somewhere 200'
 
     @from_list = [acc1, acc2, acc3]
 
@@ -49,7 +66,7 @@ class Account
 
     return @to_list if not @to_list.nil?
 
-    acc1 = Account.new 'Max', '222764399497', 'There 14'
+    acc1 = Account.new :current, 'Max', '222764399497', 'There 14'
 
     @to_list = [acc1]
 
