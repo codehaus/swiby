@@ -37,8 +37,16 @@ class Account
   def display_icon
     
     unless @savings_icon
-      @current_icon = create_icon File.join(File.dirname(__FILE__), 'images', 'bundle.png')
-      @savings_icon = create_icon File.join(File.dirname(__FILE__), 'images', 'piggy-bank.png')
+      
+      return nil if @load_done
+      
+      @current_icon = create_icon 'images/bundle.png'
+      @savings_icon = create_icon 'images/piggy-bank.png'
+
+      @load_done = true
+      
+      return nil unless @savings_icon
+        
     end
 
     case @type

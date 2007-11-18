@@ -7,6 +7,9 @@
 #
 #++
 
+require 'net/http'
+require 'uri'
+
 require 'swiby/form'
 require 'swiby/data'
 
@@ -29,9 +32,8 @@ class Sweb
     @history << @container
     @sources << page
     @history_index += 1
-    load page
-
-    self.source = page
+    
+    self.open_page(page)
 
     @top_container.java_component.content_pane.remove 1
     @top_container.java_component.content_pane.add @container.java_component
@@ -98,6 +100,7 @@ class Sweb
     @sources = []
     @history = []
 
+    @base = nil
     @source = $0
 
     @container = form(:as_panel)
@@ -129,6 +132,12 @@ class Sweb
     @sources << @source
 
   end
+  
+  protected
+  
+  def open_page script_path
+    require script_path
+  end
 
 end
 
@@ -149,4 +158,76 @@ end
 def content &block
   $context.container.instance_eval(&block)
   $context.container.complete
+end
+
+module Swiby
+  
+  module Sweb
+    
+    def self.run
+
+      if ARGV.length == 0
+
+        $context.source = ""
+
+        $context.top_container.width 600
+        $context.top_container.height 400
+
+        $context.start
+
+      else
+
+        if ARGV[0] =~ /http\:\/\/.*|https\:\/\/.*/
+
+          require "swiby/util/simple_cache"
+          require "swiby/util/remote_require"
+
+          match_data = /(.*)\/(.*)/.match(ARGV[0])
+
+          base = match_data[1]
+          script = match_data[2]
+
+          cache_dir = ENV["USERPROFILE"] + "/.swiby/cache/"
+
+          Swiby::RemoteLoader.cache_manager = Swiby::SimpleCache.new base, cache_dir
+
+          $:.unshift cache_dir
+
+          puts "Starting remote, base is #{base}, script is #{script}" #TODO write in a log file?
+
+          require script
+
+        else
+
+          $:.unshift File.dirname(File.expand_path(ARGV[0]))
+
+          require "swiby/util/remote_loader"
+
+          # replace resolve_file defined in remote_loader
+          eval %{
+            module ::Kernel
+
+              def resolve_file file_name
+
+                return $:[0] + '/' + file_name if not File.exist?(file_name)
+
+              end
+
+            end
+          }
+
+          require ARGV[0]
+
+        end
+
+      end
+      
+    end
+    
+  end
+  
+end
+
+if $0 == __FILE__
+  Swiby::Sweb::run
 end
