@@ -293,6 +293,11 @@ module Swiby
         
       end
       
+      #TODO is it possible to workaround at_exit?
+      on_close do
+        Swiby::RemoteLoader.cache_manager.close if Swiby::RemoteLoader.cache_manager
+      end
+      
     end
 
     def dispose_on_close

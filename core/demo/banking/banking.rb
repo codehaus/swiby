@@ -7,8 +7,7 @@
 #
 #++
 
-require 'swiby/sweb'
-require 'demo/banking/transfer'
+require 'transfer'
 
 transfers = Transfer.find
 accounts = Account.find_from_accounts
@@ -27,7 +26,7 @@ content {
   section "Transfer List"
   table ["From", "To", "Amount", "Date"], bind {transfers}
   button("Add") {
-    $context.goto "demo/banking/transfer_form.rb"
+    $context.goto "transfer_form.rb"
   }
   button("Edit") {
     $context.goto "demo/banking/transfer_form.rb"

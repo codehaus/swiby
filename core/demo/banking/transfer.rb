@@ -7,7 +7,7 @@
 #
 #++
 
-require 'demo/banking/account'
+require 'account'
 
 class Transfer
   attr_accessor :amount, :account_from, :account_to, :value_date

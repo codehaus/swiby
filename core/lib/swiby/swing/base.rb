@@ -8,6 +8,7 @@
 #++
 
 require 'swiby/core'
+require 'swiby/util/remote_loader'
 
 require 'java'
 
@@ -58,10 +59,11 @@ module Swiby
     elsif File.exist?(url)
       url = "#{File.expand_path(url)}"
     else
-      #TODO implement URL resolution using LOAD_PATH, for "local" files, URL like 'file://c:/..." does not work
-      #puts $LOAD_PATH
-      puts "url resolution not implemented"
-      return nil
+      
+      url = resolve_file(url)
+
+      return nil unless url
+      
     end
 
     ImageIcon.new(url)
