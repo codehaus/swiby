@@ -10,7 +10,7 @@
 <p>Your team is using an Agile methodology and is shipping the application to live each week. Your customer (a Business Analysy for a bank) thinks your team is great. One week, during a planning meeting the customer suggests that you change the 'Account' drop-down to have a picture representative of the account type next to the account number. It is a simple web-cart application, and the customer thinks that you are going to estimate this story at half a day.</p>
 <p>The trouble is that the web only supports fields like :</p>
 <p><img src="images/dropdown_without.jpg" alt="drop down" width="259" height="137"/></p>
-<p>Your current choice is to show the choice of pet underneath the drop-down field :</p>
+<p>With HTML you could show the choice of account underneath the drop-down field :</p>
 <p><img src="images/dropdown_below.jpg" alt="drop down" width="259" height="137"/></p>
 <p>What your customer wants is these (unclicked and clicked) :</p>
 <p><img src="images/dropdown_with.jpg" alt="drop down" width="281" height="137"/>&nbsp;<img src="images/dropdown_with_popped.jpg" alt="drop down" width="281" height="137"/></p>
@@ -22,8 +22,8 @@
 <p>So for our case, the need to render the drop down differently, you can go from ...</p>
 <div class="source">
 <pre>content {
-    combobox("pet") {
-       list bind { inventory.pets }
+    combobox("account") {
+       list bind { accounts }
 
     }
 }</pre>
@@ -31,12 +31,12 @@
 to ...
 <div class="source">
 <pre>content {
-    combobox("pet") {
-       list bind { inventory.pets }
-       cell_renderer pet_cell_renderer
+    combobox("account") {
+       list bind { accounts }
+       cell_renderer icon_cell_renderer
     }
 }
-//TODO - show pet_cell_renderer
+//TODO - show icon_cell_renderer
 </pre>
 </div>
 <p>... with ease.</p>
