@@ -7,23 +7,15 @@
 
 <body>
 <h3>The Glass Ceiling of web development</h3>
-<p>Your team is using an Agile methodology and is shipping the application to live each week. Your customer (a Pet Store owner) thinks your team is great. One week, during a planning meeting the customer suggests that you change the Pet drop-down to have a picture of the pet to the left of the pet's description. Its a simple web-cart application, and the customer thinks that you are going to estimate this story at half a day.</p>
+<p>Your team is using an Agile methodology and is shipping the application to live each week. Your customer (a Business Analysy for a bank) thinks your team is great. One week, during a planning meeting the customer suggests that you change the 'Account' drop-down to have a picture representative of the account type next to the account number. It is a simple web-cart application, and the customer thinks that you are going to estimate this story at half a day.</p>
 <p>The trouble is that the web only supports fields like :</p>
-<form id="form1" name="form1" method="post" action="">
-  <label>Choose Pet:
-  <select name="pets" id="pets">
-    <option>Pig</option>
-    <option>Monkey</option>
-    <option>Bird</option>
-  </select>
-  </label>
-</form>
+<p><img src="images/dropdown_without.jpg" alt="drop down" width="259" height="137"/></p>
 <p>Your current choice is to show the choice of pet underneath the drop-down field :</p>
-<p><img src="http://www.itee.uq.edu.au/~peters/java/tutorial/figures/uiswing/components/ComboBoxDemo.gif"/> (TODO - replace image with better)</p>
-<p>What your customer wants is :</p>
-<p><img src="http://www.itee.uq.edu.au/~peters/java/tutorial/figures/uiswing/components/CustomComboBoxDemo.gif"/> (TODO - replace image with better)</p>
+<p><img src="images/dropdown_below.jpg" alt="drop down" width="259" height="137"/></p>
+<p>What your customer wants is these (unclicked and clicked) :</p>
+<p><img src="images/dropdown_with.jpg" alt="drop down" width="281" height="137"/>&nbsp;<img src="images/dropdown_with_popped.jpg" alt="drop down" width="281" height="137"/></p>
 <p>Yet HTML does not support this. </p>
-<p>Well, not quite true. If you willing to abandon the pure-HTML drop-down field, and dive into a world of JavaScript, you can recreate something that effectively is a combo-box/drop-down to the end user. You may find a pre-existing Javsscript library that makes this possibility for you. You may even find one that works well in more InternetExplorer as well as Firefox. If you don't you are looking at many week's work, not half a day.</p>
+<p>Well, not quite true. If you are willing to abandon the pure-HTML drop-down field, and dive into a world of JavaScript, you can recreate something that effectively is a combo-box/drop-down to the end user. You may find a pre-existing Javsscript library that makes this possibility for you. You may even find a pre-existing one that works well in more Internet Explorer as well as Firefox and Safari. If you are writing it yourself, you are looking at many week's work, not half a day.</p>
 <h3>Summary</h3>
 <p>The glass ceiling of the web is that there are <strong>two languages</strong>; HTML and JavaScript. HTML is accessible to non technical people, but only to a certain degree. JavaScript library functions are quite common, but there is not getting away from the fact that it is a order more difficult to develop in than HTML. Its not just complexity, if the fact that you might get something working well to a certain level, but with a couple more feature requests, you're not extending that thing, you are scrapping the investment in it for a different technology.</p>
 <p>Swiby, by having a meld of JRuby and Swing aims to allow you to functionally improve applications without hitting the glass cielings that scar other tchnologies. And we feel that a single language is the key to success to punching through the glass ceiling. Swiby pages, look declarative. So much so in fact that in tests, non-developers feel they can edit the source form for modest changes to the site. <strong>Swiby pages only look declarative, in fact they are a procedural form, that takes advantage of the power of builder-syntax to make things look simple and elegant.</strong></p>
@@ -48,6 +40,8 @@ to ...
 </pre>
 </div>
 <p>... with ease.</p>
+<p>Combo boxes are just one example of the glas ceiling.</p>
+<p>&nbsp;</p>
 </body>
 
 
