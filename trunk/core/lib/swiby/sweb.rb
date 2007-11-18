@@ -187,7 +187,8 @@ module Swiby
           base = match_data[1]
           script = match_data[2]
 
-          cache_dir = ENV["USERPROFILE"] + "/.swiby/cache/"
+          cache_dir = ENV["HOMEPATH"] + "/.swiby/cache/" if ENV["HOMEPATH"]
+          cache_dir = ENV["HOME"] + "/.swiby/cache/" if ENV["HOME"]
 
           Swiby::RemoteLoader.cache_manager = Swiby::SimpleCache.new base, cache_dir
 
