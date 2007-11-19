@@ -100,8 +100,8 @@ class Sweb
     @sources = []
     @history = []
 
-    @base = nil
-    @source = $0
+    @source = $0 if $0 != __FILE__
+    @source = ARGV[0] if $0 == __FILE__
 
     @container = form(:as_panel)
     
@@ -137,6 +137,7 @@ class Sweb
   
   def open_page script_path
     require script_path
+    self.source = script_path
   end
 
 end
