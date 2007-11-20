@@ -106,7 +106,7 @@ module Swiby
   WRAP = JTabbedPane::WRAP_TAB_LAYOUT
   SCROLL = JTabbedPane::SCROLL_TAB_LAYOUT
 
-  UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+  UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()) unless System::get_property('swing.defaultlaf')
 
   module ComponentAccesssor
 
