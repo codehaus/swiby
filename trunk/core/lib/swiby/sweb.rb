@@ -100,8 +100,11 @@ class Sweb
     @sources = []
     @history = []
 
-    @source = $0 if $0 != __FILE__
-    @source = ARGV[0] if $0 == __FILE__
+    if $0 == __FILE__ or $0 == '-e' # $0 = -e if run from installed gem/bin command
+      @source = ARGV[0]
+    else
+      @source = $0
+    end
 
     @container = form(:as_panel)
     
@@ -188,8 +191,7 @@ module Swiby
           base = match_data[1]
           script = match_data[2]
 
-          cache_dir = ENV["HOMEPATH"] + "/.swiby/cache/" if ENV["HOMEPATH"]
-          cache_dir = ENV["HOME"] + "/.swiby/cache/" if ENV["HOME"]
+          cache_dir = System::get_property('user.home')
 
           Swiby::RemoteLoader.cache_manager = Swiby::SimpleCache.new base, cache_dir
 
