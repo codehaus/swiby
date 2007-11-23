@@ -22,32 +22,33 @@ styles {
   )
 }    
 
-def open_console run_context
+# returns a form (Swiby#Frame) that publishes a #run_context=
+# method to change the running context (form)
+def open_console run_context, container = nil
+  
+  container = run_context unless container
   
   frm = form do
+    
+    @container = container
+    @run_context = run_context
 
     title "Console"
     
     editor 400, 300, :name => :editor
     
     button "Show Info", :name => :frame_info_button do
-      
-      @info_pane = FrameInfoPanel.new(run_context) unless @info_pane
-      
-      if @info_pane.visible?
-        @info_pane.visible = false
-        context[:frame_info_button].text = "Show Info"
-      else
-        @info_pane.visible = true
-        context[:frame_info_button].text = "Hide Info"
-      end
-      
+      context.show_hide_info
     end
     button "Execute" do
-      run_context.instance_eval(context[:editor].text)
+      context.execute(context[:editor].text)
     end
     button "Close" do
       close
+    end
+    
+    on_close do
+      context.hide_info
     end
     
     visible true
@@ -56,6 +57,41 @@ def open_console run_context
   end
   
   setup_as_script_editor frm['editor'], RubyTokenizer.new
+  
+  def frm.run_context= run_context
+    
+    hide_info
+    
+    @run_context = run_context
+    @info_pane.change_target(run_context) if @info_pane
+    
+  end
+  
+  def frm.execute script
+    @run_context.instance_eval(script)
+  end
+  
+  def frm.hide_info
+    if @info_pane and @info_pane.visible?
+      show_hide_info
+    end
+  end
+  
+  def frm.show_hide_info
+      
+    @info_pane = FrameInfoPanel.new(@container, @run_context) unless @info_pane
+
+    if @info_pane.visible?
+      @info_pane.visible = false
+      self[:frame_info_button].text = "Show Info"
+    else
+      @info_pane.visible = true
+      self[:frame_info_button].text = "Hide Info"
+    end
+
+  end
+  
+  frm
   
 end
 
@@ -125,21 +161,84 @@ class FrameInfoPanel
   #TODO make it part of Swiby wrappers?
   #TODO button in Windows L&F hide the "index marker" (cause highlight when mouse over)
 
-  def initialize parent
+  def initialize parent, target
     
     @markers = []
-    @target = parent
+    @parent = parent
+    @target = target
     @panel = JPanel.new
-    
-    bg_color = AWT::Color.new(255, 255, 128)
-    no_name_bg = AWT::Color.new(248, 248, 248)
-    outside = Swing::BorderFactory.createLineBorder(AWT::Color::BLACK)
-    inside = Swing::BorderFactory.createEmptyBorder(1, 2, 1, 2)
-    border = Swing::BorderFactory.createCompoundBorder(outside, inside)
 
     @panel.visible = false
     @panel.opaque = false
     @panel.layout = nil
+    
+    create_markers
+    
+    parent.java_component.layered_pane.add(@panel, JLayeredPane::DRAG_LAYER)
+
+    listener = HierarchyBoundsListener.new
+    
+    listener.register :resized do
+      layout
+    end
+    
+    @panel.addHierarchyBoundsListener(listener)
+    
+  end
+
+  def visible?
+    @panel.visible?
+  end
+
+  def visible= flag
+    
+    @panel.setBounds(0, 0, @parent.java_component.width, @parent.java_component.height) if flag
+    
+    @panel.set_visible(flag)
+    
+    self.layout if flag
+    
+  end
+  
+  def change_target target
+    
+    @target = target
+    @panel.remove_all
+    
+    @markers.clear
+    
+    create_markers
+    
+  end
+  
+  def layout
+    
+    @panel.setBounds(0, 0, @parent.java_component.width, @parent.java_component.height)
+    
+    origin = @parent.java_component.content_pane.location_on_screen
+
+    @markers.each_index do |i|
+    
+      d = @markers[i].preferred_size
+      p = @target[i].java_component.location_on_screen
+
+      @markers[i].set_bounds(p.x - 2 - origin.x, p.y - 4 - origin.y, d.width, d.height)
+    
+    end
+    
+  end
+  
+  private
+  
+  def create_markers
+    
+    unless @bg_color
+      @bg_color = AWT::Color.new(255, 255, 128)
+      @no_name_bg = AWT::Color.new(248, 248, 248)
+      outside = Swing::BorderFactory.createLineBorder(AWT::Color::BLACK)
+      inside = Swing::BorderFactory.createEmptyBorder(1, 2, 1, 2)
+      @border = Swing::BorderFactory.createCompoundBorder(outside, inside)
+    end
     
     index = 0
     
@@ -154,10 +253,10 @@ class FrameInfoPanel
       
       l = JLabel.new(index.to_s)
 
-      l.setBorder(border)
+      l.setBorder(@border)
 
       l.setOpaque(true)
-      l.setBackground(comp.name.nil? ? no_name_bg : bg_color)
+      l.setBackground(comp.name.nil? ? @no_name_bg : @bg_color)
       l.setToolTipText(text)
 
       @panel.add(l)
@@ -166,47 +265,6 @@ class FrameInfoPanel
       
       index += 1
       
-    end
-    
-    @target.java_component.layered_pane.add(@panel, JLayeredPane::POPUP_LAYER)
-
-    listener = HierarchyBoundsListener.new
-    
-    listener.register :resized do
-        layout
-    end
-    
-    @panel.addHierarchyBoundsListener(listener)
-    
-  end
-
-  def visible?
-    @panel.visible?
-  end
-
-  def visible= flag
-    
-    @panel.setBounds(0, 0, @target.java_component.width, @target.java_component.height) if flag
-    
-    @panel.set_visible(flag)
-    
-    self.layout if flag
-    
-  end
-  
-  def layout
-    
-    @panel.setBounds(0, 0, @target.java_component.width, @target.java_component.height)
-    
-    origin = @target.java_component.content_pane.location_on_screen
-
-    @markers.each_index do |i|
-    
-      d = @markers[i].preferred_size
-      p = @target[i].java_component.location_on_screen
-
-      @markers[i].set_bounds(p.x - 2 - origin.x, p.y - 4 - origin.y, d.width, d.height)
-    
     end
     
   end
