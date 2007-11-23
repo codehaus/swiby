@@ -1166,6 +1166,10 @@ module Swiby
     end
 
     include Builder
+    
+    def separator
+      @component.add_separator
+    end
 
   end
 

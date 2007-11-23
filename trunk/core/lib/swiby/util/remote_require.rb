@@ -11,15 +11,23 @@ require 'swiby/util/remote_loader'
 
 module Kernel
 
-  # alias the orginal require
+  # alias the orginal require/load
   alias sys_require require
+  alias sys_load load
   
-  #TODO must do the same thing for 'load', with reload if file changed
   def require file_name
+    sys_require to_local_file(file_name)
+  end
+
+  def load file_name
+    sys_load to_local_file(file_name)
+  end
+  
+  def to_local_file file_name
 
     if not Swiby::exclude_remote?(file_name)
       
-      puts "remote require #{file_name}" #TODO in 'debug' mode should log this...
+      #puts "remote #{file_name}" #TODO in 'debug' mode should log this...
 
       cached = Swiby::RemoteLoader.from_cache(file_name)
     
@@ -30,9 +38,9 @@ module Kernel
       file_name = cached if cached
       
     end
-
-    sys_require file_name
-
+    
+    file_name
+    
   end
-
+  
 end

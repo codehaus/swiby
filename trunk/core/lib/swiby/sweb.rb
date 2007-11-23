@@ -12,6 +12,7 @@ require 'uri'
 
 require 'swiby/form'
 require 'swiby/data'
+require 'swiby/tools/console'
 
 def image_path image
   File.join(File.dirname(__FILE__), 'images', image)
@@ -28,10 +29,18 @@ class Sweb
 
   def goto page
 
+    @history_index += 1
+    
+    while @history.length > @history_index
+      @history.pop
+      @sources.pop
+      @titles.pop
+    end
+    
     @container = form(:as_panel)
     @history << @container
     @sources << page
-    @history_index += 1
+    @titles << ''
     
     self.open_page(page)
 
@@ -39,6 +48,8 @@ class Sweb
     @top_container.java_component.content_pane.add @container.java_component
     @top_container.java_component.validate
 
+    @console.run_context = @container if @console
+    
   end
 
   def exit
@@ -59,6 +70,8 @@ class Sweb
 
     self.source = @sources[@history_index]
 
+    @console.run_context = @container if @console
+    
   end
 
   def forward
@@ -75,6 +88,8 @@ class Sweb
 
     self.source = @sources[@history_index]
 
+    @console.run_context = @container if @console
+    
   end
 
   def first_page?
@@ -120,6 +135,10 @@ class Sweb
           enabled bind(browser, :source) {|context| not context.last_page?}
           action proc {$context.forward}
         end
+        separator
+        button create_icon(image_path("console.png")) do
+          $context.show_console
+        end
       end
 
       toolbar do
@@ -136,10 +155,20 @@ class Sweb
 
   end
   
+  def show_console
+
+    unless @console
+      @console = open_console(@container, @top_container)
+    end
+
+    @console.visible = true if not @console.visible?
+
+  end
+  
   protected
   
   def open_page script_path
-    require script_path
+    load script_path
     self.source = script_path
   end
 
