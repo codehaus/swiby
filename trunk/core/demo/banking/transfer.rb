@@ -19,14 +19,6 @@ class Transfer
     @value_date = value_date
   end
 
-  def table_row
-    [@account_from.humanize, @account_to.humanize, @amount.to_s, @value_date.to_s]
-  end
-
-  def humanize
-    "#{@amount} to #{@account_to.humanize}"
-  end
-
   def self.find
 
     return @list if not @list.nil?
@@ -39,7 +31,7 @@ class Transfer
       Transfer.new(14.dollars, from[0], from[1]),
       Transfer.new(130.dollars, from[1], to[0])
     ]
-
+    
   end
 
 end

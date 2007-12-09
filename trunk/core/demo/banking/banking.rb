@@ -7,7 +7,7 @@
 #
 #++
 
-require 'transfer'
+require 'transfer_ui'
 
 transfers = Transfer.find
 accounts = Account.find_from_accounts
