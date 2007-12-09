@@ -16,48 +16,8 @@ class Account
     @number = number
     @address = address
     
-    class << @number
-        
-      def plug_input_formatter field
-        field.input_mask '###-#######-##'
-      end
-
-    end
-    
   end
 
-  def humanize
-
-    s = @number.to_s
-
-    "#{s[0..2]}-#{s[3..9]}-#{s[10..11]}"
-
-  end
-
-  def display_icon
-    
-    unless @savings_icon
-      
-      return nil if @load_done
-      
-      @current_icon = create_icon 'images/bundle.png'
-      @savings_icon = create_icon 'images/piggy-bank.png'
-
-      @load_done = true
-      
-      return nil unless @savings_icon
-        
-    end
-
-    case @type
-    when :current
-      return @current_icon
-    when :savings
-      return @savings_icon
-    end
-    
-  end
-  
   def self.find_from_accounts
 
     return @from_list if not @from_list.nil?
@@ -78,10 +38,6 @@ class Account
 
     @to_list = [acc1]
 
-  end
-
-  def table_row
-    [@owner.to_s, humanize, @address.to_s]
   end
 
 end

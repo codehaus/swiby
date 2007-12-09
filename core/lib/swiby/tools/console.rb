@@ -173,8 +173,8 @@ class FrameInfoPanel
     @panel.layout = nil
     
     create_markers
-    
-    parent.java_component.layered_pane.add(@panel, JLayeredPane::DRAG_LAYER)
+
+    parent.java_component.layered_pane.add(@panel, JLayeredPane::POPUP_LAYER)
 
     listener = HierarchyBoundsListener.new
     
