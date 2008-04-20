@@ -9,7 +9,9 @@
 
 require 'swiby'
 
-image = File.join(File.dirname(__FILE__), '..', 'lib', 'swiby', 'images', 'go-previous.png')
+Defaults.height = 100
+
+image = File.join(File.dirname(__FILE__), '..',  '..', 'lib', 'swiby', 'images', 'go-previous.png')
 
 ##---------------------------------------------
 f = frame do

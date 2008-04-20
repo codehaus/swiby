@@ -31,29 +31,52 @@ module Swiby
     include_class 'javax.swing.table.DefaultTableModel'
   end
 
+  def dialog(parent, &block)
+    
+    sync_swing_thread do
+      
+      x = ::Frame.new(nil, true, parent)
+
+      x.extend(Form)
+      x.setup true
+
+      x.instance_eval(&block) unless block.nil?
+
+      x
+      
+    end
+    
+  end
+  
   # valid options are :as_panel or :as_frame
   def form(*options, &block)
 
-    is_panel = false
-
-    if options.length == 0
+    sync_swing_thread do
+      
       is_panel = false
-    elsif options[0] == :as_panel
-      is_panel = true
+
+      if options.length == 0
+        is_panel = false
+      elsif options[0] == :as_panel
+        is_panel = true
+      end
+
+      if is_panel
+        x = ::Panel.new
+      else
+        x = ::Frame.new
+      end
+
+      x.extend(Form)
+      x.setup is_panel
+
+      x.instance_eval(&block) unless block.nil?
+
+      x.apply_styles
+
+      x
+    
     end
-
-    if is_panel
-      x = ::Panel.new
-    else
-      x = ::Frame.new
-    end
-
-    x.extend(Form)
-    x.setup is_panel
-
-    x.instance_eval(&block) unless block.nil?
-
-    x
 
   end
 
@@ -78,18 +101,34 @@ module Swiby
       if is_panel
         @content_pane = self.java_component
       else
-        @content_pane = JPanel.new
-        @component.content_pane = @content_pane
+        @content_pane = @component.content_pane
       end
-
-      @main_layout = AreaLayout.new(5, 5)
-      @content_pane.layout = @main_layout
 
     end
 
-    def content(&block)
+    def method_missing(symbol, *args)
       
-      block.call
+      if @section.respond_to?(symbol)
+        @section.send(symbol, *args)
+      else
+        super
+      end
+      
+    end
+    
+    def content(*options, &block)
+      
+      layout = create_form_compatible_layout(*options)
+      layout = default_layout unless layout
+      
+      @main_layout = layout
+      @content_pane.layout = layout
+    
+      if layout.respond_to?(:add_layout_extensions)
+        layout.add_layout_extensions self
+      end
+      
+      instance_eval(&block)
       
       complete
       
@@ -121,6 +160,10 @@ module Swiby
           end
 
           def block.values
+            @the_form
+          end
+ 
+          def block.context
             @the_form
           end
         
@@ -227,18 +270,33 @@ module Swiby
 
     end
 
-    def section(title = nil)
+    def section(title = nil, *options)
 
-      @layout = FormLayout.new(10, 5)
+      @layout = create_section_compatible_layout(*options)
+      
+      @layout = FormLayout.new(10, 5) unless @layout
       
       @section = Section.new title
       @section.layout = @layout
+          
+      if @layout.respond_to?(:add_layout_extensions)
+        @layout.add_layout_extensions @section
+      end
+      
+      x = options.length > 0? options[0] : {}
+      context[x[:name].to_s] = @section if x[:name]
       
       context << @section
+      context.add_child @section
       
       @content_pane.add @section.java_component
 
+      @main_layout = default_layout unless @main_layout
       @main_layout.add_area @section
+    
+      if @main_layout.respond_to?(:add_layout_extensions)
+        @main_layout.add_layout_extensions self
+      end
 
     end
 
@@ -254,12 +312,24 @@ module Swiby
       @layout.add_command comp.java_component
     end
 
+    def layout_label label
+      @layout.add_panel label.java_component
+    end
+    
     def layout_input label, text 
-      @layout.add_field label.java_component, text.java_component
+      if label
+        @layout.add_field label.java_component, text.java_component
+      else
+        @layout.add_field label, text.java_component
+      end
     end
     
     def layout_list label, list
-      @layout.add_component label.java_component, list.java_component
+      if label
+        @layout.add_component label.java_component, list.java_component
+      else
+        @layout.add_component label, list.java_component
+      end
     end
 
     def layout_panel panel
@@ -285,70 +355,47 @@ module Swiby
       end
       
     end
-    
-    def editor w = nil, h = nil, options = nil, &block
 
-      ensure_section
+    def create_form_compatible_layout(*options)
       
-      x = EditorOptions.new(context, w, h, options, &block)
-      
-      pane = Editor.new(x)
-      
-      context[x[:name].to_s] = pane if x[:name]
-      
-      add pane
-      context << pane
-      layout_panel pane
+      layout = create_layout(*options)
 
-    end
-    
-    def table headers, values
-
-      section if @section.nil?
-
-      if values.instance_of? IncrementalValue
-        values = values.get_value
-      end
-
-      model = Swing::DefaultTableModel.new
-
-      headers.each do |column|
-        model.addColumn column
-      end
-
-      values.each do |value|
-
-        row = value.table_row
-
-        vector = java.util.Vector.new
-
-        row.each do |cell|
-          vector.addElement cell
+      if layout and !layout.respond_to?(:add_area)
+        
+        def layout.add_area panel
         end
-
-        model.addRow vector
-
+        
       end
-
-      table = Swing::JTable.new
-      table.model = model
-
-      table.auto_resize_mode = Swing::JTable::AUTO_RESIZE_SUBSEQUENT_COLUMNS
-      table.selection_model.selection_mode = javax.swing.ListSelectionModel::SINGLE_SELECTION
-
-      pane = JScrollPane.new(table)
       
-      #TODO create a Swiby::ScrollPane?
-      def pane.java_component
-        self
-      end
-
-      @section.add pane
-
-      @layout.add_panel pane
-
+      layout
+      
     end
 
+    def create_section_compatible_layout(*options)
+      
+      layout = create_layout(*options)
+
+      if layout and !layout.respond_to?(:add_command)
+        
+        def layout.add_command command
+        end
+        def layout.add_field label, text
+        end
+        def layout.add_component label, comp
+        end
+        def layout.add_panel panel
+        end
+        
+      end
+      
+      layout
+      
+    end
+    
+    def default_layout
+      AreaLayout.new(5, 5)
+    end
+    
   end
 
 end

@@ -22,6 +22,7 @@ module Swiby
     include_class 'java.awt.Toolkit'
     include_class 'java.awt.AWTEvent'
     include_class 'java.awt.event.KeyEvent'
+    include_class 'java.awt.event.MouseAdapter'
     include_class 'java.awt.event.WindowAdapter'
     include_class 'java.awt.event.ActionListener'
     include_class 'java.awt.event.AWTEventListener'
@@ -230,6 +231,26 @@ module Swiby
       
     end
 
+  end
+  
+  class MouseListener < AWT::MouseAdapter
+   
+    def register(&handler)
+      @handler = handler
+    end
+
+    def mouseClicked ev
+      @handler.on_click if @handler.respond_to?(:on_click)
+    end
+   
+    def mouseEntered ev
+      @handler.on_mouse_over if @handler.respond_to?(:on_mouse_over)
+    end
+   
+    def mouseExited ev
+      @handler.on_mouse_out if @handler.respond_to?(:on_mouse_out)
+    end
+    
   end
   
 end

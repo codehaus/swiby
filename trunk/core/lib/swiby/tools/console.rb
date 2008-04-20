@@ -15,13 +15,6 @@ include_class 'javax.swing.JLayeredPane'
 include_class 'javax.swing.text.StyleConstants'
 include_class 'javax.swing.text.StyledEditorKit'
 
-styles {
-  editor(
-    :font_family => Styles::COURIER,
-    :font_size => 12
-  )
-}    
-
 # returns a form (Swiby#Frame) that publishes a #run_context=
 # method to change the running context (form)
 def open_console run_context, container = nil
@@ -32,6 +25,9 @@ def open_console run_context, container = nil
     
     @container = container
     @run_context = run_context
+
+    width 500
+    height 300
 
     title "Console"
     
@@ -129,10 +125,10 @@ def setup_as_script_editor editor, tokenizer
   StyleConstants::set_foreground(style, AWT::Color::RED)
   
   style = doc.add_style("string", nil)
-  StyleConstants::set_foreground(style, AWT::Color::ORANGE)
+  StyleConstants::set_foreground(style, AWT::Color::RED)
   
   style = doc.add_style("comment", nil)
-  StyleConstants::set_foreground(style, AWT::Color::GREEN)
+  StyleConstants::set_foreground(style, AWT::Color.new(21, 110, 30))
   StyleConstants::set_italic(style, true)
 
   editor.on_change do

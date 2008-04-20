@@ -7,7 +7,7 @@
 #
 #++
 
-styles {
+create_styles {
   root(
     :font_family => Styles::VERDANA,
     :font_style => :normal,

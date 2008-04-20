@@ -11,7 +11,7 @@ require 'swiby/form'
 require 'swiby/data'
 require 'swiby/tools/console.rb'
 
-require 'styles'
+Defaults.auto_sizing_frame = true
 
 class Account
   
@@ -90,49 +90,54 @@ current = Transfer.new 200.dollars, acc3, acc4
 
 transfer_form = form {
 
+  use_styles "samples/styles.rb"
+  
   title "Transfer Form"
 
-  width 420
+  width 450
+  height 300
 
   content {
+    
     data current
+    
     input "Date", :date
     section
     input "Amount", :amount
     next_row
-    section "From"
-    combo("Account", my_accounts, :account_from) { |selection| 
-      context['account_from.owner'].value = selection.owner
-      context['account_from.address'].value = selection.address
-    }
-    input "Name", :account_from / :owner, :readonly => true
-    input "Address", :account_from / :address, :readonly => true
-    section "To"
-    input "Account", :account_to / :number
-    input "Name", :account_to / :owner
-    input "Address", :account_to / :address
-    button "Save beneficiary"
+      section "From"
+      combo("Account", my_accounts, :account_from) { |selection| 
+        context['account_from.owner'].value = selection.owner
+        context['account_from.address'].value = selection.address
+      }
+      input "Name", :account_from / :owner, :readonly => true
+      input "Address", :account_from / :address, :readonly => true
+      section "To"
+      input "Account", :account_to / :number
+      input "Name", :account_to / :owner
+      input "Address", :account_to / :address
+      button "Save beneficiary"
     next_row
-    command(:ok, :cancel) {
-      
-      def on_validate
-        
-        acc_number = values['account_to.number'].value
-        
-        if Account.valid?(acc_number)
-          true
-        else
-          message_box "#{Account.format(acc_number)} is not a valid account number"
-          false
+      command(:ok, :cancel) {
+
+        def on_validate
+
+          acc_number = values['account_to.number'].value
+
+          if Account.valid?(acc_number)
+            true
+          else
+            message_box "#{Account.format(acc_number)} is not a valid account number"
+            false
+          end
+
         end
-        
-      end
-      
-    }
+
+      }
     next_row
-    button("Console") {
-      open_console self
-    }
+      button("Console") {
+        open_console self
+      }
   }
   
   on_close {

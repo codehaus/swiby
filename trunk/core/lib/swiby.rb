@@ -9,4 +9,6 @@
 
 require 'swiby/swing'
 
+Swiby::Extension.load_extensions_for :component
+
 include Swiby

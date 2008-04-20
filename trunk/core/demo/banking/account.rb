@@ -15,9 +15,12 @@ class Account
     @owner = owner
     @number = number
     @address = address
-    
   end
 
+  def self.count_from_accounts
+    find_from_accounts.size
+  end
+  
   def self.find_from_accounts
 
     return @from_list if not @from_list.nil?

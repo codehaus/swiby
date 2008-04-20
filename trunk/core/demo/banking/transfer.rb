@@ -19,6 +19,10 @@ class Transfer
     @value_date = value_date
   end
 
+  def self.count
+    find.size
+  end
+  
   def self.find
 
     return @list if not @list.nil?
