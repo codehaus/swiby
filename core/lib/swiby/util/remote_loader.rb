@@ -12,11 +12,7 @@ require 'set'
 module Kernel
 
   def resolve_file file_name
-
-    #puts "resolve_file #{file_name}" #TODO in 'debug' mode should log this...
-    
     Swiby::RemoteLoader.from_cache(file_name)
-
   end
   
 end

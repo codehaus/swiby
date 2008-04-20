@@ -8,6 +8,7 @@
 #++
 
 require 'swiby/core'
+require 'swiby/util/local_loader'
 require 'swiby/util/remote_loader'
 
 require 'java'
@@ -31,23 +32,6 @@ module Swiby
   
   def exit (exit_code = 0)
     System::exit(exit_code)
-  end
-  
-  def create_layout(layout)
-
-    case layout
-    when :left_flow
-      layout = AWT::FlowLayout.new(AWT::FlowLayout::LEFT)
-    when :center_flow
-      layout = AWT::FlowLayout.new(AWT::FlowLayout::CENTER)
-    when :rigth_flow
-      layout = AWT::FlowLayout.new(AWT::FlowLayout::RIGHT)
-    else
-      layout = nil
-    end
-
-    layout
-    
   end
   
   def create_icon(url)
@@ -139,12 +123,24 @@ module Swiby
     def install_listener iv
     end
 
+    def font
+      java_component.font
+    end
+
+    def font= f
+      java_component.font = f
+    end
+    
     def java_component
       return @component if @scroll_pane.nil?
       @scroll_pane
     end
 
-    def apply_styles
+    def java_container
+      nil
+    end
+
+    def apply_styles styles = nil
     end
     
     def invoke_later &block

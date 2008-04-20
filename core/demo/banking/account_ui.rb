@@ -15,6 +15,15 @@ class Account
   
   def initialize type, owner, number, address
     model_init type, owner, number, address
+    add_ui_methods
+  end
+
+  def number= acc_num
+    @number = acc_num
+    add_ui_methods
+  end
+  
+  def add_ui_methods
     
     class << @number
         
@@ -25,7 +34,7 @@ class Account
     end
     
   end
-
+  
   def humanize
 
     s = @number.to_s
@@ -62,4 +71,18 @@ class Account
     [@owner.to_s, humanize, @address.to_s]
   end
 
+  def self.update_existing_instances
+
+    find_from_accounts.each do |acc|
+      acc.add_ui_methods
+    end
+    
+    find_to_accounts.each do |acc|
+      acc.add_ui_methods
+    end
+    
+  end
+  
+  update_existing_instances
+  
 end

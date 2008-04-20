@@ -7,6 +7,7 @@
 #
 #++
 
+require 'ostruct'
 require 'net/http'
 require 'uri'
 
@@ -92,6 +93,10 @@ class Sweb
     
   end
 
+  def has_history?
+    @history.size > 1
+  end
+  
   def first_page?
     @history_index == 0
   end
@@ -103,6 +108,19 @@ class Sweb
   def register_title t
     @top_container.title t
     @titles[@history_index] = t
+  end
+  
+  def apply_styles styles
+    @container.apply_styles styles
+  end
+  
+  def java_component
+    @top_container.java_component
+  end
+  
+  def session
+    @session = OpenStruct.new unless @session
+    @session
   end
   
   def initialize
@@ -177,20 +195,19 @@ end
 $context = Sweb.new
 
 def width w
-  $context.container.width w if $context.first_page?
+  $context.top_container.width w if $context.first_page? and !$context.has_history?
 end
 
 def height h
-  $context.container.height h if $context.first_page?
+  $context.top_container.height h if $context.first_page? and !$context.has_history?
 end
 
 def title t
   $context.register_title t
 end
 
-def content &block
-  $context.container.instance_eval(&block)
-  $context.container.complete
+def content *layout, &block
+  $context.container.content(*layout, &block)
 end
 
 module Swiby
@@ -220,7 +237,7 @@ module Swiby
           base = match_data[1]
           script = match_data[2]
 
-          cache_dir = System::get_property('user.home')
+          cache_dir = System::get_property('user.home') + "/.swiby/cache/"
 
           Swiby::RemoteLoader.cache_manager = Swiby::SimpleCache.new base, cache_dir
 

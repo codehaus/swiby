@@ -16,8 +16,6 @@ current = Transfer.new 0.dollars, from_accounts[2], to_accounts[0]
 
 title "Transfer Form"
 
-width 400
-
 content {
   data current
   input "Date", :value_date
@@ -40,4 +38,5 @@ content {
   command :apply, :restore
 }
 
+$context.apply_styles $context.session.styles if $context.session.styles
 $context.start

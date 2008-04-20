@@ -9,6 +9,8 @@
 
 module Swiby
 
+  $SWIBY_EXT_PATHS = [File.dirname(__FILE__) + '/ext']
+  
   class ComponentOptions
 
     def initialize name, context
@@ -61,6 +63,10 @@ module Swiby
         self[key] = value
       end
 
+    end
+    
+    def delete key
+      @options.delete(key)
     end
 
     def to_s
@@ -264,7 +270,7 @@ module Swiby
     end
 
   end
-
+  
   class IncrementalValue
 
     IGNORE = %w[Array Bignum Comparable Config Class Dir Enumerable ENV ERB Swiby Fixnum Float Hash
