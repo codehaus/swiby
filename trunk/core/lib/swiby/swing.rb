@@ -97,6 +97,12 @@ module Swiby
     CATEGORY = 'component'
     AUTHOR = 'Jean Lazarou'  
   end
+
+  module LayoutExtension
+    VERSION = 1.0
+    CATEGORY = 'layout'
+    AUTHOR = 'Jean Lazarou'  
+  end
   
   class SwibyRunnable
     

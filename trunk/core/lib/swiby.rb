@@ -10,5 +10,6 @@
 require 'swiby/swing'
 
 Swiby::Extension.load_extensions_for :component
+Swiby::Extension.load_extensions_for :layout
 
 include Swiby
