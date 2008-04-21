@@ -11,6 +11,26 @@ require 'swiby/swing/layout'
 
 module Swiby
     
+  class LayoutFactory
+  
+    @@factories = []
+    
+    def self.register_factory factory
+      @@factories << factory
+    end
+    
+    def self.create_layout name, options
+    
+      @@factories.each do |factory|
+        if factory.accept(name)
+          return factory.create(name, options)
+        end
+      end
+      
+    end
+    
+  end
+  
   FLOW_ALIGNMENTS = {
     :left => AWT::FlowLayout::LEFT, 
     :center => AWT::FlowLayout::CENTER, 
@@ -40,78 +60,12 @@ module Swiby
           
           layout
           
-        when :stacked
-          
-          align = data[:align]
-          direction = data[:direction]
-          
-          layout = StackedLayout.new
-          
-          layout.hgap = data[:hgap] if data[:hgap]
-          layout.vgap = data[:vgap] if data[:vgap]
-          
-          layout.alignment = align if align
-          layout.direction = direction if direction
-          
-          layout.sizing = data[:sizing] if data[:sizing]
-          
-          layout
-          
-        when :border
-          
-          layout = AWT::BorderLayout.new
-          
-          layout.hgap = data[:hgap] if data[:hgap]
-          layout.vgap = data[:vgap] if data[:vgap]
-          
-          def layout.add_layout_extensions component
-            
-            return if component.respond_to?(:swiby__actual_add)
-            
-            class << component
-              alias :swiby__actual_add :add
-            end
-            
-            def component.add x
-              
-              if @position
-                swiby__actual_add x, @position
-              else
-                swiby__actual_add x
-              end
-              
-            end
-            
-            def component.north
-              @position = AWT::BorderLayout::NORTH
-            end
-            
-            def component.east
-              @position = AWT::BorderLayout::EAST
-            end
-            
-            def component.center
-              @position = AWT::BorderLayout::CENTER              
-            end
-            
-            def component.south
-              @position = AWT::BorderLayout::SOUTH              
-            end
-            
-            def component.west
-              @position = AWT::BorderLayout::WEST
-            end
-            
-          end
-          
-          layout
-          
         when :area
           
           AreaLayout.new
           
         else
-          #TODO report error?
+          LayoutFactory.create_layout(lm, data)
         end
         
       elsif options.length > 0
