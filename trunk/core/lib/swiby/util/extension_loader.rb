@@ -54,9 +54,9 @@ module Swiby
 
       $SWIBY_EXT_PATHS.each do |dirname|
 
-        next unless File.exist?(dirname)
-
         dirname = File.expand_path(category, dirname)
+
+        next unless File.exist?(dirname)
 
         Dir.open(dirname).each do |ext|
           next unless ext =~ /[.]rb$/

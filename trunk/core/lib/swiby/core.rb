@@ -9,7 +9,9 @@
 
 module Swiby
 
-  $SWIBY_EXT_PATHS = [File.dirname(__FILE__) + '/ext']
+  $SWIBY_EXT_PATHS = [] unless $SWIBY_EXT_PATHS
+  
+  $SWIBY_EXT_PATHS << File.dirname(__FILE__) + '/ext'
   
   class ComponentOptions
 
@@ -73,8 +75,10 @@ module Swiby
       @options.to_s
     end
 
-    def method_missing(meth, *args)
+    def method_missing(meth, *args, &block)
 
+      args << block if args.length == 0 and not block.nil?
+      
       raise "[#{@name}] Missing value for property '#{meth}'" if args.length == 0
       raise "[#{@name}] Property '#{meth}' expects only one value but was #{args.length}" if args.length > 1
 
