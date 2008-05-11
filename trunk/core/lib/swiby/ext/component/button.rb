@@ -52,6 +52,7 @@ module Swiby
       declare :name, [String, Symbol], true
       declare :text, [String, Symbol], true
       declare :icon, [ImageIcon, String], true
+      declare :swing, [Proc], true
       declare :action, [Proc], true
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
       
@@ -84,6 +85,8 @@ module Swiby
       icon options[:icon] if options[:icon]
       action(&options[:action]) if options[:action]
 
+      options[:swing].call(java_component) if options[:swing]
+      
     end
     
     def create_button_component

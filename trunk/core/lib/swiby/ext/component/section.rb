@@ -18,7 +18,7 @@ module Swiby
     def initialize title
 
       @component = JPanel.new
-      @component.border = Swing::BorderFactory.createTitledBorder(title) unless title.nil?
+      @component.border = ::BorderFactory.createTitledBorder(title) unless title.nil?
 
       @kids = []
       

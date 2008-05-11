@@ -91,19 +91,19 @@ content(:layout => :border) {
       align :right
       label 'settings', :name => :settings do
 
-        def on_click
-          on_mouse_out
+        def on_click ev
+          on_mouse_out nil
           open_settings $context
         end
 
-        def on_mouse_over
+        def on_mouse_over ev
           return if @is_over
           @is_over = true
           @default_color = context[:settings].java_component.foreground
           context[:settings].java_component.foreground = Color::RED
         end
 
-        def on_mouse_out
+        def on_mouse_out ev
           return unless @is_over
           @is_over = false
           context[:settings].java_component.foreground = @default_color

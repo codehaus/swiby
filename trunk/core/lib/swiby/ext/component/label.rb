@@ -7,6 +7,8 @@
 #
 #++
 
+import javax.swing.BorderFactory
+
 module Swiby
   
   class LabelExtension < Extension
@@ -44,6 +46,7 @@ module Swiby
       
     define "Label" do
       
+      declare :swing, [Proc], true
       declare :action, [Proc], true
       declare :name, [String, Symbol], true
       declare :label, [String, Symbol, IncrementalValue]
@@ -82,6 +85,8 @@ module Swiby
       
       action(&options[:action]) if options[:action]
       
+      options[:swing].call(java_component) if options[:swing]
+      
     end
 
     def apply_styles styles
@@ -98,6 +103,10 @@ module Swiby
       
       color = styles.resolver.find_color(:label, @style_id)
       @component.foreground = color if color
+      
+      border = styles.resolver.create_border(:label, @style_id)
+        
+      @component.border = border if border
       
     end
     

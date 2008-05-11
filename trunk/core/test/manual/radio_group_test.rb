@@ -9,6 +9,7 @@
 
 require 'swiby/form'
 
+##
 form {
   
   title "Radio Group / default layout / no data"
@@ -32,6 +33,7 @@ form {
   
 }
 
+##
 class MyColor
   
   attr_accessor :color
@@ -56,6 +58,30 @@ form {
   label 'blue should be selected'
 
   radio_group 'Color:', ['red', 'green', 'blue'], :color
+  
+  button "'green' by index" do
+    context[:color].selection = 1
+  end
+  
+  button "'red' by value" do
+    context[:color].value = 'red'
+  end
+  
+  visible true
+  
+}
+
+##
+form {
+  
+  title "Radio Group / horizontal / no data"
+  
+  width 340
+  height 200
+  
+  label 'blue should be selected'
+
+  radio_group :horizontal, 'Color:', ['red', 'green', 'blue'], 'blue', :name => :color
   
   button "'green' by index" do
     context[:color].selection = 1

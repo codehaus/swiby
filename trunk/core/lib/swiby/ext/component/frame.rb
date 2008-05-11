@@ -162,17 +162,30 @@ module Swiby
     def java_container
       @component.content_pane
     end
+    
+    def swing &block
+      
+      component = @last_added.java_component(true) if @last_added
+      component = self.java_component unless component
+      
+      block.call(component)
+
+    end
 
     def content= child
       add child
     end
     
     def add(child, layout_hint = nil)
+      
+      @last_added = child
+      
       if layout_hint
         @component.content_pane.add child.java_component, layout_hint
       else
         @component.content_pane.add child.java_component
       end
+      
     end
     
     def on_close &block
@@ -268,6 +281,12 @@ module Swiby
         end
       end
       
+    end
+    
+    protected
+  
+    def content_done
+      @last_added = nil
     end
 
     private

@@ -26,6 +26,12 @@ module Swiby
       
       pane = Panel.new(x)
       
+      layout = pane.java_component.getLayout
+      
+      if layout.respond_to?(:add_layout_extensions)
+        layout.add_layout_extensions pane
+      end
+      
       local_context = pane #TODO pattern repeated at several places!
 
       pane.instance_eval do

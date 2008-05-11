@@ -231,9 +231,9 @@ class FrameInfoPanel
     unless @bg_color
       @bg_color = AWT::Color.new(255, 255, 128)
       @no_name_bg = AWT::Color.new(248, 248, 248)
-      outside = Swing::BorderFactory.createLineBorder(AWT::Color::BLACK)
-      inside = Swing::BorderFactory.createEmptyBorder(1, 2, 1, 2)
-      @border = Swing::BorderFactory.createCompoundBorder(outside, inside)
+      outside = ::BorderFactory.createLineBorder(AWT::Color::BLACK)
+      inside = ::BorderFactory.createEmptyBorder(1, 2, 1, 2)
+      @border = ::BorderFactory.createCompoundBorder(outside, inside)
     end
     
     index = 0
