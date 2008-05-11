@@ -301,6 +301,7 @@ module Swiby
     end
 
     def add child
+      @last_added = child
       @section.add child
     end
     

@@ -16,6 +16,7 @@ module Swiby
     include_class 'javax.swing.event.HyperlinkEvent'
     include_class 'javax.swing.event.HyperlinkListener'
     include_class 'javax.swing.event.ListSelectionListener'
+    include_class 'javax.swing.event.TreeSelectionListener'
   end
 
   module AWT
@@ -23,6 +24,7 @@ module Swiby
     include_class 'java.awt.AWTEvent'
     include_class 'java.awt.event.KeyEvent'
     include_class 'java.awt.event.MouseAdapter'
+    include_class 'java.awt.event.MouseMotionAdapter'
     include_class 'java.awt.event.WindowAdapter'
     include_class 'java.awt.event.ActionListener'
     include_class 'java.awt.event.AWTEventListener'
@@ -88,6 +90,20 @@ module Swiby
   class ListSelectionListener
 
     include Swing::ListSelectionListener
+
+    def register(&handler)
+      @handler = handler
+    end
+
+    def valueChanged(e)
+      @handler.call
+    end
+
+  end
+
+  class TreeSelectionListener
+
+    include Swing::TreeSelectionListener
 
     def register(&handler)
       @handler = handler
@@ -240,15 +256,31 @@ module Swiby
     end
 
     def mouseClicked ev
-      @handler.on_click if @handler.respond_to?(:on_click)
+      @handler.on_click(ev) if @handler.respond_to?(:on_click)
     end
    
     def mouseEntered ev
-      @handler.on_mouse_over if @handler.respond_to?(:on_mouse_over)
+      @handler.on_mouse_over(ev) if @handler.respond_to?(:on_mouse_over)
     end
    
     def mouseExited ev
-      @handler.on_mouse_out if @handler.respond_to?(:on_mouse_out)
+      @handler.on_mouse_out(ev) if @handler.respond_to?(:on_mouse_out)
+    end
+    
+  end
+  
+  class MouseMotionListener < AWT::MouseMotionAdapter
+   
+    def register(&handler)
+      @handler = handler
+    end
+
+    def mouseDragged ev
+      @handler.on_mouse_drag(ev) if @handler.respond_to?(:on_mouse_drag)
+    end
+   
+    def mouseMoved ev
+      @handler.on_mouse_move(ev) if @handler.respond_to?(:on_mouse_move)
     end
     
   end

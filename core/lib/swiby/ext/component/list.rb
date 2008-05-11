@@ -77,6 +77,20 @@ module Swiby
 
     end
     
+    def clear
+      @values = []
+      @component.model.clear
+    end
+    
+    def remove value
+      
+      index = @values.index(value)
+  
+      @values.delete_at(index)
+      @component.model.remove(index)
+      
+    end
+    
     def item_count
       @model.size
     end

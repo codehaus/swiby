@@ -131,7 +131,8 @@ module Swiby
       java_component.font = f
     end
     
-    def java_component
+    def java_component force_no_scroll = false
+      return @component if force_no_scroll
       return @component if @scroll_pane.nil?
       @scroll_pane
     end

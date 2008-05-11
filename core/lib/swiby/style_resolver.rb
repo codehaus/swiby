@@ -128,6 +128,35 @@ module Swiby
 
     end
 
+    def create_border element, id = nil
+      
+      margin = find(:margin, element, id)
+      padding = find(:padding, element, id)
+      color = find(:border_color, element, id)
+      
+      color = create_color(color) if color
+      border_color = ::BorderFactory.createLineBorder(color) if color
+      border_margin = ::BorderFactory.createEmptyBorder(margin, margin, margin, margin) if margin
+      border_padding = ::BorderFactory.createEmptyBorder(padding, padding, padding, padding) if padding
+        
+      if border_margin and border_color
+        border = ::BorderFactory.createCompoundBorder(border_margin, border_color)
+      elsif border_color
+        border = border_color
+      elsif border_margin
+        border = border_margin
+      end
+      
+      if border_padding and border
+        border = ::BorderFactory.createCompoundBorder(border, border_padding)
+      elsif border_padding
+        border = border_padding
+      end
+
+      border
+      
+    end
+    
     def create_color color
 
       return nil unless color

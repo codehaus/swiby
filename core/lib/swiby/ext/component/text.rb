@@ -85,6 +85,7 @@ module Swiby
       declare :name, [String, Symbol], true
       declare :label, [String, Symbol], true
       declare :text, [Object]
+      declare :swing, [Proc], true
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
       declare :readonly, [TrueClass, FalseClass, IncrementalValue], true
       declare :input_component, [Object], true
@@ -119,6 +120,10 @@ module Swiby
       
       self.name = options[:name].to_s if options[:name]
       self.editable = !options[:readonly] if options[:readonly]
+      
+      options[:swing].call(java_component) if options[:swing]
+      
+      options[:swing] = nil
       
     end
 

@@ -25,10 +25,33 @@ module Swiby
       end
     end
     
-    def radio_group label = nil, values = nil, selected = nil, options = nil, &block
-      list_factory(label, values, selected, options, block, :layout_list) do |opt|
-        RadioGroup.new(opt)
+    def radio_group label = nil, values = nil, selected = nil, dir = nil, options = nil, &block
+      
+      args = [label, values, selected, dir, options, block, :layout_list]
+            
+      i = args.index(:horizontal)
+      
+      if i
+        direction = :horizontal
+        args.delete_at(i)
       end
+      
+      i = args.index(:vertical)
+      
+      if i
+        direction = :vertical
+        args.delete_at(i)
+      end
+      
+      unless direction
+        direction = :vertical
+        args.delete_at(args.length - 3)
+      end
+      
+      list_factory(*args) do |opt|
+        RadioGroup.new(direction, opt)
+      end
+      
     end
  
   end
@@ -43,15 +66,23 @@ module Swiby
   
   class RadioGroup < ComboBox
     
-    def initialize options = nil
+    def initialize dir = :vertical, options = nil
       
       @radio_items = []
 
       @panel = Panel.new
       
-      @panel.content(:layout => :stacked, :align => :left) {}
+      if dir == :vertical
+        layout = {:layout => :stacked, :align => :left}
+      elsif dir == :horizontal
+        layout = {:layout => :stacked, :align => :left, :direction => :horizontal}
+      else
+        options = dir
+      end
+
+      @panel.content(layout) {}
       
-      super
+      super options
       
     end
     
@@ -77,6 +108,22 @@ module Swiby
       
       @panel.add radio
       @group.add radio.java_component
+      
+    end
+    
+    def [] name
+      
+      if name.is_a?(Integer)
+        return @radio_items[name]
+      else
+        
+        @radio_items.each do |comp|
+          return comp if (comp.name == name)
+        end
+
+      end
+      
+      nil
       
     end
     

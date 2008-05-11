@@ -7,7 +7,6 @@
 #
 #++
 
-#TODO improve layout managers (glitches when resizing and use of preferred sometimes results in bad layouts
 require 'java'
 
 module Swiby

@@ -30,18 +30,18 @@ module Swiby
           
       def layout.add_layout_extensions component
 
-        return if component.respond_to?(:swiby__actual_add)
+        return if component.respond_to?(:swiby_border__actual_add)
 
         class << component
-          alias :swiby__actual_add :add
+          alias :swiby_border__actual_add :add
         end
 
         def component.add x
 
           if @position
-            swiby__actual_add x, @position
+            swiby_border__actual_add x, @position
           else
-            swiby__actual_add x
+            swiby_border__actual_add x
           end
 
         end

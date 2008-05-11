@@ -81,6 +81,8 @@ module Swiby
       context << comp
       
       self.send(layout_method, label, comp)
+      
+      comp
 
     end
     
@@ -94,6 +96,7 @@ module Swiby
       declare :label, [String, Symbol], true
       declare :values, [Array, AccessorPath]
       declare :selected, [Object], true
+      declare :swing, [Proc], true
       declare :action, [Proc], true
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
       declare :input_component, [Object], true
@@ -116,11 +119,11 @@ module Swiby
       @component = create_list_component
       
       if @component.respond_to?(:set_renderer)
-        renderer = Swing::SwibyComboBoxRender.new
+        renderer = create_renderer
         renderer.bind(self)
         @component.set_renderer renderer
       elsif @component.respond_to?(:set_cell_renderer)
-        renderer = Swing::SwibyComboBoxRender.new
+        renderer = create_renderer
         renderer.bind(self)
         @component.set_cell_renderer renderer
       end
@@ -148,6 +151,10 @@ module Swiby
       
       action(&options[:action]) if options[:action]
       
+      options[:swing].call(java_component) if options[:swing]
+      
+      options[:swing] = nil
+      
     end
 
     def editable?
@@ -156,6 +163,10 @@ module Swiby
     
     def create_list_component
       JComboBox.new
+    end
+    
+    def create_renderer
+      Swing::SwibyComboBoxRender.new
     end
 
     def action(&block)
@@ -190,6 +201,16 @@ module Swiby
     
     def item_count
       @component.item_count
+    end
+    
+    def clear
+      raise "Not implemented"
+    end
+    
+    def content= values
+      clear
+      @values = values
+      fill_list
     end
     
     def value= x
@@ -261,6 +282,10 @@ module Swiby
       
       color = styles.resolver.find_background_color(:list, @style_id)
       @component.background = color if color
+      
+      border = styles.resolver.create_border(:list, @style_id)
+        
+      @component.border = border if border
       
     end
     

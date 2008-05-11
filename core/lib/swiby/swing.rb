@@ -47,6 +47,7 @@ module Swiby
     'JTabbedPane',
     'JTextField',
     'JToolBar',
+    'JTree',
     'KeyStroke',
     'UIManager',
     'SwingConstants'
@@ -273,6 +274,8 @@ module Swiby
       
       self.instance_eval(&block)
       
+      content_done
+      
     end
     
     def height=(h)
@@ -356,6 +359,11 @@ module Swiby
       IncrementalValue.new(model, getter, block)
     end
 
+  end
+  
+  protected
+  
+  def content_done
   end
   
 end
