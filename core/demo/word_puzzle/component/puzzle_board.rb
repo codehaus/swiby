@@ -153,6 +153,13 @@ class PuzzleBoard
         @panel.preferred_size = Dimension.new(@margin * 2 + @grid.cols * WIDTH, @margin * 2 + @grid.rows * HEIGHT)
       end
       
+      file = styles.resolver.find(:background_image, :table, @style_id)
+      @bg_image = ImageIcon.new(file)
+      
+      color = styles.resolver.find(:found_color, :table, @style_id)
+      @found_color = styles.resolver.create_color(color) if color
+      @found_color = AWT::Color::BLACK unless @found_color
+      
     end
     
     @panel.on_paint do |g|
@@ -169,6 +176,9 @@ class PuzzleBoard
         bg.set_font "Verdana", Font::ITALIC, 14
 
         bg.color @border_color if @border_color
+        
+        bg.move_to @center_x, @center_y
+        bg.draw_image @bg_image if @bg_image
         
         @grid.each_line do |line|
           
@@ -189,6 +199,8 @@ class PuzzleBoard
      
       g.layer(:found, @new_line_found) do |found_g|
      
+        found_g.color @found_color
+        
         @found_lines.each do |line|
           found_g.up
           found_g.move_to line[0], line[1]
@@ -201,10 +213,14 @@ class PuzzleBoard
       end
       
       if @anchor_x
+        
+        g.color @found_color
+        
         g.up
         g.move_to @anchor_x, @anchor_y
         g.down
         g.move_to @current_x, @current_y
+        
       end
       
       if @hint and @hint.slot[@hint_index]
