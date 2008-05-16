@@ -158,6 +158,10 @@ class Graphics
    
   end
  
+  def draw_image img
+    @gr.drawImage img.getImage, @x, @y, @comp
+  end
+
   def draw text
     render
     @gr.drawString text, @x, @y

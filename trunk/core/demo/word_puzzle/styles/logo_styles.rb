@@ -34,14 +34,14 @@ create_styles {
   )
   button(
     :color => 0x5C458A,
-    :background_color => 0xF2FFBF,
     :font_size => 16
   )
   container(
     :background_color => 0xD6CFE6
   )
   table(
-    :margin => 10
+    :margin => 10,
+    :background_image => 'images/logo.png'
   )
   table_row(
     :font_style => :italic,

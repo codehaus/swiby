@@ -69,11 +69,17 @@ class PuzzleGame
   
   def show
     
+    if ARGV[0]
+      styles = load_styles(ARGV[0])
+    else
+      styles = load_styles('styles/kite_styles.rb')
+    end
+
     game = self
 
     @frame = frame do
 
-      use_styles load_styles('styles.rb')
+      use_styles styles
       
       title "Word Search Puzzle"
 
