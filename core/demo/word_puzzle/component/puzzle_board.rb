@@ -7,6 +7,8 @@
 #
 #++
 
+require_extension :component, 'draw_panel'
+
 import javax.swing.Timer
 import java.awt.Dimension
 
@@ -154,7 +156,9 @@ class PuzzleBoard
       end
       
       file = styles.resolver.find(:background_image, :table, @style_id)
-      @bg_image = ImageIcon.new(file)
+      image_file = resolve_file(file)
+      image_file = resolve_local_file(file) unless image_file
+      @bg_image = ImageIcon.new(image_file) if image_file
       
       color = styles.resolver.find(:found_color, :table, @style_id)
       @found_color = styles.resolver.create_color(color) if color
