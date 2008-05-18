@@ -14,6 +14,9 @@ require 'swiby'
 require 'puzzle/distributor'
 require 'puzzle/puzzle_builder'
 
+require_extension :component, 'list_view'
+require_extension :component, 'puzzle_board'
+
 class Word
   
   def <=> other
