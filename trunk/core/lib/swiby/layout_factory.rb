@@ -27,6 +27,8 @@ module Swiby
         end
       end
       
+      raise "Unresolved layout manager: #{name}"
+      
     end
     
   end
