@@ -48,11 +48,14 @@ module Swiby
       
       declare :swing, [Proc], true
       declare :action, [Proc], true
+      declare :icon, [ImageIcon], true
       declare :name, [String, Symbol], true
-      declare :label, [String, Symbol, IncrementalValue]
+      declare :label, [String, Symbol, IncrementalValue], true
       
       overload :label
+      overload :icon
       overload :label, :name
+      overload :icon, :name
 
     end
     
@@ -78,6 +81,8 @@ module Swiby
         
       end
 
+      @component.icon = options[:icon] if options[:icon]
+      
       self.linked_field = options[:input_component] if options[:input_component]
       self.name = options[:name].to_s if options[:input_component].nil? && options[:name]
 
