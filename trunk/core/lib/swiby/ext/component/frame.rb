@@ -109,7 +109,7 @@ module Swiby
       
         @@frames.delete self
       
-        exit if @@frames.empty?
+        exit if @component.default_close_operation == JFrame::EXIT_ON_CLOSE
       
       end
       
@@ -155,7 +155,7 @@ module Swiby
       
       @component.dispose
       
-      exit if @component.default_close_operation == JFrame::EXIT_ON_CLOSE or @@frames.empty?
+      exit if @component.default_close_operation == JFrame::EXIT_ON_CLOSE
       
     end
     
@@ -196,7 +196,7 @@ module Swiby
 
       listener.register(&block)
       
-      @on_close_block = block
+      @on_close_block = block unless @on_close_block
 
     end
     
@@ -322,5 +322,5 @@ module Swiby
     end
 
   end
-
+  
 end
