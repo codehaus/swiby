@@ -41,10 +41,16 @@ create_styles {
   )
   table(
     :margin => 10,
-    :background_image => 'images/efx.jpg'
+    :background_image => 'images/efx.jpg',
+    :collab_color => :white
   )
   table_row(
     :font_style => :italic,
     :border_color => 0x554080
   )
+  connect {
+    button(
+      :font_size => 10
+    )
+  }
 }

@@ -49,6 +49,14 @@ class PuzzleBoard
     
   end
 
+  def on_user_activity &listener
+    
+    listener.instance_eval(&listener)
+    
+    @user_activity_listener = listener
+    
+  end
+  
   def setup_word_list
     
     @words_list = []
@@ -88,7 +96,7 @@ class PuzzleBoard
       x1, y1 = cell_to_pixel(*word.slot.first)
       x2, y2 = cell_to_pixel(*word.slot.last)
       
-      @found_lines << [x1, y1, x2, y2]
+      @found_lines << [x1, y1, x2, y2, :local]
       
     end
     
@@ -137,6 +145,33 @@ class PuzzleBoard
     
   end
   
+  def backdoor_position from, to
+    @backdoor_from = from
+    @backdoor_to = to
+    @panel.repaint
+  end
+
+  def backdoor_word word
+      
+    @words_list.each do |w_obj|
+      
+      if w_obj.text == word
+        
+        r1, c1 = *w_obj.slot[0]
+        r2, c2 = *w_obj.slot.last
+    
+        x1, y1 = cell_to_pixel(r1, c1)
+        x2, y2 = cell_to_pixel(r2, c2)
+        
+        @found_lines << [x1, y1, x2, y2, :remote]
+        @new_line_found = true
+      
+      end
+      
+    end
+
+  end
+  
   def set_painter
     
     @panel.on_styles do |styles|
@@ -163,6 +198,14 @@ class PuzzleBoard
       color = styles.resolver.find(:found_color, :table, @style_id)
       @found_color = styles.resolver.create_color(color) if color
       @found_color = AWT::Color::BLACK unless @found_color
+     
+      color = styles.resolver.find(:collab_color, :table, @style_id)
+      @collab_color = styles.resolver.create_color(color) if color
+      @collab_color = AWT::Color::BLACK unless @collab_color
+      
+      color = styles.resolver.find(:hint_color, :table, @style_id)
+      @hint_color = styles.resolver.create_color(color) if color
+      @hint_color = AWT::Color::RED unless @hint_color
       
     end
     
@@ -203,17 +246,44 @@ class PuzzleBoard
      
       g.layer(:found, @new_line_found) do |found_g|
      
-        found_g.color @found_color
-        
         @found_lines.each do |line|
+          
+          if line.last == :local
+            found_g.line_style :continuous
+            found_g.color @found_color
+          else
+            found_g.line_style :dash
+            found_g.color @collab_color
+          end
+          
           found_g.up
           found_g.move_to line[0], line[1]
           found_g.down
           found_g.move_to line[2], line[3]
+          
         end
        
         @new_line_found = false
      
+      end
+      
+      if @backdoor_from
+      
+        g.line_style :dash
+        g.color @collab_color
+        
+        x, y = cell_to_pixel(@backdoor_from[0], @backdoor_from[1])
+        
+        g.up
+        g.move_to x, y
+        g.down
+
+        x, y = cell_to_pixel(@backdoor_to[0], @backdoor_to[1])
+        
+        g.move_to x, y
+        
+        g.line_style :continuous
+        
       end
       
       if @anchor_x
@@ -283,7 +353,25 @@ class PuzzleBoard
         row, col = pixel_to_cell(x, y)
         
         @candidate_word = find_word(row, col)
+      
+        @previous_row = row
+        @previous_col = col
+        @user_activity_listener.start_word(row, col) if @user_activity_listener
         
+      else
+        
+        if @user_activity_listener and @previous_row
+        
+          row, col = pixel_to_cell(x, y)
+          
+          if row != @previous_row or col != @previous_col
+            @previous_row = row
+            @previous_col = col
+            @user_activity_listener.continue_word(row, col)
+          end
+        
+        end
+      
       end
      
       @current_x = x
@@ -311,17 +399,23 @@ class PuzzleBoard
               x1, y1 = cell_to_pixel(r1, c1)
               x2, y2 = cell_to_pixel(r2, c2)
               
-              @found_lines << [x1, y1, x2, y2]
+              @found_lines << [x1, y1, x2, y2, :local]
               @new_line_found = true
               
               consume @candidate_word
               
-              @listener.call(@candidate_word)
+              @listener.call(@candidate_word) if @listener
               
             end
           
         end
         
+      end
+
+      if @previous_row
+        @previous_row = nil
+        @previous_col = nil
+        @user_activity_listener.end_word(0, 0) if @user_activity_listener
       end
      
       @candidate_word = nil
@@ -353,7 +447,7 @@ class PuzzleBoard
     x1, y1 = cell_to_pixel(*word.slot[first])
     x2, y2 = cell_to_pixel(*word.slot[last])
     
-    g.color AWT::Color::RED
+    g.color @hint_color
     
     g.up
     g.move_to x1, y1
@@ -379,6 +473,7 @@ end
 
   def consume word
     @words_list.delete(word)
+    @user_activity_listener.found_word(word.text) if @user_activity_listener    
   end
 
 end

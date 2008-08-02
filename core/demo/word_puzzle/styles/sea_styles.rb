@@ -18,8 +18,8 @@ create_styles {
   )
   list_view {
     list(
-      :color => 0x5C458A,
-      :background_color => 0xD6CFE6,
+      :color => 0xDCD5DA,
+      :background_color => 0x6d81a6,
       :border_color => 0x554080,
       :margin => 10,
       :padding => 10,
@@ -27,27 +27,27 @@ create_styles {
     )
   }
   list(
-    :color => 0x5C458A,
+    :color => 0xDCD5DA,
     :font_size => 14,
     :font_family => "Comic Sans MS",
-    :background_color => 0xD6CFE6
+    :background_color => 0x6d81a6
   )
   button(
     :color => 0x5C458A,
     :font_size => 16
   )
   container(
-    :background_color => 0xD6CFE6
+    :background_color => 0x6d81a6
   )
   table(
     :margin => 10,
-    :background_image => 'images/kite.jpg',
-    :found_color => :white,
+    :background_image => 'images/sea.png',
+    :found_color => 0xfff5e1,
     :collab_color => :black
   )
   table_row(
     :font_style => :italic,
-    :border_color => 0x554080
+    :border_color => :black
   )
   connect {
     button(
