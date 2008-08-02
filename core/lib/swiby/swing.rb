@@ -9,6 +9,7 @@
 
 require 'swiby/swing/base'
 require 'swiby/swing/event'
+require 'swiby/swing/string'
 require 'swiby/builder'
 require 'swiby/style_resolver'
 require 'swiby/layout_factory'
