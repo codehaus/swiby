@@ -11,9 +11,6 @@ $SWIBY_EXT_PATHS = [File.dirname(__FILE__) ]
 
 require 'swiby'
 
-require 'puzzle/distributor'
-require 'puzzle/puzzle_builder'
-
 require_extension :component, 'list_view'
 require_extension :component, 'puzzle_board'
 
@@ -35,42 +32,29 @@ class PuzzleGame
   
   attr_reader :grid, :words, :hint_enabled
   
-  def initialize
+  def initialize grid_factory
     @language = :en
     @hint_enabled = true
-    @dist = WordDistributor.new
-    @dist.load 'words_en.txt'
+    @grid_factory = grid_factory
+  end
+  
+  def board
+    @frame[0][:board]
   end
   
   def create
 
-    #builder = PuzzleBuilder.new(15, 15)
-    #builder = PuzzleBuilder.new(5, 5)
-    builder = PuzzleBuilder.new(10, 10)
-
-    while not @dist.empty?
-
-      word = @dist.draw
-      
-      if not builder.add(word)
-        @dist.filter_out(word.length)
-      end
-      
-    end
-
-    @grid = builder.close
+    @grid = @grid_factory.create
     
-    @words = []
-
-    @grid.each_word do |word|
-      @words << word
-    end
-
-    @words.sort!
+    change_grid @grid
         
   end
   
-  def show
+  def button name
+    @frame[0][1][name]
+  end
+  
+  def show show_visible = true
     
     if ARGV[0]
       styles = load_styles(ARGV[0])
@@ -115,24 +99,7 @@ class PuzzleGame
                   }
                   
                 at [0, 110], relative_to(:resolve, :align, :below)
-                  label('french', :name => :language) {
-                    
-                    @game = game
-                    
-                    def on_click ev
-                      @game.change_language
-                    end
-                    
-                    def on_mouse_over ev
-                      @normal_color = context[:language].java_component.foreground
-                      context[:language].java_component.foreground = AWT::Color::RED
-                    end
-                    
-                    def on_mouse_out ev
-                      context[:language].java_component.foreground = @normal_color
-                    end
-                    
-                  }
+                  label('french', :name => :language)
                   
               end
               
@@ -151,20 +118,52 @@ class PuzzleGame
         f.resizable = false
       end
 
-      visible true
+      visible true if show_visible
       
+    end
+    
+    language = @frame[0][1][:language]
+    
+    language.action do
+      
+      @game = game
+      @language = language
+      
+      def on_click ev
+        @game.change_language
+      end
+      
+      def on_mouse_over ev
+        @normal_color = @language.java_component.foreground
+        @language.java_component.foreground = AWT::Color::RED
+      end
+      
+      def on_mouse_out ev
+        @language.java_component.foreground = @normal_color
+      end
+    
     end
     
   end
   
   def new_puzzle
     
-    @dist.reset
-    
     create
     restart @grid
     
     auto_size
+    
+  end
+  
+  def change_grid  grid
+    
+    @words = []
+
+    grid.each_word do |word|
+      @words << word
+    end
+
+    @words.sort!
     
   end
   
@@ -204,7 +203,16 @@ class PuzzleGame
   end
 
   def auto_size
+
+    if @frame[:list_view].item_count == 0
+      @frame[:list_view].java_component.set_preferred_size(@list_preferred_size) if @list_preferred_size
+    else
+      @list_preferred_size = @frame[:list_view].java_component(true).get_preferred_size
+      @frame[:list_view].java_component.set_preferred_size(@list_preferred_size)
+    end
+
     @frame.java_component.pack
+    
   end
   
   def change_language
@@ -228,7 +236,6 @@ class PuzzleGame
       p[2].text = "Difficile"
 
       @language = :fr
-      @dist.load 'words_fr.txt'
       
     else
       
@@ -247,9 +254,10 @@ class PuzzleGame
       p[2].text = "Advanced"
 
       @language = :en
-      @dist.load 'words_en.txt'
       
     end
+      
+    @grid = @grid_factory.change_language @language
       
     new_puzzle
     
@@ -257,7 +265,47 @@ class PuzzleGame
 
 end
 
-game = PuzzleGame.new
+if $0 == __FILE__
+  
+  require 'optparse'
+  
+  options = {:remote => false, :host => 'localhost', :port => 3000}
+  
+  parser = OptionParser.new do |opts|
+    
+    opts.banner = "Usage: #{$0} [options]"
+    
+    opts.on("-r", "--remote", "Use a remote server") do
+      options[:remote] = true
+    end
+    
+    opts.on("-h", "--host name", "HTTP host name/ip of the server") do |h|
+      options[:host] = h
+    end
+    
+    opts.on("-p", "--port num", "HTTP port of the server") do |p|
+      options[:port] = p.to_i
+    end
+    
+  end
+  
+  parser.parse!
+  
+  if options[:remote]
+    
+    require 'puzzle/collab_factory'
+    
+    game = PuzzleGame.new(CollabFactory.new(options[:host], options[:port]))
+    
+  else
+    
+    require 'puzzle/grid_factory'
 
-game.create
-game.show
+    game = PuzzleGame.new(GridFactory.new)
+    
+  end
+
+  game.create
+  game.show
+
+end

@@ -15,6 +15,8 @@ class WordDistributor
    
   def load file
  
+    @words.clear
+    
     File.readlines(file).each do |line|
       line = line.chomp
       line.tr! 'באגהיטךכםלמןףעפצתשûüח', 'aaaaeeeeiiiioooouuuuc'

@@ -14,38 +14,44 @@ create_styles {
     :font_size => 10
   )
   label(
-    :color => 0x5C458A
+    :color => 0x440547
   )
   list_view {
     list(
-      :color => 0x5C458A,
-      :background_color => 0xD6CFE6,
-      :border_color => 0x554080,
+      :color => 0x440547,
+      :background_color => 0xf5671a,
+      :border_color => 0x440547,
       :margin => 10,
       :padding => 10,
       :font_size => 10
     )
   }
   list(
-    :color => 0x5C458A,
+    :color => 0x440547,
     :font_size => 14,
     :font_family => "Comic Sans MS",
-    :background_color => 0xD6CFE6
+    :background_color => 0xf5671a
   )
   button(
-    :color => 0x5C458A,
+    :color => 0x440547,
     :font_size => 16
   )
   container(
-    :background_color => 0xD6CFE6
+    :background_color => 0xf5671a
   )
   table(
     :margin => 10,
+    :background_image => 'images/balloon.jpg',
     :found_color => :white,
-    :background_image => 'images/balloon.jpg'
+    :collab_color => :yellow
   )
   table_row(
     :font_style => :italic,
-    :border_color => :white
+    :border_color => 0xfafbbc
   )
+  connect {
+    button(
+      :font_size => 10
+    )
+  }
 }

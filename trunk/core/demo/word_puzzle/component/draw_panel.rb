@@ -14,6 +14,8 @@ import java.awt.AWTEvent
 import java.awt.FontMetrics
 import java.awt.RenderingHints
 
+import java.awt.BasicStroke
+
 import java.awt.event.MouseListener
 import java.awt.event.MouseMotionListener
 
@@ -146,6 +148,29 @@ class Graphics
     @pen_down = true
   end
  
+  # line possible values are :continuous, :dash
+  def line_style style = :continuous
+    
+    if style == :continuous
+      @gr.setStroke(@line_stroke) if @line_stroke
+    else
+      
+      unless @line_stroke
+      
+        @line_stroke = @gr.getStroke
+      
+        dash1 = [5].to_java(:float)
+        
+        @dash_stroke = BasicStroke.new(1, BasicStroke::CAP_BUTT, BasicStroke::JOIN_MITER, 10, dash1, 0)
+      
+      end
+      
+      @gr.setStroke(@dash_stroke)
+      
+    end
+    
+  end
+  
   def move_to x, y
    
     if @pen_down

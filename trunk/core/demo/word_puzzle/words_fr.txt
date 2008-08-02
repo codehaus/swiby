@@ -171,12 +171,10 @@ banquier
 basculement
 base
 basse
-bear
 beau
 beaucoup
 bel
 belga
-bertrand
 besoins
 beurre
 bien
@@ -1055,7 +1053,6 @@ matérialisation
 matérialisé
 maximale
 maîtrise
-mcdonough
 meilleures
 membres
 menaces
@@ -1557,7 +1554,7 @@ rudimentaires
 rue
 ruine
 rusticité
-rÉgulation
+régulation
 règle
 règles
 règnera
