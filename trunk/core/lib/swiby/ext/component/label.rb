@@ -37,7 +37,60 @@ module Swiby
       add label
       context << label
       layout_label label
+      
+      label
 
+    end
+    
+    def hover_label text = nil, options = nil, &block
+      
+      handler = block
+      hover_color = AWT::Color::RED
+      
+      if options and options.respond_to?(:[])
+        
+        if options[:action]
+          handler = options[:action]
+          options.delete :action
+        end
+        
+        if options[:hover_color]
+          hover_color = options[:hover_color]
+          options.delete :hover_color
+        end
+        
+      end
+      
+      l = label(text, options)
+              
+      if handler
+        l.action do
+          
+          @label = l
+          @handler = handler
+          @color = hover_color
+          
+          def on_click ev
+            on_mouse_out nil # simulate mouse out
+            @handler.call
+          end
+          
+          def on_mouse_over ev
+            return if @is_over
+            @is_over = true
+            @normal_color = @label.java_component.foreground
+            @label.java_component.foreground = @color
+          end
+          
+          def on_mouse_out ev
+            return unless @is_over
+            @is_over = false
+            @label.java_component.foreground = @normal_color
+          end
+        
+        end
+      end
+      
     end
 
   end
