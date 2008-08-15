@@ -64,23 +64,23 @@ class PuzzleGame
 
     game = self
 
-    @frame = frame do
+    @frame = frame {
 
       use_styles styles
       
       title "Word Search Puzzle"
 
-      content do
+      content {
     
-        panel :layout => :border do
+        panel(:layout => :border) {
           
-          puzzle_board game.grid, :board do |word|
+          puzzle_board(game.grid, :board) { |word|
             game.found word
-          end
+          }
           
           south
-            panel do
-              content :layout => :absolute, :hgap => 10, :vgap => 10  do
+            panel {
+              content(:layout => :absolute, :hgap => 10, :vgap => 10) {
                 at [0, 0]
                   button("Resolve", :resolve) {game.resolve}
                   
@@ -99,50 +99,28 @@ class PuzzleGame
                   }
                   
                 at [0, 110], relative_to(:resolve, :align, :below)
-                  label('french', :name => :language)
+                  hover_label('french', :name => :language)  {game.change_language}
                   
-              end
+              }
               
-            end
+            }
             
-        end
+        }
         
         east
-          list_view :list_view, Array.new(game.words) do |x|
+          list_view(:list_view, Array.new(game.words)) { |x|
             context[0][:board].hint_for x if game.hint_enabled
-          end
+          }
           
-      end
+      }
       
-      swing do |f|
+      swing { |f|
         f.resizable = false
-      end
+      }
 
       visible true if show_visible
       
-    end
-    
-    language = @frame[0][1][:language]
-    
-    language.action do
-      
-      @game = game
-      @language = language
-      
-      def on_click ev
-        @game.change_language
-      end
-      
-      def on_mouse_over ev
-        @normal_color = @language.java_component.foreground
-        @language.java_component.foreground = AWT::Color::RED
-      end
-      
-      def on_mouse_out ev
-        @language.java_component.foreground = @normal_color
-      end
-    
-    end
+    }
     
   end
   
