@@ -183,6 +183,44 @@ class Graphics
    
   end
  
+  def stroke_width width = 1
+    stroke = BasicStroke.new(width)
+    @gr.setStroke(stroke)
+  end
+  
+  def draw_line x1, y1, x2, y2
+    render
+    @gr.draw_line x1, y1, x2, y2
+  end
+  
+  def oval width, height, border_width = 0, border_color = Color::BLACK
+    
+    return unless @pen_down
+    
+    @gr.fillOval @x, @y, width, height if @pen_down
+    
+    return if border_width == 0
+    
+    stroke = BasicStroke.new(border_width)
+    @gr.setStroke(stroke)
+    @gr.set_color border_color
+    @gr.drawOval @x, @y, width, height if @pen_down
+    
+  end
+  
+  def draw_oval x, y, width, height, border_width = 0, border_color = Color::BLACK
+    
+    @gr.fillOval x, y, width, height
+    
+    return if border_width == 0
+    
+    stroke = BasicStroke.new(border_width)
+    @gr.setStroke(stroke)
+    @gr.set_color border_color
+    @gr.drawOval x, y, width, height
+    
+  end
+  
   def draw_image img
     @gr.drawImage img.getImage, @x, @y, @comp
   end
@@ -257,6 +295,8 @@ class DrawPanel < javax.swing.JComponent
      
     end
   
+    paintComponents g
+    
   end
  
   def on_styles &block
@@ -321,12 +361,32 @@ end
 module Swiby
 
   module Builder
-    
-    def draw_panel name = nil
   
+    class DrawPanelOptions < ComponentOptions
+        
+      define "DrawPanel" do
+        
+        declare :width, [Integer], true
+        declare :height, [Integer], true
+        declare :name, [String, Symbol], true
+        
+        overload :name
+
+      end
+      
+    end
+    
+    def draw_panel name = nil, options = nil, &painter
+  
+      x = DrawPanelOptions.new(context, name, options, &painter)
+      
       panel = DrawPanel.new
       
-      context[name.to_s] = panel if name
+      panel.preferred_size = Dimension.new(x[:width], x[:height]) if x[:width] and x[:height]
+      
+      panel.on_paint &x[:action] if x[:action]
+      
+      context[x[:name].to_s] = panel if x[:name]
       
       context.add_child panel
       
