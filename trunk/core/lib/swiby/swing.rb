@@ -209,6 +209,24 @@ module Swiby
       @kids_by_name[key.to_s] = value
     end
     
+    def find key
+      
+      key = key.to_s
+      
+      return @kids_by_name[key] if @kids_by_name.has_key?(key)
+      
+      @kids.each do |kid|
+        
+        comp = kid.find(key) if kid.respond_to?(:find)
+        
+        return comp if comp
+          
+      end
+        
+      nil
+      
+    end
+    
     # The component is registered but not added to the Swing structure
     def << component
       @kids << component
@@ -276,6 +294,20 @@ module Swiby
       self.instance_eval(&block)
       
       content_done
+      
+    end
+    
+    def change_content(*options, &block)
+      
+      @kids.clear
+      @kids_by_name.clear
+      
+      java_component.remove_all
+      
+      content *options, &block
+      
+      java_component.validate
+      java_component.repaint
       
     end
     
