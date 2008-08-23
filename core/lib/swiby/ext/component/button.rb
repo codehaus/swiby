@@ -19,9 +19,13 @@ module Swiby
     end
     
     def button text = nil, image = nil, options = nil, &block
-      button_factory(text, image, options, block) do |opt|
+      
+      but = button_factory(text, image, options, block) do |opt|
         Button.new(opt)
       end
+      
+      layout_button but
+      
     end
     
     # Needs a block that returns the Swiby component
@@ -39,8 +43,9 @@ module Swiby
       
       add but
       context << but
-      layout_button but
 
+      but
+      
     end
   
   end
@@ -55,12 +60,16 @@ module Swiby
       declare :swing, [Proc], true
       declare :action, [Proc], true
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
+      declare :selected, [TrueClass, FalseClass, IncrementalValue], true
       
       overload :text
       overload :icon
+      overload :selected
       overload :text, :name
+      overload :text, :selected
+      overload :text, :name, :selected
       overload :text, :icon
-      overload :text, :icon, :enabled
+      overload :text, :icon, :selected
       
     end
     
@@ -79,6 +88,7 @@ module Swiby
       self.text = options[:text] if options[:text]
       self.enabled_state = options[:enabled] unless options[:enabled].nil?
       self.name = options[:name].to_s if options[:name]
+      self.selected = options[:selected] if options[:selected]
       
       @style_id = self.name.to_sym if self.name
 

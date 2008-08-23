@@ -20,9 +20,13 @@ module Swiby
   module Builder
   
     def radio text = nil, image = nil, options = nil, &block
-      button_factory(text, image, options, block) do |opt|
+      
+      but = button_factory(text, image, options, block) do |opt|
         RadioButton.new(opt)
       end
+
+      layout_list nil, but
+      
     end
     
     def radio_group label = nil, values = nil, selected = nil, dir = nil, options = nil, &block

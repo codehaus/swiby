@@ -18,9 +18,15 @@ module Swiby
   module Builder
   
     def check text = nil, image = nil, options = nil, &block
-      button_factory(text, image, options, block) do |opt|
+      
+      but = button_factory(text, image, options, block) do |opt|
         CheckBox.new(opt)
       end
+      
+      layout_list nil, but
+      
+      but
+      
     end
  
   end
