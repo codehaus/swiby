@@ -399,10 +399,10 @@ module Swiby
 		
     end
 	
-    def add_field(label, text)
+    def add_field(label, text, helper = nil)
       @labels.push(label)
       @fields.push(text)
-      @helpers.push(nil)
+      @helpers.push(helper)
       @components.push(nil)
     end
 	
