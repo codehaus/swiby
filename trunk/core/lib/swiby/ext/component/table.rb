@@ -66,16 +66,17 @@ module Swiby
 
     def initialize
       
-      @table = Swing::JTable.new
-      @component = JScrollPane.new(@table)
-
-      @table.auto_resize_mode = Swing::JTable::AUTO_RESIZE_SUBSEQUENT_COLUMNS
-      @table.selection_model.selection_mode = javax.swing.ListSelectionModel::SINGLE_SELECTION
+      @component = Swing::JTable.new
       
+      @component.auto_resize_mode = Swing::JTable::AUTO_RESIZE_SUBSEQUENT_COLUMNS
+      @component.selection_model.selection_mode = javax.swing.ListSelectionModel::SINGLE_SELECTION
+      
+      scrollable
+
     end
     
     def model= model
-      @table.model = model
+      @component.model = model
     end
     
     def apply_styles styles
@@ -86,7 +87,7 @@ module Swiby
         
       bg_color = styles.resolver.find_background_color(:table)
       bg_color = styles.resolver.find_background_color(:container) unless bg_color
-      @table.parent.background = bg_color if bg_color
+      @component.parent.background = bg_color if bg_color
 
       font = styles.resolver.find_font(:table_header)
       font = styles.resolver.find_font(:table) unless font
@@ -100,7 +101,7 @@ module Swiby
       header_color = color unless header_bg_color
       @header_renderer.foreground = header_color if header_color
         
-      if @table.model.row_count > 0
+      if @component.model.row_count > 0
 
         row_bg_color = styles.resolver.find_background_color(:table_row)
         row_bg_color = bg_color unless row_bg_color
@@ -114,10 +115,10 @@ module Swiby
         height = @renderer.preferred_size.height
         font = styles.resolver.find_font(:table_row)
         font = styles.resolver.find_font(:table) unless font
-        @table.font = font if font
+        @component.font = font if font
         @renderer.font = font if font
         height = @renderer.preferred_size.height - height
-        @table.row_height += height unless @table.row_height + height < 1
+        @component.row_height += height unless @component.row_height + height < 1
         
       end
       
@@ -131,7 +132,7 @@ module Swiby
 
         @renderer = DefaultTableCellRenderer.new
 
-        col_model = @table.getColumnModel
+        col_model = @component.getColumnModel
 
         for i in (0...col_model.getColumnCount)
           column = col_model.getColumn(i)
@@ -140,7 +141,7 @@ module Swiby
 
         @header_renderer = SwibyTableHeaderRenderer.new
         
-        header = @table.getTableHeader
+        header = @component.getTableHeader
         header_renderer = header.getDefaultRenderer
       
         @header_renderer.delegate = header_renderer
