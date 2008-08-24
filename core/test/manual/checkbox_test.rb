@@ -7,23 +7,26 @@
 #
 #++
 
-require 'swiby/form'
-
-form {
+class CheckboxTest < ManualTest
   
-  title "Test handler called"
-  
-  width 220
-  height 70
+  manual 'Test Handler call' do
+    
+    form {
+      
+      title "Test handler called"
+      
+      check "Select me (x)", :x do
+        puts "Is it selected? #{context[:x].selected?}"
+      end
 
-  check "Select me (x)", :x do
-    puts "Is it selected? #{context[:x].selected?}"
+      check "Change x", :y do
+        context[:x].selected = context[:y].selected
+      end
+      
+      visible true
+      
+    }
+
   end
 
-  check "Change x", :y do
-    context[:x].selected = context[:y].selected
-  end
-  
-  visible true
-  
-}
+end

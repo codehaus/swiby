@@ -7,28 +7,31 @@
 #
 #++
 
-require 'swiby'
+class BorderLayoutTest < ManualTest
+  
+  manual 'Test implicit default layout' do
 
-Defaults.auto_sizing_frame = true
+    frame {
+      
+      title "Implicit Default layout"
+      
+      content {
+        north
+          label "Here is north"
+        south
+          button "South button"
+        center
+          button "Center button"
+        east
+          button "east"
+        west
+          button "west"
+      }
+      
+      visible true
+      
+    }
 
-#-
-frame {
-  
-  title "Implicit Default layout"
-  
-  content(:layout => :border) {
-    north
-      label "Here is north"
-    south
-      button "South button"
-    center
-      button "Center button"
-    east
-      button "east"
-    west
-      button "west"
-  }
-  
-  visible true
-  
-}
+  end
+
+end

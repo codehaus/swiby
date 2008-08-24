@@ -7,88 +7,106 @@
 #
 #++
 
-require 'swiby/form'
+class StyleSettingTest < ManualTest
 
-styles = create_styles {
-  root(
-      :font_family => Styles::VERDANA,
-      :font_style => :normal,
-      :font_size => 10,
-      :color => :white,
-      :background_color => 0x494980
-  )
-}
+  manual 'Style from variable from' do
+    
+    styles = create_styles {
+      root(
+          :font_family => Styles::VERDANA,
+          :font_style => :normal,
+          :font_size => 10,
+          :color => :white,
+          :background_color => 0x494980
+      )
+    }
+  
+    form {
 
-form {
+      title 'Set styles from variable (blue)'
+      
+      use_styles styles
+      
+      width 400
+      height 130
+      
+      button "Hello"
+      input "Name: ", "Joe"
+      combo "Country:", ['Belgium', 'France', 'Italy']
+      
+      visible true
+      
+    }
 
-  title 'Set styles from variable (blue)'
+  end
   
-  use_styles styles
-  
-  width 400
-  height 130
-  
-  button "Hello"
-  input "Name: ", "Joe"
-  combo "Country:", ['Belgium', 'France', 'Italy']
-  
-  visible true
-  
-}
+  manual 'Embedded in form styles' do
+    
+    form {
 
-form {
+      title 'Set styles within form build (red)'
+      
+      use_styles {
+        root(
+          :font_family => Styles::VERDANA,
+          :font_style => :normal,
+          :font_size => 10,
+          :color => :white,
+          :background_color => 0x804949
+        )    
+      }
+      
+      width 400
+      height 130
+      
+      button "Hello"
+      input "Name: ", "Joe"
+      combo "Country:", ['Belgium', 'France', 'Italy']
+      
+      visible true
+      
+    }
 
-  title 'Set styles within form build (red)'
+  end
   
-  use_styles {
-    root(
-      :font_family => Styles::VERDANA,
-      :font_style => :normal,
-      :font_size => 10,
-      :color => :white,
-      :background_color => 0x804949
-    )    
-  }
-  
-  width 400
-  height 130
-  
-  button "Hello"
-  input "Name: ", "Joe"
-  combo "Country:", ['Belgium', 'France', 'Italy']
-  
-  visible true
-  
-}
+  manual 'Styles from file' do
+    
+    form {
 
-form {
+      title 'Load styles from file (green)'
+      
+      use_styles 'my_styles.rb'
+      
+      width 400
+      height 130
+      
+      button "Hello"
+      input "Name: ", "Joe"
+      combo "Country:", ['Belgium', 'France', 'Italy']
+      
+      visible true
+      
+    }
 
-  title 'Load styles from file (green)'
+  end
   
-  use_styles 'my_styles.rb'
-  
-  width 400
-  height 130
-  
-  button "Hello"
-  input "Name: ", "Joe"
-  combo "Country:", ['Belgium', 'France', 'Italy']
-  
-  visible true
-  
-}
+  manual 'Default unchanged' do
+    
+    form {
 
-form {
-
-  title 'Previous styles don\'t change default'
+      title 'Previous styles don\'t change default'
+      
+      width 400
+      height 130
+      
+      button "Hello"
+      input "Name: ", "Joe"
+      combo "Country:", ['Belgium', 'France', 'Italy']
+      
+      visible true
+      
+    }
+        
+  end
   
-  width 400
-  height 130
-  
-  button "Hello"
-  input "Name: ", "Joe"
-  combo "Country:", ['Belgium', 'France', 'Italy']
-  
-  visible true
-  
-}
+end
