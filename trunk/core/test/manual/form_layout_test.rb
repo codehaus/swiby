@@ -7,24 +7,28 @@
 #
 #++
 
-require 'swiby'
+class FormLayoutTest < ManualTest
 
-Defaults.auto_sizing_frame = true
+  manual 'Test layout' do
+    
+    options = {:layout => :form, :vgap => 10, :hgap => 5}
 
-options = {:layout => :form, :vgap => 10, :hgap => 5}
-
-frame {
-  
-  title "Form Layout Test"
-  
-  content(options) {
-
-    button "Hello", :hello_but
-    button "World!", :world_but
-    input "Name", "<your name here>"
+    frame {
       
-  }
+      title "Form Layout Test"
+      
+      content(options) {
+
+        button "Hello", :hello_but
+        button "World!", :world_but
+        input "Name", "<your name here>"
+          
+      }
+      
+      visible true
+      
+    }
+
+  end
   
-  visible true
-  
-}
+end

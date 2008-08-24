@@ -7,113 +7,132 @@
 #
 #++
 
-require 'swiby'
+class ButtonOptionsTest < ManualTest
 
-Defaults.height = 100
+  Defaults.height = 100
 
-image = File.join(File.dirname(__FILE__), '..',  '..', 'lib', 'swiby', 'images', 'go-previous.png')
+  image = File.join(File.dirname(__FILE__), '..',  '..', 'lib', 'swiby', 'images', 'go-previous.png')
 
-##---------------------------------------------
-f = frame do
+  manual 'Syntax: button title &action' do
+    
+    f = frame do
 
-  title "Syntax: button title &action"
+      title "Syntax: button title &action"
 
-  content do
-    button "Push Me!" do
-      message_box 'Hello'
+      content do
+        button "Push Me!" do
+          message_box 'Hello'
+        end
+      end
+
+      width 300
+
     end
+
+    f.visible = true
   end
 
-  width 300
+  manual 'Syntax: button icon &action' do
+    
+    f = frame do
 
-end
+      title "Syntax: button icon &action"
 
-f.visible = true
+      content do
+        button create_icon(image) do
+          message_box 'Hello'
+        end
+      end
 
-##---------------------------------------------
-f = frame do
+      width 300
 
-  title "Syntax: button icon &action"
-
-  content do
-    button create_icon(image) do
-      message_box 'Hello'
     end
+
+    f.visible = true
+    
   end
 
-  width 300
+  manual 'Syntax: button text, icon &action' do
+    
+    f = frame do
 
-end
+      title "Syntax: button text, icon &action"
 
-f.visible = true
+      content do
+        button "Push Me", create_icon(image) do
+          message_box 'Hello'
+        end
+      end
 
-##---------------------------------------------
-f = frame do
+      width 350
 
-  title "Syntax: button text, icon &action"
-
-  content do
-    button "Push Me", create_icon(image) do
-      message_box 'Hello'
     end
+
+    f.visible = true
+  
   end
+  
+  manual 'Syntax: button &options' do
+    
+    f = frame do
 
-  width 350
+      title "Syntax: button &options"
 
-end
+      content do
+        button do
+          text "Push Me"
+          icon image
+          action proc {message_box 'Hello'}
+        end
+      end
 
-f.visible = true
+      width 300
 
-##---------------------------------------------
-f = frame do
-
-  title "Syntax: button &options"
-
-  content do
-    button do
-      text "Push Me"
-      icon image
-      action proc {message_box 'Hello'}
     end
+
+    f.visible = true
+
   end
+  
+  manual 'Syntax: button hash &action' do
+    
+    f = frame do
 
-  width 300
+      title "Syntax: button hash &action"
 
-end
+      content do
+        button :text => "Push Me", :icon => create_icon(image) do
+          message_box 'Hello'
+        end
+      end
 
-f.visible = true
+      width 300
 
-##---------------------------------------------
-f = frame do
-
-  title "Syntax: button hash &action"
-
-  content do
-    button :text => "Push Me", :icon => create_icon(image) do
-      message_box 'Hello'
     end
+
+    f.visible = true
+
   end
+  
+  manual 'Syntax: button text, :more_options &options' do
+    
+    f = frame do
 
-  width 300
+      title "Syntax: button text, :more_options &options"
 
-end
+      content do
+        button "Push Me", :more_options do
+          icon image
+          action proc {message_box 'Hello'}
+        end
+      end
 
-f.visible = true
+      width 400
 
-##---------------------------------------------
-f = frame do
-
-  title "Syntax: button text, :more_options &options"
-
-  content do
-    button "Push Me", :more_options do
-      icon image
-      action proc {message_box 'Hello'}
     end
+
+    f.visible = true
+
   end
-
-  width 400
-
+  
 end
-
-f.visible = true

@@ -7,62 +7,72 @@
 #
 #++
 
-require 'swiby'
+class FrameWithPanelTest < ManualTest
 
-frame {
-  
-  title 'frame with centerd panel (default layouts)'
-
-  width 500
-  height 150
-  
-  content {
+  manual 'frame with centerd panel (default layouts)' do
     
-    north
-      input "Joe"
-    south
-      button "Yes"
-
-    center
-      panel {
-        content {
-          input "Address", "5th street"
-          button "search"
-        }
-      }
+    frame {
       
-  }
+      title 'frame with centerd panel (default layouts)'
 
-  visible true
-  
-}
+      width 500
+      height 150
+      
+      content {
+        
+        north
+          input "Joe"
+        south
+          button "Yes"
 
-frame {
-  
-  title 'frame with centerd panel with border layout)'
+        center
+          panel {
+            content {
+              input "Address", "5th street"
+              button "search"
+            }
+          }
+          
+      }
 
-  width 500
-  height 150
-  
-  content {
+      visible true
+      
+    }
     
-    north
-      input "Joe"
-    south
-      button "Yes"
+  end
 
-    center
-      panel {
-        content(:layout => :border) {
-          center
-            input "Address", "5th street"
-          south
-            button "search"
-        }
-      }
+  manual 'frame with centerd panel (with border layout)' do
+    
+    frame {
       
-  }
+      title 'frame with centerd panel (with border layout)'
 
-  visible true
+      width 500
+      height 150
+      
+      content {
+        
+        north
+          input "Joe"
+        south
+          button "Yes"
+
+        center
+          panel {
+            content(:layout => :border) {
+              center
+                input "Address", "5th street"
+              south
+                button "search"
+            }
+          }
+          
+      }
+
+      visible true
+      
+    }
+
+  end
   
-}
+end

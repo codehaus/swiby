@@ -7,48 +7,58 @@
 #
 #++
 
-require 'swiby/form'
-
-form {
+class ComboTest < ManualTest
   
-  title "Combo component / strings"
-  
-  width 200
-  height 70
+  manual 'Combo w/ strings, handler receives strings' do
+    
+    form {
+      
+      title "Combo component / strings"
+      
+      width 200
+      height 70
 
-  combo ["default", "blue", "green", "purple", "red", "yellow"] do |theme|
-    puts theme
+      combo ["default", "blue", "green", "purple", "red", "yellow"] do |theme|
+        puts theme
+      end
+      
+      visible true
+      
+    }
+
   end
   
-  visible true
-  
-}
+  manual 'Handler receives objects' do
+    
+    class MyData
+      
+      attr_accessor :name
+      
+      def initialize name
+        @name = name
+      end
 
-class MyData
-  
-  attr_accessor :name
-  
-  def initialize name
-    @name = name
-  end
+      def to_s
+        @name
+      end
+      
+    end
 
-  def to_s
-    @name
+    form {
+      
+      title "Combo component / objects"
+      
+      width 200
+      height 70
+
+      combo([MyData.new(:a), MyData.new(:b), MyData.new(:c)]) do |data|
+        puts data.name
+      end
+      
+      visible true
+      
+    }
+    
   end
   
 end
-
-form {
-  
-  title "Combo component / objects"
-  
-  width 200
-  height 70
-
-  combo([MyData.new(:a), MyData.new(:b), MyData.new(:c)]) do |data|
-    puts data.name
-  end
-  
-  visible true
-  
-}

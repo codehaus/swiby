@@ -7,36 +7,40 @@
 #
 #++
 
-require 'swiby'
-
-Defaults.auto_sizing_frame = true
-
-options = {:layout => :absolute, :vgap => 10, :hgap => 5}
-
-frame {
+class AbsoluteLayoutTest < ManualTest
   
-  title "Absolute Layout Test"
-  
-  content(options) {
+  manual 'Test absolute layout' do
     
-    at [10, 10]
-      button "Hello", :hello_but
+    options = {:layout => :absolute, :vgap => 10, :hgap => 5}
+
+    frame {
       
-    at [30, 50]
-      button "World!", :world_but
+      title "Absolute Layout Test"
       
-    at [0, 5], relative_to(:world_but, :align, :below)
-      label "Name:", :the_label
-    at [10, 0], relative_to(:the_label, :right, :align)
-      input "<your name here>"
+      content(options) {
+        
+        at [10, 10]
+          button "Hello", :hello_but
+          
+        at [30, 50]
+          button "World!", :world_but
+          
+        at [0, 5], relative_to(:world_but, :align, :below)
+          label "Name:", :the_label
+        at [10, 0], relative_to(:the_label, :right, :align)
+          input "<your name here>"
+        
+        at [0, 0], relative_to(:hello_but, :left, :above)
+          label "1"
+        at [0, 0], relative_to(:world_but, :left, :align)
+          label "2"
+          
+      }
+      
+      visible true
+      
+    }
     
-    at [0, 0], relative_to(:hello_but, :left, :above)
-      label "1"
-    at [0, 0], relative_to(:world_but, :left, :align)
-      label "2"
-      
-  }
+  end
   
-  visible true
-  
-}
+end
