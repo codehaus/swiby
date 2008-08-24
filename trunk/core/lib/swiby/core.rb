@@ -180,6 +180,10 @@ module Swiby
     
     def prepare args
       
+      if args.length == 1 && args[0].instance_of?(Hash)
+        return args[0]
+      end
+      
       @overloadings.reverse_each do |signature|
         
         if args.length == signature.length or 
@@ -213,10 +217,6 @@ module Swiby
       
         end
         
-      end
-      
-      if args.length == 1 && args[0].instance_of?(Hash)
-        return args[0]
       end
       
       if args.length > 0
