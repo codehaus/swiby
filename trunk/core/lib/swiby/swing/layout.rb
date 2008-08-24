@@ -386,6 +386,8 @@ module Swiby
 	
     include AWT::LayoutManager
 	
+    attr_accessor :hgap, :vgap
+    
     def initialize(hgap = 0, vgap = 0)
 		
       @hgap = hgap
@@ -397,6 +399,45 @@ module Swiby
       @commands = []
       @components = []
 		
+    end
+    
+    def add_layout_extensions component
+        
+        if component.respond_to?(:form_layout_manager=)
+          component.form_layout_manager = self
+          return
+        end
+        
+        def component.form_layout_manager= layout_mgr
+          @layout_mgr = layout_mgr
+        end
+        
+        component.form_layout_manager = self
+        
+        def component.layout_button child
+          @layout_mgr.add_command child.java_component
+        end
+        def component.layout_label child
+          @layout_mgr.add_panel child.java_component
+        end
+        def component.layout_input label, text
+          if label
+            @layout_mgr.add_field label.java_component, text.java_component
+          else
+            @layout_mgr.add_field label, text.java_component
+          end
+        end
+        def component.layout_list label, list
+          if label
+            @layout_mgr.add_component label.java_component, list.java_component
+          else
+            @layout_mgr.add_component label, list.java_component
+          end
+        end        
+        def component.layout_panel panel
+          @layout_mgr.add_panel panel.java_component
+        end
+        
     end
 	
     def add_field(label, text, helper = nil)
