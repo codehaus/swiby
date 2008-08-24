@@ -13,14 +13,16 @@ module Swiby
     include ComponentExtension
   end
 
-  def frame layout = nil, &block
+  def frame options = nil, &block
 
     sync_swing_thread do
 
-      layout = {:layout => :border } unless layout
-      layout = {:layout => layout } if layout.is_a?(Symbol)
+      options = {:layout => :border } unless options
+      options = {:layout => options } if options.is_a?(Symbol)
 
-      layout = create_layout(layout)
+      options[:layout] = :border unless options[:layout]
+      
+      layout = create_layout(options)
 
       x = ::Frame.new(layout)
 
@@ -32,6 +34,16 @@ module Swiby
         self
       end
 
+      if options[:controller]
+        
+        controller = options[:controller]
+          
+        controller.view = x
+          
+        x.instance_variable_set(:@controller, controller)
+        
+      end
+      
       x.instance_eval(&block) unless block.nil?
 
       x.apply_styles

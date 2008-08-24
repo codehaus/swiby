@@ -44,6 +44,10 @@ module Swiby
 
       end
       
+      if context.instance_variable_defined?(:@controller)
+        pane.instance_variable_set(:@controller, context.instance_variable_get(:@controller))
+      end
+      
       context[x[:name].to_s] = pane if x[:name]
       
       context.add_child pane
