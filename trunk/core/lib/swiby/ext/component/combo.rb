@@ -37,15 +37,20 @@ module Swiby
       
       selected = x[:selected]
       
-      if selected.instance_of?(Symbol)
-        accessor = AccessorPath.new(selected)
-        x[:name] = selected.to_s
-        x[:selected] = @data.send(selected)
-      elsif selected.instance_of?(AccessorPath)
-        accessor = selected
-        x[:name] = selected.to_s
-        x[:selected] = accessor.resolve(@data)
+      if @data
+        if selected.instance_of?(Symbol)
+          accessor = AccessorPath.new(selected)
+          x[:name] = selected.to_s
+          x[:selected] = @data.send(selected)
+        elsif selected.instance_of?(AccessorPath)
+          accessor = selected
+          x[:name] = selected.to_s
+          x[:selected] = accessor.resolve(@data)
+        end
+      else
+        x[:selected] = selected
       end
+      
 
       comp = yield(x)
 
