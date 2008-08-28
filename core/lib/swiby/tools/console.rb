@@ -29,7 +29,7 @@ def open_console run_context, container = nil
     width 500
     height 300
 
-    title "Console"
+    title "#{container.java_component.title} - Console"
     
     editor 400, 300, :name => :editor
     
@@ -271,13 +271,18 @@ if $0 == __FILE__
   
   if ARGV.length > 0
     
+    alias :frame_original :frame
     alias :form_original :form
     
     def form *args, &block
       $main_form = form_original(*args, &block)
     end
     
-    load ARGV[0]
+    def frame *args, &block
+      $main_form = frame_original(*args, &block)
+    end
+    
+    require ARGV[0]
     
     open_console $main_form
     
