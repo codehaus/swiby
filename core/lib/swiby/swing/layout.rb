@@ -605,7 +605,7 @@ module Swiby
 
       nLines = li.count > (fi.count + ci.count) ? li.count : fi.count + ci.count
 
-      w = li.maxWidth + @hgap + (fi.maxWidth < ci.maxWidth ? ci.maxWidth : fi.maxHeight) + @hgap + hi.maxWidth + @hgap
+      w = li.maxWidth + @hgap + (fi.maxWidth < ci.maxWidth ? ci.maxWidth : fi.maxWidth) + @hgap + hi.maxWidth + @hgap
       wBut = bi.count * bi.maxWidth + (bi.count- 1) * @hgap
       h = nLines * li.maxHeight + (nLines - 1) * @vgap
 		
