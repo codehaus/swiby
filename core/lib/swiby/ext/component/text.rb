@@ -121,6 +121,7 @@ module Swiby
       self.name = options[:name].to_s if options[:name]
       self.editable = !options[:readonly] if options[:readonly]
       
+      @style_id = self.name.to_sym if self.name      
       options[:swing].call(java_component) if options[:swing]
       
       options[:swing] = nil
@@ -131,13 +132,13 @@ module Swiby
       
       return unless styles
       
-      font = styles.resolver.find_font(:input)
+      font = styles.resolver.find_font(:input, @style_id)
       @component.font = font if font
       
-      color = styles.resolver.find_color(:input)
+      color = styles.resolver.find_color(:input, @style_id)
       @component.foreground = color if color
       
-      color = styles.resolver.find_background_color(:input)
+      color = styles.resolver.find_background_color(:input, @style_id)
       @component.background = color if color
       
     end
