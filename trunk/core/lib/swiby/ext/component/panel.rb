@@ -22,6 +22,20 @@ module Swiby
 
       ensure_section
 
+      pane = create_panel(options)
+      
+      context.add_child pane
+      
+      add pane
+      context << pane
+      layout_panel(pane)
+
+      pane.instance_eval(&block) unless block.nil?
+    
+    end
+
+    def create_panel options
+      
       x = options ? options : {}
       
       pane = Panel.new(x)
@@ -50,20 +64,14 @@ module Swiby
       
       context[x[:name].to_s] = pane if x[:name]
       
-      context.add_child pane
+      pane
       
-      add pane
-      context << pane
-      layout_panel(pane)
-
-      pane.instance_eval(&block) unless block.nil?
-    
     end
 
   end
   
   class Panel < Container
-
+    
     def initialize options = nil
             
       super
@@ -77,6 +85,8 @@ module Swiby
       if options[:layout]
         java_component.layout = create_layout(options)
       end
+      
+      @style_id = self.name.to_sym if self.name
       
     end
 
@@ -112,8 +122,11 @@ module Swiby
         styles = @styles
       end
       
-      color = styles.resolver.find_background_color(:container)
+      color = styles.resolver.find_background_color(:container, @style_id)
       @component.background = color if color
+      
+      border = styles.resolver.create_border(:container, @style_id)
+      @component.border = border if border
       
       if @children
         

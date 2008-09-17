@@ -54,13 +54,78 @@ module Swiby
 
   end
   
+  class LayerContainer < javax.swing.JLayeredPane
+    
+    attr_reader :default_layer_panel
+
+    def do_initialize parent, layout
+      
+      @default_layer_panel = Panel.new
+      
+      @default_layer = @default_layer_panel.java_component
+      @default_layer.layout = layout
+        
+      add @default_layer
+      set_layer @default_layer, javax.swing.JLayeredPane::DEFAULT_LAYER
+        
+      listener = ResizeListener.new
+      
+      listener.register do |ev|
+        
+        popup = parent.layers[:popup]
+        
+        if popup
+          
+          popup = popup.java_component
+          
+          rc = ev.getComponent.getBounds
+          dim = popup.getPreferredSize
+
+          popup.setBounds(rc.x + (rc.width - dim.width) / 2, rc.y + (rc.height - dim.height) / 2, dim.width, dim.height)
+          
+        end
+
+        parent.layers.each do |name, layer|
+          
+          rc = ev.getComponent.getBounds
+
+          unless name == :popup
+            pane = layer.java_component            
+            pane.setBounds(rc.x, rc.y, rc.width, rc.height)
+          end
+          
+        end
+        
+      end
+      
+      self.addComponentListener listener
+      
+    end
+    
+    def doLayout
+      @default_layer.setBounds(0, 0, getWidth(), getHeight())
+    end
+    
+  end
+
   class Frame < Container
 
     @@frames = []
 
+    attr_reader :default_layer, :layers
+    
     def initialize layout = nil, as_dialog = false, parent = nil
 
       super
+      
+      layout = AWT::BorderLayout.new unless layout
+      
+      layered_pane = LayerContainer.new
+      layered_pane.do_initialize self, layout
+      @default_layer = layered_pane.default_layer_panel.java_component
+      
+      @layers = {}
+      @layers[:default] = layered_pane.default_layer_panel
       
       if as_dialog
         
@@ -68,7 +133,8 @@ module Swiby
         
         @component = JDialog.new(parent.java_component)
         @component.modal = true
-        @component.layout = layout if layout
+        
+        @component.layered_pane = layered_pane
         
         def self.java_container
           @component
@@ -83,6 +149,7 @@ module Swiby
           if !@component.visible and @width and @height
             @component.set_size @width, @height
           else
+            @component.content_pane.set_preferred_size @default_layer.preferred_size
             @component.pack
           end
 
@@ -95,8 +162,9 @@ module Swiby
           @component.setBounds x, y, w, h if x and y
           
           unless @component.visible or x or y
-            @component.pack if Defauls.auto_sizing_frame
-          end
+            @component.content_pane.set_preferred_size @default_layer.preferred_size if Defaults.auto_sizing_frame
+            @component.pack
+         end
           
           @component.visible = flag
           
@@ -108,9 +176,8 @@ module Swiby
       
       @@frames << self
       
-      @component = JFrame.new
-      
-      java_component.layout = layout if layout
+      @component = JFrame.new      
+      @component.layered_pane = layered_pane
 
       exit_on_close unless $is_java_applet or not Defaults.exit_on_frame_close
       
@@ -120,8 +187,6 @@ module Swiby
         Swiby::RemoteLoader.cache_manager.close if Swiby::RemoteLoader.cache_manager
       
         @@frames.delete self
-      
-        exit if @component.default_close_operation == JFrame::EXIT_ON_CLOSE
       
       end
       
@@ -139,6 +204,10 @@ module Swiby
       @component.setDefaultCloseOperation JFrame::EXIT_ON_CLOSE
     end
     
+    def layout_manager= layout
+      @default_layer.layout = layout
+    end
+    
     def visible=(flag)
       
       super
@@ -154,7 +223,8 @@ module Swiby
       end
           
       if flag and @width.nil? and @height.nil?
-        @component.pack if Defaults.auto_sizing_frame
+        @component.content_pane.set_preferred_size @default_layer.preferred_size if Defaults.auto_sizing_frame
+        @component.pack
       end
       
     end
@@ -163,7 +233,13 @@ module Swiby
       
       @@frames.delete self
       
-      @on_close_block.call if @on_close_block
+      window_listener_class = java.lang.Class.forName("java.awt.event.WindowListener")
+
+      event = java.awt.event.WindowEvent.new(@component,  java.awt.event.WindowEvent::WINDOW_CLOSING)
+      
+      @component.getListeners(window_listener_class).each do |listener|
+        listener.windowClosing event
+      end
       
       @component.dispose
       
@@ -193,9 +269,9 @@ module Swiby
       @last_added = child
       
       if layout_hint
-        @component.content_pane.add child.java_component, layout_hint
+        @default_layer.add child.java_component, layout_hint
       else
-        @component.content_pane.add child.java_component
+        @default_layer.add child.java_component
       end
       
     end
@@ -203,20 +279,18 @@ module Swiby
     def on_close &block
 
       listener = WindowCloseListener.new
-
+      
       @component.addWindowListener(listener)
 
       listener.register(&block)
-      
-      @on_close_block = block unless @on_close_block
-
+ 
     end
     
     def toolbar &block
 
       if @tb_container.nil?
         @tb_container = JPanel.new(AWT::FlowLayout.new(AWT::FlowLayout::LEFT))
-        @component.content_pane.add @tb_container, AWT::BorderLayout::NORTH
+        @default_layer.add @tb_container, AWT::BorderLayout::NORTH
       end
 
       tb = Toolbar.new
@@ -286,11 +360,16 @@ module Swiby
       color = style_resolver.find_background_color(:container)
       @component.content_pane.background = color if color
       @component.background = color if color
+      @default_layer.background = color if color
 
       if @children
         @children.each do |kid|
           kid.apply_styles @styles
         end
+      end
+      
+      @layers.each do |name, layer|
+        layer.apply_styles @styles
       end
       
     end

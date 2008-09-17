@@ -285,7 +285,7 @@ module Swiby
     def content(*options, &block)
     
       layout = create_layout(*options)
-      @component.layout = layout if layout
+      self.layout_manager = layout if layout
 
       if layout.respond_to?(:add_layout_extensions)
         layout.add_layout_extensions self
@@ -295,6 +295,10 @@ module Swiby
       
       content_done
       
+    end
+    
+    def layout_manager= layout
+      @component.layout = layout
     end
     
     def change_content(*options, &block)
@@ -381,7 +385,7 @@ module Swiby
     def message_box text
       JOptionPane.showMessageDialog @component, text
     end
-
+    
   end
 
   def bind(model = nil, getter = nil, &block)
