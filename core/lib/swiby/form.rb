@@ -38,7 +38,7 @@ module Swiby
       x = ::Frame.new(nil, true, parent)
 
       x.extend(Form)
-      x.setup true
+      x.setup false
 
       x.instance_eval(&block) unless block.nil?
 
@@ -101,7 +101,7 @@ module Swiby
       if is_panel
         @content_pane = self.java_component
       else
-        @content_pane = @component.content_pane
+        @content_pane = @default_layer
       end
 
     end

@@ -23,8 +23,10 @@ module Swiby
     include_class 'java.awt.Toolkit'
     include_class 'java.awt.AWTEvent'
     include_class 'java.awt.event.KeyEvent'
+    include_class 'java.awt.event.KeyAdapter'
     include_class 'java.awt.event.MouseAdapter'
     include_class 'java.awt.event.MouseMotionAdapter'
+    include_class 'java.awt.event.FocusAdapter'
     include_class 'java.awt.event.WindowAdapter'
     include_class 'java.awt.event.ActionListener'
     include_class 'java.awt.event.AWTEventListener'
@@ -35,6 +37,18 @@ module Swiby
     include_class 'java.beans.PropertyChangeListener'
   end
 
+  class FocusLostListener < AWT::FocusAdapter
+    
+    def register(&handler)
+      @handler = handler
+    end
+
+    def focusLost(evt)
+      @handler.call
+    end
+
+  end
+  
   class WindowCloseListener < AWT::WindowAdapter
     
     def register(&handler)
@@ -47,24 +61,46 @@ module Swiby
 
   end
   
-  class EnterAction
+  #TODO find a was to unregister KeyEventLisenters...
+  class KeyEventListener
 
     include AWT::AWTEventListener
 
-    def register(&handler)
-
+    # if not key stroke is given any key event results in calling the handler
+    def register(*key_strokes, &handler)
+      
       AWT::Toolkit.getDefaultToolkit().addAWTEventListener(self, AWT::AWTEvent::KEY_EVENT_MASK)
 
+      @key_strokes = key_strokes
       @handler = handler
 
+    end
+    
+    def register_for_component(swing_comp, *key_strokes, &handler)
+      
+      @swing_comp = swing_comp
+      
+      register(*key_strokes, &handler)
+      
     end
 
     def eventDispatched(evt)
 
       if evt.is_a? AWT::KeyEvent
 
-        if evt.getID() == AWT::KeyEvent::KEY_PRESSED and evt.key_code == AWT::KeyEvent::VK_ENTER
-          @handler.call
+        if evt.getID() == AWT::KeyEvent::KEY_PRESSED
+
+          unless @swing_comp and not @swing_comp.isAncestorOf(evt.source)
+            
+            ev_keystroke = javax.swing.KeyStroke.getKeyStrokeForEvent(evt)
+            
+            if @key_strokes.any? { |ks| ks == ev_keystroke }
+              evt.consume
+              @handler.call
+            end
+            
+          end
+          
         end
 
       end
@@ -268,7 +304,25 @@ module Swiby
     end
     
   end
-  
+
+  class KeyListener < AWT::KeyAdapter
+   
+    def register(handler)
+      @handler = handler
+    end
+
+    def keyPressed ev
+
+      ev_keystroke = javax.swing.KeyStroke.getKeyStrokeForEvent(ev)
+      
+      if @handler.key_strokes.any? { |ks| ks == ev_keystroke }
+        @handler.process(ev)
+      end
+      
+    end
+    
+  end
+
   class MouseMotionListener < AWT::MouseMotionAdapter
    
     def register(&handler)
@@ -281,6 +335,18 @@ module Swiby
    
     def mouseMoved ev
       @handler.on_mouse_move(ev) if @handler.respond_to?(:on_mouse_move)
+    end
+    
+  end
+  
+  class ResizeListener < java.awt.event.ComponentAdapter
+   
+    def register(&handler)
+      @handler = handler
+    end
+   
+    def componentResized ev
+      @handler.call(ev)
     end
     
   end

@@ -8,6 +8,7 @@
 #++
 
 require_extension :component, 'label'
+require_extension :component, 'shortcut'
 
 module Swiby
     
@@ -85,7 +86,9 @@ module Swiby
       declare :name, [String, Symbol], true
       declare :label, [String, Symbol], true
       declare :text, [Object]
+      declare :columns, [Integer], true
       declare :swing, [Proc], true
+      declare :on_key, [KeyHandler], true
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
       declare :readonly, [TrueClass, FalseClass, IncrementalValue], true
       declare :input_component, [Object], true
@@ -112,6 +115,10 @@ module Swiby
       
       x = options[:text]
       
+      if options[:on_key]
+        on_keyboard options[:on_key]
+      end
+      
       if x.instance_of? IncrementalValue
         x.assign_to self, :value=
       else
@@ -122,6 +129,8 @@ module Swiby
       self.editable = !options[:readonly] if options[:readonly]
       
       @style_id = self.name.to_sym if self.name      
+      @component.columns = options[:columns] if options[:columns]
+      
       options[:swing].call(java_component) if options[:swing]
       
       options[:swing] = nil
@@ -147,16 +156,16 @@ module Swiby
       editable
     end
     
-    def install_listener iv
-
-      ea = EnterAction.new
-
-      ea.register do
-        iv.change @component.text
-      end
-
+    def on_keyboard key_handler
+      
+      listener = KeyListener.new
+      
+      listener.register key_handler
+      
+      java_component.addKeyListener listener
+      
     end
-
+    
     def on_change &block
             
       listener = PropertyChangeListener.new

@@ -120,6 +120,16 @@ module Swiby
       @component.setBounds x, y, w, h
     end
 
+    def on_focus_lost &handler
+      
+      listener = FocusLostListener.new
+      
+      listener.register &handler
+      
+      java_component(true).addFocusListener(listener)
+      
+    end
+
     def install_listener iv
     end
 

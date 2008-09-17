@@ -45,8 +45,8 @@ class Sweb
     
     self.open_page(page)
 
-    @top_container.java_component.content_pane.remove 1
-    @top_container.java_component.content_pane.add @container.java_component
+    @top_container.default_layer.remove 1
+    @top_container.default_layer.add @container.java_component
     @top_container.java_component.validate
 
     @console.run_context = @container if @console
@@ -64,9 +64,9 @@ class Sweb
     @history_index -= 1
     @container = @history[@history_index]
     @top_container.title @titles[@history_index]
-    @top_container.java_component.content_pane.remove 1
-    @top_container.java_component.content_pane.add @container.java_component
-    @top_container.java_component.content_pane.validate
+    @top_container.default_layer.remove 1
+    @top_container.default_layer.add @container.java_component
+    @top_container.default_layer.validate
     @top_container.java_component.repaint
 
     self.source = @sources[@history_index]
@@ -82,8 +82,8 @@ class Sweb
     @history_index += 1
     @container = @history[@history_index]
     @top_container.title @titles[@history_index]
-    @top_container.java_component.content_pane.remove 1
-    @top_container.java_component.content_pane.add @container.java_component
+    @top_container.default_layer.remove 1
+    @top_container.default_layer.add @container.java_component
     @top_container.java_component.validate
     @top_container.java_component.repaint
 
@@ -165,7 +165,7 @@ class Sweb
 
     end
 
-    @top_container.java_component.content_pane.add @container.java_component
+    @top_container.default_layer.add @container.java_component
 
     @history << @container
     @titles << ""

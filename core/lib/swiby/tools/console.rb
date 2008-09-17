@@ -15,42 +15,270 @@ include_class 'javax.swing.JLayeredPane'
 include_class 'javax.swing.text.StyleConstants'
 include_class 'javax.swing.text.StyledEditorKit'
 
+class ScriptBuffer
+  
+  attr_accessor :text, :file
+  
+  def initialize
+    @text = ''
+  end
+  
+end
+
+class ConsoleContext
+  
+  def initialize editor, info
+    
+    @buffers = []
+    
+    @editor, @info = editor, info
+    
+    new
+
+  end
+  
+  def save
+    
+    file = @buffers[@pos].file
+    
+    if file == nil
+      
+      chooser = javax.swing.JFileChooser.new
+      
+      response = chooser.showSaveDialog(@editor.java_component.parent)
+      
+      return unless response == javax.swing.JFileChooser::APPROVE_OPTION
+      
+      @buffers[@pos].file = chooser.getSelectedFile.getAbsolutePath
+      
+    end
+    
+    @buffers[@pos].text = @editor.java_component(true).text
+    
+    file = @buffers[@pos].file
+    
+    File.open(file, 'w') {|f| f.write(@buffers[@pos].text) }
+    
+  end
+
+  def open file = nil
+    
+    if file == nil
+      
+      chooser = javax.swing.JFileChooser.new
+      
+      response = chooser.showOpenDialog(@editor.java_component.parent)
+      
+      return unless response == javax.swing.JFileChooser::APPROVE_OPTION
+      
+      file = chooser.getSelectedFile.getAbsolutePath
+      
+    end
+    
+    create_buffer file, IO.readlines(file).join
+    
+  end
+
+  def new file = nil
+    create_buffer file, ''
+  end
+  
+  def edit name = nil
+    
+    new_pos = -1
+    
+    (0...@buffers.length).each do |i|
+      
+      buffer = @buffers[i]
+      
+      if buffer.file.nil? and name.nil?
+        new_pos = i
+        break
+      end
+      
+      next if buffer.file.nil?
+      
+      if buffer.file == name
+        new_pos = i
+        break
+      end
+      
+      file = File.basename(buffer.file)
+      
+      if file == name
+        new_pos = i
+        break
+      end
+      
+      file = File.basename(buffer.file, '.rb')
+      
+      if file == name
+        new_pos = i
+        break
+      end
+      
+    end
+
+    return if new_pos < 0
+    
+    change_buffer @buffers[new_pos]
+    
+    @pos = new_pos
+
+  end
+  
+  def next_buffer
+    
+    pos = @pos
+    pos = -1 if pos + 1 == @buffers.length
+    pos += 1
+    
+    change_buffer @buffers[pos]
+    
+    @pos = pos
+    
+  end
+  
+  def previous
+    
+    pos = @pos
+    pos = @buffers.length if pos == 0
+    pos -= 1
+    
+    change_buffer @buffers[pos]
+    
+    @pos = pos
+    
+  end
+  
+  private
+  
+  def create_buffer file, content
+  
+    buffer = ScriptBuffer.new
+    
+    buffer.file = file
+    buffer.text = content
+    
+    change_buffer buffer
+    
+    @buffers << buffer
+
+    @pos = @buffers.length - 1
+
+  end
+
+  def change_buffer buffer
+    
+    @buffers[@pos].text = @editor.java_component(true).text if @pos
+    
+    @info.value = buffer.file
+    @editor.java_component(true).text = buffer.text
+    @editor.java_component(true).grab_focus
+    
+  end
+  
+end
+
 # returns a form (Swiby#Frame) that publishes a #run_context=
 # method to change the running context (form)
 def open_console run_context, container = nil
   
   container = run_context unless container
   
-  frm = form do
+  styles = create_styles {
+    label(
+      :color => :white
+    )
+    info {
+      input(
+        :color => :white,
+        :background_color => 0x727272
+      )
+    }
+    popup {
+      container(
+        :border_color => 0x700418,
+        :background_color => 0x6c0000
+      )
+    }
+  }
+  
+  frm = form {
+    
+    use_styles styles
     
     @container = container
     @run_context = run_context
 
     width 500
     height 300
-
+    
     title "#{container.java_component.title} - Console"
+    
+    input '', '', :name => :info
     
     editor 400, 300, :name => :editor
     
-    button "Show Info", :name => :frame_info_button do
+    button("Show Info", :name => :frame_info_button) {
       context.show_hide_info
-    end
-    button "Execute" do
+    }
+    button("Execute") {
       context.execute(context[:editor].text)
-    end
-    button "Close" do
+    }
+    button("Close") {
       close
-    end
+    }
     
-    on_close do
+    on_close {
       context.hide_info
-    end
+    }
+    
+    layer(:popup) {
+      content(:layout => :form, :vgap => 10, :hgap => 10) {
+        input 'Command:', '', :name => :command, :columns => 40
+        button 'Close', :close
+      }
+    }
+    
+    global_shortcut(ctl_key(cr_key)) {
+      context.layers[:popup].visible true
+      context.layers[:popup][:command].java_component.grab_focus
+    }
     
     visible true
     dispose_on_close
     
-  end
+  }
+  
+  console_context = ConsoleContext.new(frm['editor'], frm[:info])
+  
+  frm.layers[:popup][:command].on_keyboard esc_key{
+    frm.layers[:popup].visible false
+    frm[:editor].java_component(true).grab_focus
+  }
+  frm.layers[:popup][:command].on_keyboard cr_key{
+    begin
+      
+      cmd = frm.layers[:popup][:command].java_component.text
+      
+      cmd.strip!
+      cmd = 'next_buffer' if cmd == 'next'
+      
+      console_context.instance_eval(cmd)
+      
+      frm.layers[:popup].visible false
+      frm[:editor].java_component(true).grab_focus
+      
+    rescue Exception => ex
+      message_box "Error: #{ex}"
+    end
+  }
+  
+  frm.layers[:popup][:command].on_focus_lost {
+    frm.layers[:popup].visible false
+    frm[:editor].java_component(true).grab_focus
+  }
   
   setup_as_script_editor frm['editor'], RubyTokenizer.new
   
@@ -155,7 +383,7 @@ end
 class FrameInfoPanel
   
   #TODO make it part of Swiby wrappers?
-  #TODO button in Windows L&F hide the "index marker" (cause highlight when mouse over)
+  #TODO button in Windows L&F hide the "index marker"
 
   def initialize parent, target
     
@@ -163,14 +391,16 @@ class FrameInfoPanel
     @parent = parent
     @target = target
     @panel = JPanel.new
-
+    
     @panel.visible = false
     @panel.opaque = false
     @panel.layout = nil
+    @panel.setBounds 0, 0, 0, 0
     
     create_markers
 
-    parent.java_component.layered_pane.add(@panel, JLayeredPane::POPUP_LAYER)
+    parent.java_component.layered_pane.add @panel
+    parent.java_component.layered_pane.set_layer @panel, javax.swing.JLayeredPane::POPUP_LAYER
 
     listener = HierarchyBoundsListener.new
     
@@ -211,7 +441,7 @@ class FrameInfoPanel
     
     @panel.setBounds(0, 0, @parent.java_component.width, @parent.java_component.height)
     
-    origin = @parent.java_component.content_pane.location_on_screen
+    origin = @parent.default_layer.location_on_screen
 
     @markers.each_index do |i|
     
