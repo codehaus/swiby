@@ -144,6 +144,8 @@ transfer_form = form {
     message_box(current.summary)
   }
 
+  exit_on_close
+  
 }
 
 transfer_form.visible = true
