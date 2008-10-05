@@ -10,6 +10,25 @@
 require 'swiby/form'
 require 'test/manual/manual_test'
 
+limit_to = []
+verbose = false
+
+if ARGV[0]
+  
+  ARGV.each do |file|
+    
+    if file == '-v'
+      verbose = true
+    elsif file =~ /[.]rb$/
+      limit_to << File.basename(file)
+    else
+      limit_to << File.basename(file + '.rb')
+    end
+    
+  end
+  
+end
+
 dir = File.dirname(__FILE__)
 this_file = File.basename(__FILE__)
 
@@ -17,8 +36,9 @@ Dir.open(dir).each do |file|
 
   next if file == 'manual_test.rb'
   next unless file =~ /[.]rb$/ and file != this_file
+  next unless limit_to.include?(file)
   
-  puts "Loading #{dir}/#{file}..."
+  puts "Loading #{dir}/#{file}..." if verbose
   require "#{dir}/#{file}"
   
 end
