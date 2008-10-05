@@ -36,7 +36,10 @@ Dir.open(dir).each do |file|
 
   next if file == 'manual_test.rb'
   next unless file =~ /[.]rb$/ and file != this_file
-  next unless limit_to.include?(file)
+  
+  if limit_to.size > 0
+    next unless limit_to.include?(file)
+  end
   
   puts "Loading #{dir}/#{file}..." if verbose
   require "#{dir}/#{file}"
