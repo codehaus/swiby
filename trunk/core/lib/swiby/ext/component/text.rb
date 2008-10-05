@@ -22,6 +22,19 @@ module Swiby
     end
 
     def input label = nil, text = nil, options = nil, &block
+      text_input_factory label, text, options, block do |opt|
+        TextField.new(opt)
+      end
+    end
+    
+    def password label = nil, text = nil, options = nil, &block
+      text_input_factory label, text, options, block do |opt|
+        PasswordField.new(opt)
+      end
+    end
+    
+    # Needs a block that returns the Swiby wrapper
+    def text_input_factory label, text, options, block
 
       ensure_section
 
@@ -41,7 +54,7 @@ module Swiby
         x[:text] = accessor.resolve(@data)
       end
 
-      field = TextField.new(x)
+      field = yield(x)
       
       if accessor
         
@@ -243,6 +256,59 @@ module Swiby
       @component.formatter_factory = factory
     end
 
+  end
+  
+  class PasswordField < SwingBase
+    
+    attr_accessor :linked_label
+
+    def initialize options = nil
+      
+      @component = javax.swing.JPasswordField.new
+      
+      return unless options
+      
+      options[:input_component] = self
+      
+      x = options[:text]
+      
+      if x.instance_of? IncrementalValue
+        x.assign_to self, :value=
+      else
+        self.value = x if x
+      end
+      
+      self.name = options[:name].to_s if options[:name]
+      
+      @component.columns = options[:columns] if options[:columns]
+      
+      options[:swing].call(java_component) if options[:swing]
+      
+      options[:swing] = nil
+      
+    end
+
+    def apply_styles styles
+    end
+
+    def on_change &block
+            
+      listener = PropertyChangeListener.new
+
+      listener.register(&block)
+
+      @component.addPropertyChangeListener('value', listener)
+  
+    end
+    
+    def value
+      @component.text
+    end
+
+    def value=(val)
+      @component.text = val
+    end
+    
   end
   
 end
