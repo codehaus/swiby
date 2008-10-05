@@ -131,7 +131,7 @@ module Swiby
         
         @parent = parent
         
-        @component = JDialog.new(parent.java_component)
+        @component = JDialog.new(parent ? parent.java_component : nil)
         @component.modal = true
         
         @component.layered_pane = layered_pane
@@ -146,24 +146,44 @@ module Swiby
             apply_styles
           end
           
+          preferred = @default_layer.preferred_size
+          
+          if @width and @width > 0
+            preferred.width = @width
+          end
+          
+          if @height and @height > 0
+            preferred.height = @height
+          end
+          
           if !@component.visible and @width and @height
             @component.set_size @width, @height
           else
-            @component.content_pane.set_preferred_size @default_layer.preferred_size
+            @component.content_pane.set_preferred_size preferred
             @component.pack
           end
 
-          w = @component.width
-          h = @component.height
-          
-          x = (@parent.java_component.width - w) / 2 if @parent.java_component.width > w
-          y = (@parent.java_component.height - h) / 2 if @parent.java_component.height > h
+          if @parent
+            w = @component.width
+            h = @component.height
+            
+            x = (@parent.java_component.width - w) / 2 if @parent.java_component.width > w
+            y = (@parent.java_component.height - h) / 2 if @parent.java_component.height > h
 
-          @component.setBounds x, y, w, h if x and y
+            @component.setBounds x, y, w, h if x and y
+          end
           
           unless @component.visible or x or y
-            @component.content_pane.set_preferred_size @default_layer.preferred_size if Defaults.auto_sizing_frame
-            @component.pack
+            if @autosize_enabled or (@autosize_enabled.nil? and Defaults.auto_sizing_frame)
+        
+              insets = @component.insets
+              preferred.width += insets.left + insets.right
+              preferred.height += insets.top + insets.bottom
+              
+              @component.content_pane.set_preferred_size preferred
+              @component.pack
+              
+            end
          end
           
           @component.visible = flag
@@ -192,6 +212,10 @@ module Swiby
       
     end
 
+    def autosize enable_autosize = true
+      @autosize_enabled = enable_autosize
+    end
+    
     def dispose_on_close
       @component.setDefaultCloseOperation JFrame::DISPOSE_ON_CLOSE
     end
@@ -209,7 +233,7 @@ module Swiby
     end
     
     def visible=(flag)
-      
+
       super
       
       if flag
@@ -222,9 +246,29 @@ module Swiby
         @@frames.delete self
       end
           
-      if flag and @width.nil? and @height.nil?
-        @component.content_pane.set_preferred_size @default_layer.preferred_size if Defaults.auto_sizing_frame
-        @component.pack
+      if flag
+          
+        preferred = @default_layer.preferred_size
+        
+        if @width and @width > 0
+          preferred.width = @width
+        end
+        
+        if @height and @height > 0
+          preferred.height = @height
+        end
+        
+        insets = @component.insets
+        preferred.width += insets.left + insets.right
+        preferred.height += insets.top + insets.bottom
+        
+        if @autosize_enabled or (@autosize_enabled.nil? and Defaults.auto_sizing_frame)
+          
+          @component.set_preferred_size preferred
+          @component.pack
+        
+        end
+      
       end
       
     end

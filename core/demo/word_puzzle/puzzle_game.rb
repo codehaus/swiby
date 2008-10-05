@@ -26,8 +26,6 @@ class Word
   
 end
 
-Defaults.auto_sizing_frame = true
-
 class PuzzleGame
   
   attr_reader :grid, :words, :hint_enabled
@@ -68,6 +66,8 @@ class PuzzleGame
 
       use_styles styles
       
+      autosize
+
       title "Word Search Puzzle"
 
       content {
