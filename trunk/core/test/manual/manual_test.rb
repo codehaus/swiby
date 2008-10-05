@@ -91,14 +91,25 @@ class ManualTest
     @succeeded = false
   end
   
+  def setup
+  end
+  
+  def tear_down
+  end
+  
   def description
     @desc
   end
   
   def execute
+    
     @executed = true
     @succeeded = false
+    
+    setup
     @block.call
+    tear_down
+    
   end
   
   def executed?

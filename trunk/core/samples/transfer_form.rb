@@ -11,8 +11,6 @@ require 'swiby/form'
 require 'swiby/data'
 require 'swiby/tools/console.rb'
 
-Defaults.auto_sizing_frame = true
-
 class Account
   
   attr_accessor :owner, :number, :address
