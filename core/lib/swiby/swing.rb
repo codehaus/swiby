@@ -171,7 +171,7 @@ module Swiby
     def self.width
        @@width
     end
-    def self.width width
+    def self.width= width
        @@width = width
     end
   
