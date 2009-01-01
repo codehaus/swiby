@@ -29,11 +29,13 @@ module Swiby
     end
     
     def self.bad_signature *actual_types
-      "Cannot resolve initialization signature: #{actual_types.join(', ')}"
+      name = actual_types[0]
+      actual_types.shift
+      "#{name} cannot resolve initialization signature: #{actual_types.join(', ')}"
     end
     
-    def self.missing_option option_name_symbol
-      "Option '#{option_name_symbol}' was not set"
+    def self.missing_option name, option_name_symbol
+      "Option '#{option_name_symbol}' for #{name} was not set"
     end
     
     def self.invalid_argument option_name_symbol, options, valid_types
@@ -223,7 +225,7 @@ module Swiby
         
         types = args.collect { |arg| arg.class }
         
-        raise ArgumentError.new(ComponentOptions.bad_signature(types))
+        raise ArgumentError.new(ComponentOptions.bad_signature(@name, types))
         
       end 
       
@@ -236,7 +238,7 @@ module Swiby
       @metadata.each do |key, value|
         
         if @options[key].nil?
-          raise ArgumentError.new(ComponentOptions.missing_option(key)) unless value.optional?
+          raise ArgumentError.new(ComponentOptions.missing_option(@name, key)) unless value.optional?
         elsif !@metadata[key].compatible?(@options[key])
           raise ArgumentError.new(ComponentOptions.invalid_argument(key, @options, @metadata[key].types))
         end
