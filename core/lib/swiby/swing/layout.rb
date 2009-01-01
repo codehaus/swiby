@@ -480,7 +480,7 @@ module Swiby
       ci = ComponentsInfo.createPreferredInfo(@components)
       bi = ComponentsInfo.createPreferredInfo(@commands)
       hi = ComponentsInfo.createPreferredInfo(@helpers)
-		
+    
       compute_size(parent, li, fi, ci, hi, bi)
 		
     end
@@ -509,6 +509,10 @@ module Swiby
 
       w = parent.size.width - (insets.left + insets.right)
       h = parent.size.height - (insets.top + insets.bottom)
+      
+      min_size = minimumLayoutSize(parent)
+      w = min_size.width if w < min_size.width
+      h = min_size.height if w < min_size.height
 
       x = insets.left + @hgap
       y = insets.top + @vgap
@@ -526,15 +530,15 @@ module Swiby
       end
 
       centerHelper = (fi.maxHeight - hi.maxHeight) / 2
-      bonusH = ci.cumulatedHeight + (fi.count + ci.count + 1) * @vgap + bi.maxHeight + @vgap
+      neededH = ci.cumulatedHeight + (fi.count + ci.count + 1) * @vgap + bi.maxHeight + @vgap
 
       if fi.maxHeight < hi.maxHeight
-        bonusH += fi.maxHeight * (fi.count - hi.count) + hi.maxHeight * hi.count
+        neededH += fi.maxHeight * (fi.count - hi.count) + hi.maxHeight * hi.count
       else
-        bonusH += fi.maxHeight * fi.count
+        neededH += fi.maxHeight * fi.count
       end
 		
-      bonusH = ci.count != 0 && bonusH < h ? (h - bonusH) / ci.count : 0
+      bonusH = ci.count != 0 && neededH > h ? (h - neededH) / ci.count : 0
 		
       i = 0
 		
@@ -548,7 +552,8 @@ module Swiby
 
         if !c.nil? && c.visible?
 				
-          c.setBounds(x + li.maxWidth + @hgap, y, ci.minWidth, fi.maxHeight)
+          c.setBounds(x + li.maxWidth + @hgap, y, ci.minWidth, fi.maxHeight)  if li.maxWidth > 0
+          c.setBounds(x + li.maxWidth, y, ci.minWidth + @hgap, fi.maxHeight)  if li.maxWidth == 0
 
           c = @helpers[i]
 
@@ -562,8 +567,8 @@ module Swiby
             y += fi.maxHeight + @vgap
           end
 				
-        end
-			
+      end
+      
         c = @components[i]
 
         if !c.nil? && c.visible?
@@ -583,9 +588,11 @@ module Swiby
         i += 1
 			
       end
-
+    
       x = insets.right + w
-      y = insets.top + h - @vgap - bi.maxHeight
+      
+      bottom_y = insets.top + h - @vgap - bi.maxHeight
+      y = bottom_y if bottom_y > y
 		
       @commands.reverse_each do |c|
 
