@@ -141,7 +141,10 @@ module Swiby
 
       AWT::EventQueue.invokeAndWait(runnable)
 
-      raise runnable.error if runnable.failed?
+      if runnable.failed?
+        runnable.error.backtrace
+        raise runnable.error
+      end
       
       runnable.result
       
