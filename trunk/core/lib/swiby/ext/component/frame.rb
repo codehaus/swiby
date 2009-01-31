@@ -13,6 +13,10 @@ module Swiby
     include ComponentExtension
   end
 
+  def window *args, &block
+    frame(*args, &block)
+  end
+  
   def frame options = nil, &block
 
     sync_swing_thread do

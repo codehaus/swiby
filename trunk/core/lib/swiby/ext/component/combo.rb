@@ -17,6 +17,7 @@ module Swiby
 
   module Builder
 
+    # in case <i>layout_input</i> is not defined in the calling context
     def layout_input label, text
     end
     

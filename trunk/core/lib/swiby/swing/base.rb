@@ -104,6 +104,10 @@ module Swiby
       }
     end
 
+    def gui_wrapper?
+      true
+    end
+
     def scrollable
       @scroll_pane = JScrollPane.new @component
     end

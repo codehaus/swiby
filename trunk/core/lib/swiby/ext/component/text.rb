@@ -7,6 +7,10 @@
 #
 #++
 
+require 'swiby/data/converter/date_converter'
+
+import javax.swing.JTextField
+
 require_extension :component, 'label'
 require_extension :component, 'shortcut'
 
@@ -21,40 +25,67 @@ module Swiby
     def layout_input label, text
     end
 
-    def input label = nil, text = nil, options = nil, &block
-      text_input_factory label, text, options, block do |opt|
+    # Creates a input field without label
+    def text text = nil, options = nil, &block
+      text_input_factory TextOptions.new(context,text, options, block) do |opt|
         TextField.new(opt)
       end
     end
     
+    # Creates a input field without label for date values
+    def date text = nil, options = nil, &block
+      text_input_factory TextOptions.new(context,text, options, block), :date do |opt|
+        TextField.new(opt)
+      end
+    end		
+		
+    # Creates an input field with label for date values
+    def input_date label = nil, text = nil, options = nil, &block
+      text_input_factory InputOptions.new(context, label, text, options, &block), :date do |opt|
+        TextField.new(opt)
+      end
+		end
+		
+    # Creates an input field with label for free string values
+    def input label = nil, text = nil, options = nil, &block
+      text_input_factory InputOptions.new(context, label, text, options, &block) do |opt|
+        TextField.new(opt)
+      end
+    end
+    
+    # Creates an input field with label for password values
     def password label = nil, text = nil, options = nil, &block
-      text_input_factory label, text, options, block do |opt|
+      text_input_factory InputOptions.new(context, label, text, options, &block) do |opt|
         PasswordField.new(opt)
       end
     end
     
+    # Creates the visual component(s)
     # Needs a block that returns the Swiby wrapper
-    def text_input_factory label, text, options, block
+    #
+    # +options+ is a ComponentOptions for inputs
+    # +type+ (optional) is the type of data to input
+    def text_input_factory options, type = nil
 
       ensure_section
 
-      x = InputOptions.new(context, label, text, options, &block)
-      
       accessor = nil
       
-      text = x[:text]
+      options[:type] = type if type
+      
+      text = options[:text]
       
       if text.instance_of?(Symbol)
         accessor = AccessorPath.new(text)
-        x[:name] = text.to_s
-        x[:text] = @data.send(text)
+        options[:name] = text.to_s
+        options[:text] = @data.send(text)
       elsif text.instance_of?(AccessorPath)
         accessor = text
-        x[:name] = text.to_s
-        x[:text] = accessor.resolve(@data)
+        options[:name] = text.to_s
+        options[:text] = accessor.resolve(@data)
       end
 
-      field = yield(x)
+      field = yield(options)
       
       if accessor
         
@@ -72,15 +103,15 @@ module Swiby
       
       label = nil
       
-      if x[:label]
-        x.delete(:action)
-        label = SimpleLabel.new(x)
+      if options[:label]
+        options.delete(:action)
+        label = SimpleLabel.new(options)
         add label
         context << label
         context.add_child label
       end
 
-      context[x[:name].to_s] = field if x[:name]
+      context[options[:name].to_s] = field if options[:name]
       
       context.add_child field
       
@@ -99,6 +130,7 @@ module Swiby
       declare :name, [String, Symbol], true
       declare :label, [String, Symbol], true
       declare :text, [Object]
+      declare :type, Symbol, true # defaults to free string input
       declare :columns, [Integer], true
       declare :swing, [Proc], true
       declare :on_key, [KeyHandler], true
@@ -112,15 +144,39 @@ module Swiby
     end
     
   end
+  
+  class TextOptions < ComponentOptions
+    
+    define "Text" do
+      
+      declare :name, [String, Symbol], true
+      declare :text, [Object], true
+      declare :type, Symbol, true # defaults to free string input
+      declare :columns, [Integer], true
+      declare :swing, [Proc], true
+      declare :on_key, [KeyHandler], true
+      declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
+      declare :readonly, [TrueClass, FalseClass, IncrementalValue], true
+      declare :input_component, [Object], true
+      
+      overload :text
+      
+    end
+    
+  end
 
   class TextField < SwingBase
 
+    DATA_CONVERTERS = {:default => nil, :date => DateConverter.new}
+    
     attr_accessor :linked_label
     swing_attr_accessor :columns, :editable
 
     def initialize options = nil
       
       @component = JFormattedTextField.new
+      
+      @component.focus_lost_behavior = JFormattedTextField::COMMIT
       
       return unless options
       
@@ -135,7 +191,7 @@ module Swiby
       if x.instance_of? IncrementalValue
         x.assign_to self, :value=
       else
-        self.value = x if x
+        self.value = x if x and not (x.is_a?(String) and x.length == 0)
       end
       
       self.name = options[:name].to_s if options[:name]
@@ -143,6 +199,8 @@ module Swiby
       
       @style_id = self.name.to_sym if self.name      
       @component.columns = options[:columns] if options[:columns]
+      
+      @converter = DATA_CONVERTERS[options[:type]] if options[:type]
       
       options[:swing].call(java_component) if options[:swing]
       
@@ -190,24 +248,38 @@ module Swiby
     end
     
     def value
-      @component.value
+      
+      begin
+        @component.commitEdit
+      rescue
+        return nil
+      end
+      
+      x = @component.text unless @converter
+      x = @converter.ui_value_to_internal(@component.value) if @converter
+      x
+      
     end
 
     def value=(val)
+
+      val = @converter.internal_value_to_ui(val) if @converter
       
-      plug_formatter_for val unless @formatter_set
+      plugged_formatter = plug_formatter_for(val)
       
-      @component.value = val
-      
+      @component.value = val.nil? ? '' : val
+      @component.getFormatter.setOverwriteMode(false) unless plugged_formatter
+       
     end
     
     def plug_formatter_for value
 
-      if value.respond_to?(:plug_input_formatter)
-        value.plug_input_formatter self
+      if @converter
+        @converter.plug_input_formatter self
+        true
+      else
+        false
       end
-      
-      @formatter_set = true
       
     end
 

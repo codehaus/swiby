@@ -14,9 +14,22 @@ require 'swiby/core'
 
 module Swiby
 
-  ##-----
-  class TestNoArgsInitializer < Test::Unit::TestCase
+  class ComponentOptionTestCase < Test::Unit::TestCase
+    
+    def gui_wrapper?
+      true
+    end
+    
+    def run(*args) #:nodoc:
+      return if @method_name.to_s == "default_test"
+      super
+    end
+    
+  end
   
+  ##-----
+  class TestNoArgsInitializer < ComponentOptionTestCase
+    
     class TestOptions < ComponentOptions
 
       define "Test" do
@@ -36,7 +49,7 @@ module Swiby
         TestOptions.new self, "Name"
       end
       
-      assert_equal ComponentOptions.bad_signature(String), ex.message
+      assert_equal ComponentOptions.bad_signature_error('Test', String), ex.message
       
     end
 
@@ -46,7 +59,7 @@ module Swiby
         TestOptions.new self, :label => "Name"
       end
       
-      assert_equal ComponentOptions.missing_option(:text), ex.message
+      assert_equal ComponentOptions.missing_option_error('Test', :text), ex.message
       
     end
 
@@ -96,7 +109,7 @@ module Swiby
   end
 
   ##-----
-  class TestOneArgInitializer < Test::Unit::TestCase
+  class TestOneArgInitializer < ComponentOptionTestCase
   
     class TestOptions < ComponentOptions
 
@@ -119,7 +132,7 @@ module Swiby
         TestOptions.new self, "Name", 33
       end
       
-      assert_equal ComponentOptions.bad_signature(String, Fixnum), ex.message
+      assert_equal ComponentOptions.bad_signature_error('Test', String, Fixnum), ex.message
       
     end
     
@@ -129,7 +142,7 @@ module Swiby
         TestOptions.new self, 44
       end
       
-      assert_equal ComponentOptions.bad_signature(Fixnum), ex.message
+      assert_equal ComponentOptions.bad_signature_error('Test', Fixnum), ex.message
       
     end
 
@@ -139,7 +152,7 @@ module Swiby
         TestOptions.new self, :label => "Name"
       end
       
-      assert_equal ComponentOptions.missing_option(:text), ex.message
+      assert_equal ComponentOptions.missing_option_error(:text), ex.message
       
     end
 
@@ -149,7 +162,7 @@ module Swiby
         TestOptions.new self, :label => "Name"
       end
       
-      assert_equal ComponentOptions.missing_option(:text), ex.message
+      assert_equal ComponentOptions.missing_option_error('Test', :text), ex.message
       
     end
 
@@ -221,7 +234,7 @@ module Swiby
   end
   
   ##-----
-  class TestManyArgsInitializer < Test::Unit::TestCase
+  class TestManyArgsInitializer < ComponentOptionTestCase
   
     class TestOptions < ComponentOptions
 
@@ -247,7 +260,7 @@ module Swiby
         TestOptions.new self, Class
       end
       
-      assert_equal ComponentOptions.bad_signature(Class), ex.message
+      assert_equal ComponentOptions.bad_signature_error('Test', Class), ex.message
       
     end
 
@@ -257,7 +270,7 @@ module Swiby
         TestOptions.new self, :label => "Name"
       end
       
-      assert_equal ComponentOptions.missing_option(:text), ex.message
+      assert_equal ComponentOptions.missing_option_error('Test', :text), ex.message
       
     end
 
@@ -349,7 +362,7 @@ module Swiby
   end
   
   ##-----
-  class TestArgsWithTypeAmbiguity < Test::Unit::TestCase
+  class TestArgsWithTypeAmbiguity < ComponentOptionTestCase
   
     class TestOptions < ComponentOptions
 
@@ -387,7 +400,7 @@ module Swiby
   end
   
   ##-----
-  class TestArgsWithNilsInitializer < Test::Unit::TestCase
+  class TestArgsWithNilsInitializer < ComponentOptionTestCase
   
     class TestOptions < ComponentOptions
 
@@ -452,6 +465,54 @@ module Swiby
 
     end
 
+  end
+  
+  ##-----
+  class TestNoRequiredArg < ComponentOptionTestCase
+  
+    class TestOptions < ComponentOptions
+
+      define "Test" do
+
+        declare :name, [String, Symbol], true
+        declare :text, [Object], true
+        declare :height, [Integer], true
+        declare :width, [Integer], true
+
+        overload :text
+
+      end
+
+    end
+
+    def test_accept_no_explicit_arg
+      
+      x = TestOptions.new(self, {:name => :phone})
+      
+      assert_equal :phone, x[:name]
+
+    end
+
+    def test_first_argument_is_required
+      
+      ex = assert_raise ArgumentError do
+        TestOptions.new
+      end
+      
+      assert_equal ComponentOptions.missing_component_error('Test'), ex.message
+
+    end
+
+    def test_complain_if_first_argument_is_not_component
+      
+      ex = assert_raise ArgumentError do
+        TestOptions.new('Hello')
+      end
+      
+      assert_equal ComponentOptions.not_a_component_error('Test', 'Hello'), ex.message
+
+    end
+    
   end
   
 end
