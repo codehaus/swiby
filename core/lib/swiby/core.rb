@@ -28,16 +28,24 @@ module Swiby
       @context
     end
     
-    def self.bad_signature *actual_types
+    def self.bad_signature_error *actual_types
       name = actual_types[0]
       actual_types.shift
       "#{name} cannot resolve initialization signature: #{actual_types.join(', ')}"
     end
     
-    def self.missing_option name, option_name_symbol
+    def self.missing_option_error name, option_name_symbol
       "Option '#{option_name_symbol}' for #{name} was not set"
     end
     
+    def self.missing_component_error name
+      "#{name} no argument, missing component as first argument"
+    end
+    
+    def self.not_a_component_error name, was_instead
+      "#{name} first argument should be component, got #{was_instead.class} instead"
+    end
+        
     def self.invalid_argument option_name_symbol, options, valid_types
       "Invalid argument '#{option_name_symbol}'" + 
       " type was #{options[option_name_symbol].class}" + 
@@ -97,6 +105,8 @@ module Swiby
       init = proc do
         %{
         def initialize *args, &block
+          raise ArgumentError.new(ComponentOptions.missing_component_error(#{name})) if args.length == 0
+          raise ArgumentError.new(ComponentOptions.not_a_component_error(#{name}, args[0])) unless args[0].respond_to?(:gui_wrapper?)
 
           super "#{name}", args.shift
         
@@ -225,7 +235,7 @@ module Swiby
         
         types = args.collect { |arg| arg.class }
         
-        raise ArgumentError.new(ComponentOptions.bad_signature(@name, types))
+        raise ArgumentError.new(ComponentOptions.bad_signature_error(@name, types))
         
       end 
       
@@ -238,7 +248,7 @@ module Swiby
       @metadata.each do |key, value|
         
         if @options[key].nil?
-          raise ArgumentError.new(ComponentOptions.missing_option(@name, key)) unless value.optional?
+          raise ArgumentError.new(ComponentOptions.missing_option_error(@name, key)) unless value.optional?
         elsif !@metadata[key].compatible?(@options[key])
           raise ArgumentError.new(ComponentOptions.invalid_argument(key, @options, @metadata[key].types))
         end

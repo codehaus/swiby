@@ -18,6 +18,10 @@ module Swiby
     def layout_panel panel
     end
       
+    def group *args, &block
+      panel(*args, &block)
+    end
+    
     def panel options = nil, &block
 
       ensure_section
