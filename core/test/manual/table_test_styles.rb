@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/table'
+
 class TableStylesTest < ManualTest
 
   styles = create_styles {

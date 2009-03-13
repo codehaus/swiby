@@ -7,8 +7,10 @@
 #
 #++
 
-require 'swiby/form'
-require 'swiby/data'
+require 'swiby/component/form'
+require 'swiby/component/text'
+require 'swiby/component/combo'
+
 require 'swiby/tools/console.rb'
 
 class Account
@@ -84,7 +86,7 @@ acc4 = Account.new 'Max', '222764399497', 'There 14'
 
 my_accounts = [acc1, acc2, acc3]
 
-current = Transfer.new 200.dollars, acc3, acc4
+current = Transfer.new 200, acc3, acc4
 
 transfer_form = form {
 

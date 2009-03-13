@@ -7,13 +7,9 @@
 #
 #++
 
-require_extension :component, 'frame'
+require 'swiby/component/frame'
 
 module Swiby
-  
-  class AppletExtension < Extension
-    include ComponentExtension
-  end
 
   class Applet < Frame
 

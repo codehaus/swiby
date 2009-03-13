@@ -7,19 +7,16 @@
 #
 #++
 
+import javax.swing.JTextField
+import javax.swing.JFormattedTextField
+
 require 'swiby/data/converter/date_converter'
 
-import javax.swing.JTextField
-
-require_extension :component, 'label'
-require_extension :component, 'shortcut'
+require 'swiby/component/label'
+require 'swiby/component/shortcut'
 
 module Swiby
     
-  class TextExtension < Extension
-    include ComponentExtension
-  end
-
   module Builder
 
     def layout_input label, text

@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/text'
+
 class StyleSettingTest < ManualTest
 
   manual 'Style from variable from' do
@@ -30,9 +32,9 @@ class StyleSettingTest < ManualTest
       width 400
       height 130
       
-      button "Hello"
       input "Name: ", "Joe"
       combo "Country:", ['Belgium', 'France', 'Italy']
+      button "Hello"
       
       visible true
       
@@ -59,9 +61,9 @@ class StyleSettingTest < ManualTest
       width 400
       height 130
       
-      button "Hello"
       input "Name: ", "Joe"
       combo "Country:", ['Belgium', 'France', 'Italy']
+      button "Hello"
       
       visible true
       
@@ -80,9 +82,9 @@ class StyleSettingTest < ManualTest
       width 400
       height 130
       
-      button "Hello"
       input "Name: ", "Joe"
       combo "Country:", ['Belgium', 'France', 'Italy']
+      button "Hello"
       
       visible true
       
@@ -99,9 +101,9 @@ class StyleSettingTest < ManualTest
       width 400
       height 130
       
-      button "Hello"
       input "Name: ", "Joe"
       combo "Country:", ['Belgium', 'France', 'Italy']
+      button "Hello"
       
       visible true
       

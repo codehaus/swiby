@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/text'
+
 class PasswordTest < ManualTest
 
   manual 'Password input' do

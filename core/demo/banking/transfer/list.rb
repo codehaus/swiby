@@ -9,6 +9,8 @@
 
 require 'transfer_ui'
 
+require 'swiby/component/table'
+
 transfers = Transfer.find
 
 title "Transfer List"

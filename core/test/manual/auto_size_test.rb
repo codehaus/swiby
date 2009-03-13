@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/text'
+
 class AutosizeTest < ManualTest
 
   content_builder = proc {
@@ -109,7 +111,7 @@ class AutosizeTest < ManualTest
   
   end
 
-  manual 'disable Default autosize' do
+  manual 'disable autosize + Default autosize' do
 
     Defaults.auto_sizing_frame = true
     

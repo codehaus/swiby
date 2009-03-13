@@ -9,6 +9,8 @@
 
 require 'swiby/swing/layout'
 
+import java.awt.FlowLayout
+
 module Swiby
     
   class LayoutFactory
@@ -34,9 +36,9 @@ module Swiby
   end
   
   FLOW_ALIGNMENTS = {
-    :left => AWT::FlowLayout::LEFT, 
-    :center => AWT::FlowLayout::CENTER, 
-    :right => AWT::FlowLayout::RIGHT
+    :left => FlowLayout::LEFT, 
+    :center => FlowLayout::CENTER, 
+    :right => FlowLayout::RIGHT
   }
 
   def create_layout *options
@@ -61,10 +63,6 @@ module Swiby
           layout.alignment = align if align
           
           layout
-          
-        when :area
-          
-          AreaLayout.new
           
         else
           LayoutFactory.create_layout(lm, data)

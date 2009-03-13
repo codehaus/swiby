@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/text'
+
 class Person
   attr_accessor :name, :birth_date
   

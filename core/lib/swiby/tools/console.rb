@@ -7,7 +7,10 @@
 #
 #++
 
-require 'swiby/form'
+require 'swiby/component/form'
+require 'swiby/component/layer'
+require 'swiby/component/editor'
+
 require 'swiby/swing/event'
 require 'swiby/util/ruby_tokenizer'
 
@@ -216,9 +219,11 @@ def open_console run_context, container = nil
     
     title "#{container.java_component.title} - Console"
     
-    input '', '', :name => :info
-    
-    editor 400, 300, :name => :editor
+    text :name => :info
+
+    next_row
+    section :expand => 100
+      editor :name => :editor
     
     button("Show Info", :name => :frame_info_button) {
       context.show_hide_info
@@ -337,26 +342,26 @@ def setup_as_script_editor editor, tokenizer
   doc = editor.document
   
   style = doc.add_style("default", nil)
-  StyleConstants::set_foreground(style, AWT::Color::BLACK)
+  StyleConstants::set_foreground(style, Color::BLACK)
   
   style = doc.add_style("name", nil)
-  StyleConstants::set_foreground(style, AWT::Color::BLACK)
+  StyleConstants::set_foreground(style, Color::BLACK)
   
   style = doc.add_style("keyword", nil)
-  StyleConstants::set_foreground(style, AWT::Color::BLUE)
+  StyleConstants::set_foreground(style, Color::BLUE)
   StyleConstants::set_bold(style, true)
 
   style = doc.add_style("symbol", nil)
-  StyleConstants::set_foreground(style, AWT::Color::BLUE)
+  StyleConstants::set_foreground(style, Color::BLUE)
   
   style = doc.add_style("number", nil)
-  StyleConstants::set_foreground(style, AWT::Color::RED)
+  StyleConstants::set_foreground(style, Color::RED)
   
   style = doc.add_style("string", nil)
-  StyleConstants::set_foreground(style, AWT::Color::RED)
+  StyleConstants::set_foreground(style, Color::RED)
   
   style = doc.add_style("comment", nil)
-  StyleConstants::set_foreground(style, AWT::Color.new(21, 110, 30))
+  StyleConstants::set_foreground(style, Color.new(21, 110, 30))
   StyleConstants::set_italic(style, true)
 
   editor.on_change do
@@ -459,9 +464,9 @@ class FrameInfoPanel
   def create_markers
     
     unless @bg_color
-      @bg_color = AWT::Color.new(255, 255, 128)
-      @no_name_bg = AWT::Color.new(248, 248, 248)
-      outside = ::BorderFactory.createLineBorder(AWT::Color::BLACK)
+      @bg_color = Color.new(255, 255, 128)
+      @no_name_bg = Color.new(248, 248, 248)
+      outside = ::BorderFactory.createLineBorder(Color::BLACK)
       inside = ::BorderFactory.createEmptyBorder(1, 2, 1, 2)
       @border = ::BorderFactory.createCompoundBorder(outside, inside)
     end

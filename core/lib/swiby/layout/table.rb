@@ -10,12 +10,9 @@
 require 'swiby/layout_factory'
 
 import java.awt.Dimension
+import java.awt.LayoutManager
 
 module Swiby
-  
-  class TableLayoutExtension < Extension
-    include LayoutExtension
-  end
 
   class TableLayoutFactory
     
@@ -40,7 +37,7 @@ module Swiby
   
   class TableLayout
 	
-    include AWT::LayoutManager
+    include LayoutManager
     
     attr_accessor :hgap, :vgap
 

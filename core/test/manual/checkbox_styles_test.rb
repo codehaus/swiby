@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/layout/stacked'
+
 class CheckboxStylesTest < ManualTest
 
   styles = create_styles {

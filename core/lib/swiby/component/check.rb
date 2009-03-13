@@ -7,13 +7,11 @@
 #
 #++
 
-require_extension :component, 'button'
+require 'swiby/component/button'
+
+import javax.swing.JCheckBox
 
 module Swiby
-  
-  class CheckBoxExtension < Extension
-    include ComponentExtension
-  end
   
   module Builder
   

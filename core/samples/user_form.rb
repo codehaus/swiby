@@ -7,7 +7,8 @@
 #
 #++
 
-require 'swiby/form'
+require 'swiby/component/form'
+require 'swiby/component/text'
 
 class User
   

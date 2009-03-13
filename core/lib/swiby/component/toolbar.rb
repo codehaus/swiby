@@ -7,11 +7,9 @@
 #
 #++
 
+import javax.swing.JToolBar
+
 module Swiby
-    
-  class ToolBarExtension < Extension
-    include ComponentExtension
-  end
 
   class Toolbar < SwingBase
 

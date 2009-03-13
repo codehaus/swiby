@@ -7,15 +7,14 @@
 #
 #++
 
-require_extension :component, 'combo'
-require_extension :component, 'panel'
-require_extension :component, 'button'
+require 'swiby/component/combo'
+require 'swiby/component/panel'
+require 'swiby/component/button'
+
+import javax.swing.ButtonGroup
+import javax.swing.JRadioButton
 
 module Swiby
-  
-  class RadioExtension < Extension
-    include ComponentExtension
-  end
   
   module Builder
   

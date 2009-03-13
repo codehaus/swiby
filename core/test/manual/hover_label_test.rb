@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/label'
+
 class HoverLabelTest < ManualTest
 
   manual 'Hover label w/o options' do
@@ -37,7 +39,7 @@ class HoverLabelTest < ManualTest
       width 250
       height 70
 
-      hover_label("Click me!", :hover_color => AWT::Color::BLUE)  {
+      hover_label("Click me!", :hover_color => Color::BLUE)  {
         message_box "Hello"
       }
       

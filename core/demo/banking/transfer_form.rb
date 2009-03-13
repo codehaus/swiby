@@ -12,7 +12,7 @@ require 'transfer_ui'
 from_accounts = Account.find_from_accounts
 to_accounts = Account.find_to_accounts
 
-current = Transfer.new 0.dollars, from_accounts[2], to_accounts[0]
+current = Transfer.new 0, from_accounts[2], to_accounts[0]
 
 title "Transfer Form"
 

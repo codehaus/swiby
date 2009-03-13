@@ -7,13 +7,11 @@
 #
 #++
 
+import javax.swing.JLabel
+import javax.swing.ImageIcon
 import javax.swing.BorderFactory
 
 module Swiby
-  
-  class LabelExtension < Extension
-    include ComponentExtension
-  end
 
   module Builder
 
@@ -45,7 +43,7 @@ module Swiby
     def hover_label text = nil, options = nil, &block
       
       handler = block
-      hover_color = AWT::Color::RED
+      hover_color = Color::RED
       
       if options and options.respond_to?(:[])
         

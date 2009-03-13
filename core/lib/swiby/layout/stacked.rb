@@ -10,10 +10,6 @@
 require 'swiby/layout_factory'
 
 module Swiby
-  
-  class StackedExtension < Extension
-    include LayoutExtension
-  end
 
   class StackedFactory
   

@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/list'
+
 import javax.swing.ListCellRenderer
  
 module Swiby
@@ -23,7 +25,7 @@ module Swiby
       
       comp = @actual.getListCellRendererComponent(list, value, index, false, false)
       
-      comp.foreground = AWT::Color::RED if is_selected
+      comp.foreground = Color::RED if is_selected
       
       comp
       

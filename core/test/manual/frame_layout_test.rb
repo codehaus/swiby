@@ -7,6 +7,9 @@
 #
 #++
 
+require 'swiby/layout/stacked'
+require 'swiby/component/text'
+
 class FrameLayoutTest < ManualTest
 
   manual 'Implicit Default layout' do

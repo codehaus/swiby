@@ -10,7 +10,10 @@
 require 'account'
 require 'transfer'
 
-include_class 'java.awt.Color'
+require 'swiby/layout/stacked'
+require 'swiby/component/combo'
+
+import java.awt.Color
 
 def open_settings target
   

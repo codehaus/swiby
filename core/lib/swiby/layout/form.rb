@@ -10,10 +10,6 @@
 require 'swiby/layout_factory'
 
 module Swiby
-  
-  class FormExtension < Extension
-    include LayoutExtension
-  end
 
   class FormFactory
   
@@ -23,10 +19,10 @@ module Swiby
     
     def create name, data
           
-      layout = FormLayout.new
-
-      layout.hgap = data[:hgap] if data[:hgap]
-      layout.vgap = data[:vgap] if data[:vgap]
+      hgap = data[:hgap] ? data[:hgap] : 0
+      vgap = data[:vgap] ? data[:vgap] : 0
+          
+      layout = FormLayout.new hgap, vgap
 
       layout
 

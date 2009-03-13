@@ -9,6 +9,13 @@
 
 require 'swiby/tools/console'
 
+require 'swiby/layout/stacked'
+
+require 'swiby/component/text'
+require 'swiby/component/radio_button'
+
+import javax.swing.SwingConstants
+
 def show_console context
 
   unless @console
@@ -42,9 +49,9 @@ class SyntaxTest < ManualTest
             name :label_name
             label 'label text at bottom [label_name]'
             swing { |comp|
-              comp.vertical_alignment = BOTTOM
+              comp.vertical_alignment = SwingConstants::BOTTOM
               comp.preferred_size = Dimension.new(200, 100)
-              comp.border = ::BorderFactory.createLineBorder(AWT::Color::BLACK)
+              comp.border = ::BorderFactory.createLineBorder(Color::BLACK)
               comp.tool_tip_text = "My name is <#{comp.name}>"
             }
           }
@@ -191,9 +198,9 @@ class SyntaxTest < ManualTest
         section 'Label'
           label 'label text at bottom', :label_name
             swing { |comp|
-              comp.vertical_alignment = BOTTOM 
+              comp.vertical_alignment = SwingConstants::BOTTOM 
               comp.preferred_size = Dimension.new(200, 100)
-              comp.border = ::BorderFactory.createLineBorder(AWT::Color::BLACK)
+              comp.border = ::BorderFactory.createLineBorder(Color::BLACK)
               comp.tool_tip_text = "My name is <#{comp.name}>"
             }
       

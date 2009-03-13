@@ -31,9 +31,9 @@ class Transfer
     to = Account.find_to_accounts
 
     @list = [
-      Transfer.new(200.dollars, from[0], to[0]),
-      Transfer.new(14.dollars, from[0], from[1]),
-      Transfer.new(130.dollars, from[1], to[0])
+      Transfer.new(200, from[0], to[0]),
+      Transfer.new(14, from[0], from[1]),
+      Transfer.new(130, from[1], to[0])
     ]
     
   end

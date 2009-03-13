@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/text'
+
 class TableLayoutTest < ManualTest
 
   manual 'One row' do

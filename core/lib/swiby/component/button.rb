@@ -7,11 +7,10 @@
 #
 #++
 
+import javax.swing.JButton
+import javax.swing.ImageIcon
+
 module Swiby
-  
-  class ButtonExtension < Extension
-    include ComponentExtension
-  end
   
   module Builder
   
