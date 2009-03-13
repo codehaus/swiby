@@ -14,98 +14,47 @@ require 'swiby/builder'
 require 'swiby/style_resolver'
 require 'swiby/layout_factory'
 
-require 'swiby/util/extension_loader'
-
 require 'java'
 require 'erb'
 
+import java.lang.System
+import javax.swing.UIManager
+import javax.swing.JOptionPane
+
 module Swiby
-
-  include_class 'java.lang.System'
-
-  include_class ['HTMLEditorKit', 'StyleSheet'].map {|e| "javax.swing.text.html." + e}
-  include_class [
-    'Box',
-    'ButtonGroup',
-    'DefaultListModel',
-    'ImageIcon',
-    'JApplet',
-    'JButton',
-    'JCheckBox',
-    'JComboBox',
-    'JDialog',
-    'JFormattedTextField',
-    'JFrame',
-    'JEditorPane',
-    'JLabel',
-    'JList',
-    'JMenu',
-    'JMenuBar',
-    'JMenuItem',
-    'JOptionPane',
-    'JPanel',
-    'JRadioButton',
-    'JTabbedPane',
-    'JTextField',
-    'JToolBar',
-    'JTree',
-    'KeyStroke',
-    'UIManager',
-    'SwingConstants'
-  ].map {|e| "javax.swing." + e}
-
-  module AWT
-    include_class 'java.awt.Color'
-    include_class 'java.awt.Dimension'
-    include_class 'java.awt.GridLayout'
-    include_class 'java.awt.BorderLayout'
-    include_class 'java.awt.event.InputEvent'
-  end
-
-  module Border
-    include_class 'javax.swing.border.EmptyBorder'
-  end
-  
-  include_class 'java.util.Locale'
-  include_class 'java.text.NumberFormat'
-  include_class 'java.text.SimpleDateFormat'
-  include_class 'javax.swing.text.MaskFormatter'
-  include_class 'javax.swing.text.DateFormatter'
-  include_class 'javax.swing.text.NumberFormatter'
-  include_class 'javax.swing.text.DefaultFormatterFactory'
-
-  ALT = AWT::InputEvent::ALT_MASK
-  CTL = AWT::KeyEvent::CTRL_DOWN_MASK
-
-  Q = AWT::KeyEvent::VK_Q
-  X = AWT::KeyEvent::VK_X
-  F4 = AWT::KeyEvent::VK_F4
-
-  CENTER = SwingConstants::CENTER
-  LEADING = SwingConstants::LEADING
-  TOP = SwingConstants::TOP
-  LEFT = SwingConstants::LEFT
-  RIGHT = SwingConstants::RIGHT
-  BOTTOM = SwingConstants::BOTTOM
-  TRAILING = SwingConstants::TRAILING
-
-  WRAP = JTabbedPane::WRAP_TAB_LAYOUT
-  SCROLL = JTabbedPane::SCROLL_TAB_LAYOUT
 
   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()) unless System::get_property('swing.defaultlaf')
 
-  module ComponentExtension
-    VERSION = 1.0
-    CATEGORY = 'component'
-    AUTHOR = 'Jean Lazarou'  
+  
+  # top is the java component instance that is the top element
+  # from which to start dumping hierachy components' information
+  def dump_hierachy msg, top, indent = ''
+    puts "#{indent}#{msg}: #{top.class} <layout #{top.get_layout.class}> contains #{top.component_count} component(s)"
+    top.component_count.times do |i|
+      comp = top.getComponent(i)
+      dump_hierachy "[#{i}]",  comp, indent + ' '
+    end
   end
 
-  module LayoutExtension
-    VERSION = 1.0
-    CATEGORY = 'layout'
-    AUTHOR = 'Jean Lazarou'  
+  # top is the java component instance that is the top element
+  # from which to start dumping hierachy components' sizes
+  def dump_hierachy_sizes msg, top, indent = ''
+    
+    puts "for each component display preferred, minimum and maximum sizes" if indent.length == 0
+    
+    s = top.preferred_size
+    min = top.minimum_size
+    max = top.maximum_size
+    
+    puts "#{indent}#{msg}: #{top.class} [#{s.width} x #{s.height}] - [#{min.width} x #{min.height}] - [#{max.width} x #{max.height}]"
+    
+    top.component_count.times do |i|
+      comp = top.getComponent(i)
+      dump_hierachy_sizes "[#{i}]",  comp, indent + ' '
+    end
+    
   end
-  
+
   class SwibyRunnable
     
     attr_reader :result, :error

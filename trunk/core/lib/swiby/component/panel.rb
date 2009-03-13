@@ -7,12 +7,10 @@
 #
 #++
 
+import javax.swing.JPanel
+
 module Swiby
     
-  class PanelExtension < Extension
-    include ComponentExtension
-  end
-
   module Builder
   
     def layout_panel panel

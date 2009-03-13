@@ -7,6 +7,9 @@
 #
 #++
 
+require 'swiby/layout/stacked'
+require 'swiby/component/radio_button'
+
 class RadioButtonStylesTest < ManualTest
 
   styles = create_styles {

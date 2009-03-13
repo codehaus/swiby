@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/text'
+
 class FormSectionLayoutTest < ManualTest
 
   manual 'Section layouts...' do
@@ -17,8 +19,8 @@ class FormSectionLayoutTest < ManualTest
       
       content {
         section "::1", :layout => :flow
-        button "Button 1"
         input "Name", "James"  
+        button "Button 1"
         section "::2", :layout => :flow, :align => :right
         input "Code", "007"  
         input "Nickname", "Bond"

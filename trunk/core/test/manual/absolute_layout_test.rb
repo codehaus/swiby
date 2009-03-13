@@ -7,6 +7,11 @@
 #
 #++
 
+require 'swiby/layout/absolute'
+
+require 'swiby/component/text'
+require 'swiby/component/label'
+
 class AbsoluteLayoutTest < ManualTest
   
   manual 'Test absolute layout' do

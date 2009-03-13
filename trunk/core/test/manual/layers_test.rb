@@ -7,6 +7,10 @@
 #
 #++
 
+require 'swiby/layout/absolute'
+require 'swiby/component/text'
+require 'swiby/tools/console'
+
 class LayersTest < ManualTest
 
   manual 'Show hide popup layer' do
@@ -94,6 +98,26 @@ class LayersTest < ManualTest
     
     f.layers[2].visible true
     f.layers[3].visible true
+    
+  end
+  
+  manual 'Layers + console' do
+    
+    f = form {
+    
+      title 'Layers + console'
+      
+      content {
+          input 'Input 1', 'Hello', :name => :input_1
+          input 'Input 2', 'world ...'
+          button('Open console') {
+            open_console context
+          }
+      }
+      
+      visible true
+      
+    }
     
   end
   

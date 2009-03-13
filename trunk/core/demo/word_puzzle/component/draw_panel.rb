@@ -12,6 +12,7 @@ include Java
 import java.awt.Font
 import java.awt.AWTEvent
 import java.awt.FontMetrics
+import java.awt.Dimension
 import java.awt.RenderingHints
 
 import java.awt.BasicStroke
@@ -101,9 +102,16 @@ class Graphics
     @resized = flag
   end
    
-  def set_font name, style, size
+  def set_font name, style = nil, size = nil
+    
     @fm = nil
-    @gr.font =  create_font(name, style, size)
+    
+    if style
+      @gr.font =  create_font(name, style, size)
+    else
+      @gr.font =  name
+    end
+    
   end
  
   def width
@@ -191,6 +199,34 @@ class Graphics
   def draw_line x1, y1, x2, y2
     render
     @gr.draw_line x1, y1, x2, y2
+  end
+  
+  def translate x, y
+    @gr.translate(x, y)
+  end
+  
+  def rotate angle
+    @gr.rotate angle
+  end
+  
+  def polygon *points
+    
+    poly = java.awt.Polygon.new
+    
+    points.each { |x, y| poly.add_point x, y }
+    
+    poly
+    
+  end
+  
+  def draw_polygon poly
+    render
+    @gr.draw_polygon poly
+  end
+  
+  def fill_polygon poly
+    render
+    @gr.fill_polygon poly
   end
   
   def oval width, height, border_width = 0, border_color = Color::BLACK

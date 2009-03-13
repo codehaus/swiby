@@ -9,10 +9,6 @@
 
 module Swiby
   
-  class LayerExtension < Extension
-    include ComponentExtension
-  end
-  
   module Builder
     
     VALID_LAYERS = {

@@ -9,10 +9,6 @@
 
 module Swiby
   
-  class ShortcutExtension < Extension
-    include ComponentExtension
-  end
-  
   class KeyHandler
     
     attr_reader :key_strokes

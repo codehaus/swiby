@@ -7,9 +7,14 @@
 #
 #++
 
-require 'swiby'
 require 'swiby/styles'
-require 'swiby/swing/layout'
+require 'swiby/layout/form'
+require 'swiby/component/frame'
+require 'swiby/component/button'
+require 'swiby/component/section'
+
+import javax.swing.JTable
+import javax.swing.table.DefaultTableModel
 
 class Symbol
 
@@ -24,12 +29,6 @@ class Symbol
 end
 
 module Swiby
-
-  module Swing
-    include_class 'javax.swing.JTable'
-    include_class 'javax.swing.BorderFactory'
-    include_class 'javax.swing.table.DefaultTableModel'
-  end
 
   def dialog(parent, &block)
     
@@ -111,13 +110,13 @@ module Swiby
       if @section.respond_to?(symbol)
         @section.send(symbol, *args)
       else
-        super
+        raise NoMethodError.new("undefined method `#{symbol}' for #{self}", symbol, args)
       end
       
     end
     
     def content(*options, &block)
-      
+
       layout = create_form_compatible_layout(*options)
       layout = default_layout unless layout
       
@@ -128,7 +127,7 @@ module Swiby
         layout.add_layout_extensions self
       end
       
-      instance_eval(&block)
+      instance_eval(&block) if block
       
       complete
       
@@ -272,6 +271,17 @@ module Swiby
 
     def section(title = nil, *options)
 
+      if title.is_a?(Hash)
+        options << title
+        title = nil
+      end
+      
+      expand = nil
+      if options.last.is_a?(Hash)
+        expand = options.last.delete(:expand)
+        options.pop if options.last.size == 0
+      end
+
       @layout = create_section_compatible_layout(*options)
       
       @layout = FormLayout.new(10, 5) unless @layout
@@ -289,10 +299,12 @@ module Swiby
       context << @section
       context.add_child @section
       
+      content {} unless @main_layout
+      
       @content_pane.add @section.java_component
 
       @main_layout = default_layout unless @main_layout
-      @main_layout.add_area @section
+      @main_layout.add_area @section, expand
     
       if @main_layout.respond_to?(:add_layout_extensions)
         @main_layout.add_layout_extensions self
@@ -363,7 +375,7 @@ module Swiby
 
       if layout and !layout.respond_to?(:add_area)
         
-        def layout.add_area panel
+        def layout.add_area panel, expand = nil
         end
         
       end
@@ -394,7 +406,63 @@ module Swiby
     end
     
     def default_layout
-      AreaLayout.new(5, 5)
+      
+      layout_manager = MigLayout.new("", "grow", "grow")
+      
+      def layout_manager.add_area section, expand = nil
+        
+        span_it = @last_section.nil?
+          
+        if section == :next_row
+          setComponentConstraints @last_section .java_component, "grow, wrap" if @last_section
+          @current_row_size = nil
+          @last_section = nil
+        else
+
+          if @rows_constraint.nil?
+            
+            @current_row_size = expand ? expand : 0
+            
+            @rows_constraint = '[grow]' unless expand
+            @rows_constraint = "[#{expand}%]" if expand
+            @previous_rows_constraint = ''
+            
+            setRowConstraints @rows_constraint
+            
+          elsif @current_row_size.nil?
+            
+            @current_row_size = 0
+            
+            @previous_rows_constraint = @rows_constraint
+            
+            @rows_constraint += '[grow]' unless expand
+            @rows_constraint += "[#{expand}%]" if expand
+            
+            setRowConstraints @rows_constraint
+            
+          elsif expand and expand > @current_row_size
+            
+            @current_row_size = expand
+            
+            @rows_constraint = "#{@previous_rows_constraint}[#{expand}%]"
+            
+            setRowConstraints @rows_constraint
+            
+          end
+        
+          setComponentConstraints @last_section.java_component, "grow" if @last_section
+          
+          setComponentConstraints section.java_component, "grow #{expand}, span" if span_it
+          setComponentConstraints section.java_component, "grow #{expand}" unless span_it
+          
+          @last_section = section
+          
+        end
+        
+      end
+      
+      layout_manager
+      
     end
     
   end

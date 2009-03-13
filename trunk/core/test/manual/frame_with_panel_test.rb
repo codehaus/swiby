@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/text'
+
 class FrameWithPanelTest < ManualTest
 
   manual 'frame with centerd panel (default layouts)' do

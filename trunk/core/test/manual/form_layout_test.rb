@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/text'
+
 class FormLayoutTest < ManualTest
 
   manual 'Test layout' do
@@ -19,10 +21,66 @@ class FormLayoutTest < ManualTest
       
       content(options) {
 
-        button "Hello", :hello_but
-        button "World!", :world_but
         input "Name", "<your name here>"
           
+        button "Hello", :hello_but
+        button "World!", :world_but
+        
+      }
+      
+      visible true
+      
+    }
+
+  end
+
+  manual "Several buttons/commands" do
+    
+    form {
+      
+      title 'Now, with MigLayout buttons must be at the end...'
+      
+      content {
+        section "::1"
+          input "Code", "007"
+          input "First name", "James"
+          input "Surname", "Bond"
+          button "But 1"
+          button "Button 2"
+          button "Ok"
+          button "Cancel"
+      }
+      
+      visible true
+      
+    }
+
+  end
+
+  manual 'Fields without labels' do
+    
+    form {
+      
+      content {
+        section "::1"
+        input "Name", "James"  
+        text  "Secret"  
+      }
+      
+      visible true
+      
+    }
+
+  end
+
+  manual 'Test no labels does not add unecessary hgaps' do
+    
+    form {
+      
+      content {
+        section "::1"
+        text "James"  
+        text  "Secret"  
       }
       
       visible true

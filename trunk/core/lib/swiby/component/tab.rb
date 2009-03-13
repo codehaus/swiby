@@ -8,10 +8,6 @@
 #++
 
 module Swiby
-    
-  class TabExtension < Extension
-    include ComponentExtension
-  end
 
   class TabbedPane < SwingBase
 

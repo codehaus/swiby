@@ -7,6 +7,9 @@
 #
 #++
 
+require 'swiby/layout/stacked'
+require 'swiby/component/text'
+
 def create_test(a_title, options = nil, &block)
 
   def_options = {:layout => :stacked, :align => :center, :vgap => 10, :hgap => 10}

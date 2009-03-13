@@ -9,10 +9,6 @@
 
 module Swiby
   
-  class MenuExtension < Extension
-    include ComponentExtension
-  end
-  
   class Menu < SwingBase
 
     container :items

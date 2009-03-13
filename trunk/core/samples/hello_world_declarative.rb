@@ -1,4 +1,5 @@
-require 'swiby'
+require 'swiby/component/frame'
+require 'swiby/component/label'
 
 frame {
 

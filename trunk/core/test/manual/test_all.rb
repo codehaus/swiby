@@ -7,7 +7,14 @@
 #
 #++
 
-require 'swiby/form'
+require 'swiby'
+
+require 'swiby/layout/table'
+
+require 'swiby/component/list'
+require 'swiby/component/form'
+require 'swiby/component/check'
+
 require 'test/manual/manual_test'
 
 limit_to = []
@@ -89,11 +96,17 @@ class TestRunnerController
     
     @report = @view.find(:report) unless @report
 
-    test.execute
+    begin
+        test.execute
+    rescue => err
+      cb_result.enabled = false
+      puts err.message, err.backtrace
+    else
+      cb_result.enabled = true
+    end
     
     cb_run.selected = true
     
-    cb_result.enabled = true
     cb_result.selected = false
     
     @report.text = report

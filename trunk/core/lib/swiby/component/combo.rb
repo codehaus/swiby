@@ -7,13 +7,11 @@
 #
 #++
 
-require_extension :component, 'label'
+require 'swiby/component/label'
+
+import javax.swing.JComboBox
 
 module Swiby
-  
-  class ComboBoxExtension < Extension
-    include ComponentExtension
-  end
 
   module Builder
 

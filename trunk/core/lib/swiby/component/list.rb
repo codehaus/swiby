@@ -7,13 +7,12 @@
 #
 #++
 
-require_extension :component, 'combo'
+require 'swiby/component/combo'
+
+import javax.swing.JList
+import javax.swing.DefaultListModel
 
 module Swiby
-  
-  class ListExtension < Extension
-    include ComponentExtension
-  end
 
   module Builder
     
@@ -60,7 +59,7 @@ module Swiby
 
       listener.register do
         
-        block.call(@values[@component.selected_index])
+        block.call(@values[@component.get_selected_index])
         
       end
       

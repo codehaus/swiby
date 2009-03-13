@@ -1,4 +1,6 @@
 require 'swiby'
+require 'swiby/component/text'
+require 'swiby/component/frame'
 
 class HelloWorldModel
 	attr_accessor :saying

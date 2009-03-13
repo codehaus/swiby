@@ -7,52 +7,97 @@
 #
 #++
 
+import javax.swing.JTable
+import javax.swing.table.TableCellRenderer
+import javax.swing.table.DefaultTableCellRenderer
 
 module Swiby
 
-  include_class 'javax.swing.table.TableCellRenderer'
-  include_class 'javax.swing.table.DefaultTableCellRenderer'
-  
-  class TableExtension < Extension
-    include ComponentExtension
-  end
-
   module Builder
 
-    def table headers, values
+    class TM < javax.swing.table.DefaultTableModel
+      
+      def headers= headers
+
+        headers.each do |column|
+          addColumn column
+        end
+
+      end
+      
+      def values= values
+
+        if values.instance_of? IncrementalValue
+          values = values.get_value
+        end
+
+        values.each do |value|
+
+          if value.respond_to?(:table_row)
+            row = value.table_row
+          else
+            row = value
+          end
+
+          vector = java.util.Vector.new
+
+          if row.is_a?(Hash)
+          
+            @fields.each do |field|
+              vector.addElement row[field]
+            end
+              
+          else
+          
+            row.each do |cell|
+              vector.addElement cell
+            end
+              
+          end
+
+          addRow vector
+
+        end
+        
+      end
+      
+      def fields= fields
+        @fields = fields
+      end
+      
+    end
+    
+    def table headers, values = nil
 
       ensure_section
-
-      if values.instance_of? IncrementalValue
-        values = values.get_value
+      
+      name, fields = nil, nil
+      
+      options = values if values.is_a?(Hash)
+      options = headers if headers.is_a?(Hash) and values.nil?
+      
+      if options
+        
+        values = []
+        
+        name = options[:name] if options[:name]
+        values = options[:data] if options[:data]
+        fields = options[:fields] if options[:fields]
+        headers = options[:columns] if options[:columns]
+                
       end
 
-      model = Swing::DefaultTableModel.new
-
-      headers.each do |column|
-        model.addColumn column
-      end
-
-      values.each do |value|
-
-        if value.respond_to?(:table_row)
-          row = value.table_row
-        else
-          row = value
-        end
-
-        vector = java.util.Vector.new
-
-        row.each do |cell|
-          vector.addElement cell
-        end
-
-        model.addRow vector
-
-      end
-
+      model = TM.new
+      model.headers = headers
+      model.values = values
+      model.fields = fields
+      
       table = Table.new
       table.model = model
+      table.fields = fields
+
+      context[name.to_s] = table if name
+      table.name = name.to_s if name
 
       add table
       context << table
@@ -64,11 +109,13 @@ module Swiby
   
   class Table < SwingBase
 
+    attr_accessor :fields
+    
     def initialize
       
-      @component = Swing::JTable.new
+      @component = JTable.new
       
-      @component.auto_resize_mode = Swing::JTable::AUTO_RESIZE_SUBSEQUENT_COLUMNS
+      @component.auto_resize_mode = JTable::AUTO_RESIZE_SUBSEQUENT_COLUMNS
       @component.selection_model.selection_mode = javax.swing.ListSelectionModel::SINGLE_SELECTION
       
       scrollable
@@ -77,6 +124,14 @@ module Swiby
     
     def model= model
       @component.model = model
+    end
+    
+    def model
+      @component.model
+    end
+    
+    def clear
+      model.row_count = 0
     end
     
     def apply_styles styles

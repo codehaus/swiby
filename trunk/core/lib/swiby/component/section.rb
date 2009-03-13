@@ -9,10 +9,6 @@
 
 module Swiby
     
-  class SectionExtension < Extension
-    include ComponentExtension
-  end
-
   class Section < SwingBase
     
     def initialize title

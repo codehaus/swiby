@@ -9,12 +9,12 @@
 
 require 'swiby/styles'
 
+import java.awt.Font
+import java.awt.Color
+import javax.swing.BorderFactory
+
 module Swiby
 
-  module AWT
-    include_class 'java.awt.Font'
-  end
-  
   class StyleResolver
 
     def initialize styles
@@ -84,21 +84,21 @@ module Swiby
       family = find(:font_family, component_type, id)
 
       if style.nil? and weight.nil?
-        style = AWT::Font::PLAIN
+        style = Font::PLAIN
       else
 
         awt_style = 0
 
         if style == :normal
-          awt_style = AWT::Font::PLAIN
+          awt_style = Font::PLAIN
         end
 
         if style == :italic
-          awt_style = AWT::Font::ITALIC
+          awt_style = Font::ITALIC
         end
 
         if weight == :bold
-          awt_style += AWT::Font::BOLD
+          awt_style += Font::BOLD
         end
 
       end
@@ -135,12 +135,12 @@ module Swiby
       color = find(:border_color, element, id)
       
       color = create_color(color) if color
-      border_color = ::BorderFactory.createLineBorder(color) if color
-      border_margin = ::BorderFactory.createEmptyBorder(margin, margin, margin, margin) if margin
-      border_padding = ::BorderFactory.createEmptyBorder(padding, padding, padding, padding) if padding
+      border_color = BorderFactory.createLineBorder(color) if color
+      border_margin = BorderFactory.createEmptyBorder(margin, margin, margin, margin) if margin
+      border_padding = BorderFactory.createEmptyBorder(padding, padding, padding, padding) if padding
         
       if border_margin and border_color
-        border = ::BorderFactory.createCompoundBorder(border_margin, border_color)
+        border = BorderFactory.createCompoundBorder(border_margin, border_color)
       elsif border_color
         border = border_color
       elsif border_margin
@@ -148,7 +148,7 @@ module Swiby
       end
       
       if border_padding and border
-        border = ::BorderFactory.createCompoundBorder(border, border_padding)
+        border = BorderFactory.createCompoundBorder(border, border_padding)
       elsif border_padding
         border = border_padding
       end
@@ -160,14 +160,14 @@ module Swiby
     def create_color color
 
       return nil unless color
-      return color if color.is_a?(::Java::JavaAwt::Color)
+      return color if color.is_a?(Color)
 
       return @cache[color] if @cache.has_key?(color)
 
       if color.is_a?(Symbol)
-        value = eval("AWT::Color::#{color}")
+        value = eval("Color::#{color}")
       else
-        value = AWT::Color.new(color)
+        value = Color.new(color)
       end
 
       @cache[color] = value
@@ -182,7 +182,7 @@ module Swiby
 
       return @cache[font_key] if  @cache.has_key?(font_key)
 
-      font = AWT::Font.new(family, awt_style, size) #TODO use a global cache for the fonts?
+      font = Font.new(family, awt_style, size) #TODO use a global cache for the fonts?
 
       @cache[font_key] = font
 

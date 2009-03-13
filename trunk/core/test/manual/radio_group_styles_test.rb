@@ -7,6 +7,9 @@
 #
 #++
 
+require 'swiby/layout/stacked'
+require 'swiby/component/radio_button'
+
 class RadioGroupStylesTest < ManualTest
 
     data = [Time.new, 2]
@@ -83,6 +86,8 @@ class RadioGroupStylesTest < ManualTest
         radio_group("Test change", [1, 2]) {|val|
           unless val.is_a?(Fixnum) and (val == 1 or val == 2)
             raise(RuntimeError, "Expected #{1.class} (1 or 2) but was #{val.class} = #{val}")
+          else
+            puts "selected #{val}, correct"
           end
         }
       }
@@ -117,6 +122,8 @@ class RadioGroupStylesTest < ManualTest
         radio_group("Test change", [1, 2]) {|val|
           unless val.is_a?(Fixnum) and (val == 1 or val == 2)
             raise(RuntimeError, "Expected #{1.class} (1 or 2) but was #{val.class} = #{val}")
+          else
+            puts "selected #{val}, correct"
           end
         }
       }

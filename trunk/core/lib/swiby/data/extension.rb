@@ -69,4 +69,3 @@ class Class
   end
 
 end
-

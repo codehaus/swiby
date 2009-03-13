@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/layout/stacked'
+
 class ButtonStylesTest < ManualTest
   
   styles = create_styles {

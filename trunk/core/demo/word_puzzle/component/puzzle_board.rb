@@ -7,7 +7,7 @@
 #
 #++
 
-require_extension :component, 'draw_panel'
+require 'component/draw_panel'
 
 import javax.swing.Timer
 import java.awt.Dimension
@@ -197,15 +197,15 @@ class PuzzleBoard
       
       color = styles.resolver.find(:found_color, :table, @style_id)
       @found_color = styles.resolver.create_color(color) if color
-      @found_color = AWT::Color::BLACK unless @found_color
+      @found_color = Color::BLACK unless @found_color
      
       color = styles.resolver.find(:collab_color, :table, @style_id)
       @collab_color = styles.resolver.create_color(color) if color
-      @collab_color = AWT::Color::BLACK unless @collab_color
+      @collab_color = Color::BLACK unless @collab_color
       
       color = styles.resolver.find(:hint_color, :table, @style_id)
       @hint_color = styles.resolver.create_color(color) if color
-      @hint_color = AWT::Color::RED unless @hint_color
+      @hint_color = Color::RED unless @hint_color
       
     end
     

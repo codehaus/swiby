@@ -11,8 +11,8 @@ require 'ostruct'
 require 'net/http'
 require 'uri'
 
-require 'swiby/form'
-require 'swiby/data'
+require 'swiby/component/form'
+require 'swiby/component/text'
 require 'swiby/tools/console'
 
 def image_path image

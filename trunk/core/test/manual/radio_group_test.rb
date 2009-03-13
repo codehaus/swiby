@@ -7,6 +7,9 @@
 #
 #++
 
+require 'swiby/layout/stacked'
+require 'swiby/component/radio_button'
+
 class RadioGroupTest < ManualTest
 
   manual 'Radio Group / default layout / no data' do

@@ -9,6 +9,8 @@
 
 require 'account_ui'
 
+require 'swiby/component/table'
+
 accounts = Account.find_from_accounts
 
 title "Account List"

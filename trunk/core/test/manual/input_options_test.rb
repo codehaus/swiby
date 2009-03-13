@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/text'
+
 class InputOptionsTest < ManualTest
 
   manual 'Syntax: input label, value' do

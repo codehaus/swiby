@@ -7,15 +7,13 @@
 #
 #++
 
+import java.awt.BorderLayout
+
 require 'swiby/layout_factory'
 
 module Swiby
-  
-  class BorderExtension < Extension
-    include LayoutExtension
-  end
 
-  class BorderFactory
+  class BorderLayoutFactory
   
     def accept name
       name == :border
@@ -23,7 +21,7 @@ module Swiby
     
     def create name, data
           
-      layout = AWT::BorderLayout.new
+      layout = BorderLayout.new
 
       layout.hgap = data[:hgap] if data[:hgap]
       layout.vgap = data[:vgap] if data[:vgap]
@@ -47,23 +45,23 @@ module Swiby
         end
 
         def component.north
-          @position = AWT::BorderLayout::NORTH
+          @position = BorderLayout::NORTH
         end
 
         def component.east
-          @position = AWT::BorderLayout::EAST
+          @position = BorderLayout::EAST
         end
 
         def component.center
-          @position = AWT::BorderLayout::CENTER              
+          @position = BorderLayout::CENTER              
         end
 
         def component.south
-          @position = AWT::BorderLayout::SOUTH              
+          @position = BorderLayout::SOUTH              
         end
 
         def component.west
-          @position = AWT::BorderLayout::WEST
+          @position = BorderLayout::WEST
         end
 
       end
@@ -74,6 +72,6 @@ module Swiby
     
   end
   
-  LayoutFactory.register_factory(BorderFactory.new)
+  LayoutFactory.register_factory(BorderLayoutFactory.new)
   
 end

@@ -7,12 +7,17 @@
 #
 #++
 
-$SWIBY_EXT_PATHS = [File.dirname(__FILE__) ]
-
 require 'swiby'
 
-require_extension :component, 'list_view'
-require_extension :component, 'puzzle_board'
+require 'component/list_view'
+require 'component/puzzle_board'
+
+require 'swiby/layout/stacked'
+require 'swiby/layout/absolute'
+
+require 'swiby/component/frame'
+require 'swiby/component/button'
+require 'swiby/component/radio_button'
 
 class Word
   

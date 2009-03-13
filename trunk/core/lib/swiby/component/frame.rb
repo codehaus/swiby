@@ -7,12 +7,16 @@
 #
 #++
 
+require 'swiby/swing'
+require 'swiby/layout/border'
+require 'swiby/component/panel'
+require 'swiby/component/toolbar'
+
+import javax.swing.JDialog
+import javax.swing.JFrame
+
 module Swiby
   
-  class FrameExtension < Extension
-    include ComponentExtension
-  end
-
   def window *args, &block
     frame(*args, &block)
   end
@@ -122,7 +126,7 @@ module Swiby
 
       super
       
-      layout = AWT::BorderLayout.new unless layout
+      layout = BorderLayout.new unless layout
       
       layered_pane = LayerContainer.new
       layered_pane.do_initialize self, layout
@@ -159,6 +163,12 @@ module Swiby
           if @height and @height > 0
             preferred.height = @height
           end
+          
+          insets = @component.insets
+          preferred.width += insets.left + insets.right
+          preferred.height += insets.top + insets.bottom
+          
+          @component.set_minimum_size(preferred)
           
           if !@component.visible and @width and @height
             @component.set_size @width, @height
@@ -266,6 +276,8 @@ module Swiby
         preferred.width += insets.left + insets.right
         preferred.height += insets.top + insets.bottom
         
+        @component.set_minimum_size(preferred)
+        
         if @autosize_enabled or (@autosize_enabled.nil? and Defaults.auto_sizing_frame)
           
           @component.set_preferred_size preferred
@@ -337,8 +349,8 @@ module Swiby
     def toolbar &block
 
       if @tb_container.nil?
-        @tb_container = JPanel.new(AWT::FlowLayout.new(AWT::FlowLayout::LEFT))
-        @default_layer.add @tb_container, AWT::BorderLayout::NORTH
+        @tb_container = JPanel.new(FlowLayout.new(FlowLayout::LEFT))
+        @default_layer.add @tb_container, BorderLayout::NORTH
       end
 
       tb = Toolbar.new

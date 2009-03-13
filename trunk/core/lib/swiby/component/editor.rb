@@ -7,11 +7,10 @@
 #
 #++
 
+import java.awt.Dimension
+import javax.swing.JEditorPane
+
 module Swiby
-  
-  class EditorExtension < Extension
-    include ComponentExtension
-  end
   
   module Builder
       
@@ -65,12 +64,14 @@ module Swiby
         w = options[:width]
         h = options[:height]
         
-        @component.preferred_size = AWT::Dimension.new(w, h)
+        @component.preferred_size = Dimension.new(w, h)
 
-        self.name = options[:name].to_s if options[:name]
-        self.editable = !options[:readonly] if options[:readonly]
-
+      else
+        @component.preferred_size = Dimension.new(32, 32767)
       end
+
+      self.name = options[:name].to_s if options[:name]
+      self.editable = !options[:readonly] if options[:readonly]
       
       scrollable
 
@@ -102,6 +103,10 @@ module Swiby
 
     def editable?
       editable
+    end
+
+    def editable= flag
+      @component.editable = flag
     end
 
     def on_change &block
