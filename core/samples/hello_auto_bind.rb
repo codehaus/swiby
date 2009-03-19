@@ -1,3 +1,4 @@
+=begin
 require 'swiby'
 require 'swiby/component/text'
 require 'swiby/component/frame'
@@ -24,12 +25,14 @@ frame {
 	
 	visible true
 	
-	dispose_on_close
-	
 }
 
 ["New value...", "Good morning...", "A break?", "Let's go on!", "Hello World F3"].each { |text|
 	sleep 2
 	model.saying = text
 }
+=end
 
+puts 'Unfortunelty auto-binding does not work anymore'
+puts '(with latest JRuby versions).'
+puts 'Need to change approach to make it work again...'
