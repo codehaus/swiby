@@ -25,11 +25,27 @@ module Swiby
       
       pane = Editor.new(x)
       
+      label = nil
+      
+      if x[:label]
+        
+        name = x.delete(:name)
+        
+        label = SimpleLabel.new(x)
+        add label
+        context << label
+        context.add_child label
+        
+        x[:name] = name
+        
+      end
+      
       context[x[:name].to_s] = pane if x[:name]
       
       add pane
       context << pane
-      layout_panel pane
+      layout_list label, pane if label
+      layout_panel pane unless label
 
     end
 
@@ -39,12 +55,14 @@ module Swiby
     
     define "Editor" do
       
+      declare :label, [String, Symbol], true
       declare :name, [String, Symbol], true
       declare :width, [Integer], true
       declare :height, [Integer], true
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
       declare :readonly, [TrueClass, FalseClass, IncrementalValue], true
       
+      overload :label
       overload :width, :height
       
     end
@@ -93,6 +111,14 @@ module Swiby
       @component.text
     end
     
+    def value
+      @component.text
+    end
+    
+    def value=(val)
+      @component.text = val
+    end
+      
     def document
       @component.document
     end
