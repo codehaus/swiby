@@ -57,12 +57,8 @@ module Swiby
     end
     
     def selection_changed
-      
-      if @selection_handler_method
-        @controller.send(@selection_handler_method, @component.getSelectedRow)
-        @master.refresh
-      end
-      
+      @controller.send(@selection_handler_method, @component.getSelectedRow)
+      @master.refresh
     end
     
   end
