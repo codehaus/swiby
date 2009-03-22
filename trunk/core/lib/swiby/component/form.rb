@@ -30,6 +30,22 @@ end
 
 module Swiby
 
+  module Builder
+  
+    def form &block
+      
+      panel = Swiby::form(:as_panel, &block)
+      
+      context.add_child panel
+      
+      add panel
+      context << panel
+      layout_panel(panel)
+      
+    end
+  
+  end
+
   def dialog(parent, &block)
     
     sync_swing_thread do
