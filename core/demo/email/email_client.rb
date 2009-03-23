@@ -53,9 +53,30 @@ end
 
 class MailboxController
   
+  INBOX = 0
+  SENTBOX = 1
+  
   def initialize auth
     @auth = auth
+    @box_index = INBOX
     @box = @auth.inbox
+  end
+  
+  def current_mailbox= box
+    
+    return if @box_index == box
+    
+    @current = nil
+    @messages = nil 
+    
+    @box_index = box
+    
+    if box == INBOX
+      @box = @auth.inbox
+    else
+      @box = @auth.sentbox
+    end
+      
   end
   
   def current_mailbox_content= index
@@ -91,7 +112,7 @@ class MailboxController
   end
   
   def may_reply?
-    not @current.nil?
+    @box_index == INBOX and not @current.nil?
   end
   
   def new_mail
