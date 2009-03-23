@@ -11,6 +11,7 @@ require 'swiby/mvc'
 require 'swiby/mvc/text'
 require 'swiby/mvc/table'
 require 'swiby/mvc/label'
+require 'swiby/mvc/combo'
 require 'swiby/mvc/button'
 require 'swiby/mvc/editor'
 
@@ -62,7 +63,10 @@ Swiby.define_named_view(:mailbox_view) {
     height 400
 
     toolbar {
+      combo ['In box', 'Sent box'], :name => :mailbox
+      label ' '
       button 'New', :name => :new_mail
+      label ' '
       separator
       button 'Exit', :name => :exit
     }

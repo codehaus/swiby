@@ -146,11 +146,11 @@ class Auth
   end
   
   def login user, password
-    @connection.submit?('Auth', 'logIn', :userName => user, :password => password)
+    @connection.submit?(self.class, 'logIn', :userName => user, :password => password)
   end
   
   def logout
-    @connection.submit?('Auth', 'logOut')    
+    @connection.submit?(self.class, 'logOut')    
   end
   
   def inbox
