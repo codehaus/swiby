@@ -131,6 +131,11 @@ class Connection
     
     resp, data = @http.post(path, body, @headers)
     
+    unless resp.kind_of?(Net::HTTPSuccess)
+      raise "URI '#{path}' not found" if resp.is_a?(Net::HTTPNotFound)
+      raise "Request error '#{resp.message}' for '#{path}'"
+    end
+    
     @headers = { 'Cookie' => resp.response['set-cookie']} if resp.response['set-cookie']
     
     data
@@ -246,7 +251,7 @@ def create_connection options
   
   parser = options.use_json ? JSONParser.new : RubyParser.new
   
-  puts "Connection to #{options.host}:#{options.port}/#{options.service}"
+  puts "Connection to #{options.host}:#{options.port}#{options.service}"
   puts "Using JSON data format" if options.use_json
   
   Connection.new(options.host, options.port, options.service, parser)
