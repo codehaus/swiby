@@ -98,7 +98,7 @@ end
 
 class Connection
   
-  def initialize parser = RubyParser.new, service_path = '/remoting/ruby', server = 'localhost', port = 8080
+  def initialize server, port, service_path, parser
     @http = Net::HTTP.new(server, port)
     @service_path = service_path
     @headers = nil
@@ -212,17 +212,60 @@ class Sent < Mailbox
   
 end
 
-if $0 == __FILE__
+def parse_options args
 
-  if ARGV[0] == '-json'
-    puts 'Using JSON format'
-    require 'json'
-    auth = Auth.new(Connection.new(JSONParser.new, '/remoting/pwr'))
-  else
-    puts 'Using Ruby format'
-    auth = Auth.new(Connection.new)
+  require 'ostruct'
+  require 'optparse'
+
+  options = OpenStruct.new
+  options.host = 'localhost'
+  options.port = 8080
+  options.service = nil
+  options.use_json = false
+  
+  parser = OptionParser.new 
+  parser.on('-p', '--port port_number') { |x| options.port = x }
+  parser.on('-n', '--host host_name') { |x| options.host = x }
+  parser.on('-s', '--service service_path') { |x| options.service = x }
+  parser.on('-j', '--json') { options.use_json = true }
+  parser.on('-h', '--help') { puts parser; exit }
+
+  parser.parse!(args)
+  
+  unless options.service
+    options.service = options.use_json ? '/remoting/pwr' : '/remoting/ruby'
   end
 
+  require 'json' if options.use_json
+
+  options
+  
+end
+
+def create_connection options
+  
+  parser = options.use_json ? JSONParser.new : RubyParser.new
+  
+  puts "Connection to #{options.host}:#{options.port}/#{options.service}"
+  puts "Using JSON data format" if options.use_json
+  
+  Connection.new(options.host, options.port, options.service, parser)
+  
+end
+
+if $0 == __FILE__
+
+  options = parse_options(ARGV)
+  
+  if options.use_json
+    puts 'Using JSON format'
+    require 'json'
+  else
+    puts 'Using Ruby format'
+  end
+
+  auth = Auth.new(create_connection(options))
+    
   unless auth.login('Gil Bates', '1234')
   #unless auth.login('Beeve Salmer', '1234')
     puts auth.last_error[:message]

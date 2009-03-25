@@ -21,7 +21,7 @@ Swiby.define_named_view(:login_view) {
 
   form {
     
-    title 'Login' 
+    title 'Login'
 
     autosize
     height 200
@@ -38,7 +38,6 @@ Swiby.define_named_view(:login_view) {
         label "<html><h3>Demo login</h3>Use <i>'Gil Bates'</i> or <i>'Beeve Salmer'</i> with <i>1234</i> as password<br>"
 
       next_row
-      section
       
         button 'OK', :name => :ok
         button 'Exit', :name => :exit
@@ -104,10 +103,12 @@ Swiby.define_named_view(:mail_composer) {
     
     input 'To', '', :name => :recipient
     input 'Subject', '', :name => :subject
-    editor 'Message', :name => :body
+    
+    next_row
+      editor :name => :body
 
-    button 'Send', :name => :send_mail
-    button 'Cancel', :name => :cancel
+      button 'Send', :name => :send_mail
+      button 'Cancel', :name => :cancel
     
     visible true
     
