@@ -16,7 +16,8 @@ require 'email_remote'
 
 class LoginController
 
-  def initialize
+  def initialize connection
+    @connection = connection
     @error_message = ''
   end
   
@@ -30,7 +31,7 @@ class LoginController
   
   def ok
     
-    auth = Auth.new(Connection.new)
+    auth = Auth.new(@connection)
     
     unless auth.login(@login, @password)
       @error_message = "<html><font color='red'>#{auth.last_error[:message]}</font>"
@@ -156,4 +157,6 @@ class MailComposerController
   
 end
 
-Views[:login_view].instantiate(LoginController.new)
+options = parse_options(ARGV)
+
+Views[:login_view].instantiate(LoginController.new(create_connection(options)))
