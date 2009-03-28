@@ -222,3 +222,32 @@ class TestRequired < Test::Unit::TestCase
   end
 
 end
+
+class TestSwitchesOnly < Test::Unit::TestCase
+
+  def setup
+    
+    @parser = create_parser_for('Tester', '1.0') {
+      
+      accept optional, :verbose, '-v', '-verbose'
+      accept required, :server_url, '-s', '--server server_url'
+      
+      exception_on_error
+      
+    }
+    
+    @parser.redirect_output StringIO.new
+    
+  end
+  
+  def test_error_argument_without_its_switch
+    
+    ex = assert_raise(ArgumentError) do
+      @parser.parse ['-s', 'here', 'there']
+    end
+    
+    assert_equal "Unexpected argument: there", ex.message
+    
+  end
+
+end
