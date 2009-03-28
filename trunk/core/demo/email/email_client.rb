@@ -157,6 +157,6 @@ class MailComposerController
   
 end
 
-options = parse_options(ARGV)
+options = parse_options(ARGV, __FILE__)
 
 Views[:login_view].instantiate(LoginController.new(create_connection(options)))
