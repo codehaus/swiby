@@ -126,6 +126,7 @@ class ArgumentsParser
             
             name = definition[:name]
             
+            values_count +=1
             options.send "#{name}=".to_sym, true
             definition[:handler].call(options, true) if definition[:handler]
             
@@ -144,7 +145,7 @@ class ArgumentsParser
           name = waiting_for[:name]
           waiting_for = nil
           
-        else
+        elsif unnamed.length > 0
           
           definition = unnamed.first
           
@@ -168,9 +169,12 @@ class ArgumentsParser
             end
             
           end
-          
+        
+        else
+          reject "Unexpected argument: #{arg}"
         end
         
+        values_count +=1
         options.send "#{name}=".to_sym, arg
         definition[:handler].call(options, arg) if definition[:handler]
         
@@ -231,8 +235,10 @@ class ArgumentsParser
     
     text = unnamed_explain_text
 
-    @out.puts text if text
-    @out.puts
+    if text
+      @out.puts text
+      @out.puts
+    end
     
     text = switches_explain_text
 
