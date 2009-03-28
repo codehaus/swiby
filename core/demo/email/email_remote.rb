@@ -129,7 +129,7 @@ class Connection
     
     body = args.map {|k,v| "#{k}=#{ERB::Util.url_encode(v)}"}.join("&")
     
-    resp, data = @http.post(path, body, @headers)
+    resp, data = @http.start { |http| http.post(path, body, @headers) }
     
     unless resp.kind_of?(Net::HTTPSuccess)
       raise "URI '#{path}' not found" if resp.is_a?(Net::HTTPNotFound)
@@ -217,29 +217,24 @@ class Sent < Mailbox
   
 end
 
-def parse_options args
+def parse_options args, app_name = __FILE__, version = '1.0'
 
-  require 'ostruct'
-  require 'optparse'
+  require 'swiby/util/arguments_parser'
 
-  options = OpenStruct.new
-  options.host = 'localhost'
-  options.port = 8080
-  options.service = nil
-  options.use_json = false
+  parser = create_parser_for(app_name, version) {
+    
+    accept optional, :port, '-p', '--port port_number', 'Server port (defaults to 80)'
+    accept required, :host, '-h', '--host host_name', 'Server host name'
+    accept required, :service, '-s', '--service service_path', 'Path for email service'
+    accept optional, :use_json, '-j', '--json', :doc => "Use JSON instead of Ruby data transfer\n(default to Ruby)"
+    
+    validator do |options|
+      options.port = 80 unless options.port
+    end
+    
+  }
   
-  parser = OptionParser.new 
-  parser.on('-p', '--port port_number') { |x| options.port = x }
-  parser.on('-n', '--host host_name') { |x| options.host = x }
-  parser.on('-s', '--service service_path') { |x| options.service = x }
-  parser.on('-j', '--json') { options.use_json = true }
-  parser.on('-h', '--help') { puts parser; exit }
-
-  parser.parse!(args)
-  
-  unless options.service
-    options.service = options.use_json ? '/remoting/pwr' : '/remoting/ruby'
-  end
+  options = parser.parse(args)
 
   require 'json' if options.use_json
 
@@ -270,7 +265,7 @@ if $0 == __FILE__
   end
 
   auth = Auth.new(create_connection(options))
-    
+  
   unless auth.login('Gil Bates', '1234')
   #unless auth.login('Beeve Salmer', '1234')
     puts auth.last_error[:message]
