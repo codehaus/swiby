@@ -55,7 +55,7 @@ module Swiby
       
       match_data = /.*:\/\/(.*)/.match(@base_url)
       
-      @cache_dir += match_data[1]
+      @cache_dir += match_data[1].gsub!(/:/, "_")
         
       @resolved = {}
       @cache_data = {}
@@ -113,12 +113,12 @@ module Swiby
         
         reloaded = true
         
-        cache_file = @cache_dir + file_path
+        cache_file = cache_file_name(file_path)
         
         url = @base_url + file_path
         
         entry = FileInfo.new(url)
-        
+
         open(url) do |remote|
           
           entry.last_modified = remote.last_modified
@@ -202,7 +202,7 @@ module Swiby
 
     def resolve_offline file_path
       
-      cache_file = @cache_dir + file_path
+      cache_file = cache_file_name(file_path)
 
       if @cache_data.key?(file_path)
         @resolved[file_path] = cache_file
@@ -215,6 +215,18 @@ module Swiby
     def log ex
       puts ex
       print ex.backtrace.join("\n")
+    end
+    
+    def cache_file_name file_path
+      
+      local_name = file_path
+
+      if local_name =~ /\?/ and not local_name =~ /.*\.rb$/
+        local_name = "#{file_path}.rb"
+      end
+
+      @cache_dir + local_name.gsub(/\?/, '$')
+      
     end
     
   end
