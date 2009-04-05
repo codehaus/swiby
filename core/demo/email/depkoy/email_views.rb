@@ -21,6 +21,8 @@ Swiby.define_named_view(:login_view) {
 
   form {
     
+    use_styles "styles.rb"
+    
     title 'Login'
 
     autosize
@@ -55,6 +57,8 @@ Swiby.define_named_view(:login_view) {
 Swiby.define_named_view(:mailbox_view) {
 
   frame {
+  
+    use_styles "styles.rb"
     
     title 'Mailbox View' 
 
@@ -97,6 +101,8 @@ Swiby.define_named_view(:mailbox_view) {
 Swiby.define_named_view(:mail_composer) {
 
   form {
+  
+    use_styles "styles.rb"
   
     width 400
     height 250

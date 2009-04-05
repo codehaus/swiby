@@ -12,7 +12,6 @@ require 'time'
 require 'pretty_time'
 
 require 'email_views'
-require 'email_remote'
 
 class LoginController
 
@@ -33,10 +32,10 @@ class LoginController
     
     auth = Auth.new(@connection)
     
-    unless auth.login(@login, @password)
+    unless auth.logIn(@login, @password)
       @error_message = "<html><font color='red'>#{auth.last_error[:message]}</font>"
     else
-      Views[:mailbox_view].instantiate(MailboxController.new(auth))
+      Views[:mailbox_view].instantiate(MailboxController.new(@connection))
       @window.close
     end
     
@@ -57,10 +56,10 @@ class MailboxController
   INBOX = 0
   SENTBOX = 1
   
-  def initialize auth
-    @auth = auth
+  def initialize connection
+    @connection = connection
     @box_index = INBOX
-    @box = @auth.inbox
+    @box = Inbox.new(@connection)
   end
   
   def current_mailbox= box
@@ -73,9 +72,9 @@ class MailboxController
     @box_index = box
     
     if box == INBOX
-      @box = @auth.inbox
+      @box = Inbox.new(@connection)
     else
-      @box = @auth.sentbox
+      @box = Sent.new(@connection)
     end
       
   end
@@ -108,7 +107,7 @@ class MailboxController
     subject = "Re: #{message[:subject]}"
     body = "\n====================\n#{message[:message]}"
     
-    Views[:mail_composer].instantiate(MailComposerController.new(@auth, message[:from], subject, body))
+    Views[:mail_composer].instantiate(MailComposerController.new(Sent.new(@connection), message[:from], subject, body))
     
   end
   
@@ -117,7 +116,7 @@ class MailboxController
   end
   
   def new_mail
-    Views[:mail_composer].instantiate(MailComposerController.new(@auth))
+    Views[:mail_composer].instantiate(MailComposerController.new(Sent.new(@connection)))
   end
   
   private
@@ -138,8 +137,8 @@ class MailComposerController
   
   attr_accessor :recipient, :subject, :body
   
-  def initialize auth, recipient = nil, subject = nil, body = nil
-    @auth, @recipient, @subject, @body = auth, recipient, subject, body
+  def initialize sent_box, recipient = nil, subject = nil, body = nil
+    @sent_box, @recipient, @subject, @body = sent_box, recipient, subject, body
   end
   
   def cancel
@@ -147,7 +146,7 @@ class MailComposerController
   end
   
   def send_mail
-    @auth.sentbox.send @subject, @body, @recipient
+    @sent_box.send @recipient, @subject, @body
     @window.close
   end
   
@@ -157,6 +156,10 @@ class MailComposerController
   
 end
 
-options = parse_options(ARGV, __FILE__)
+if $0 == __FILE__
 
-Views[:login_view].instantiate(LoginController.new(create_connection(options)))
+  options = parse_options(ARGV, __FILE__)
+
+  Views[:login_view].instantiate(LoginController.new(create_connection(options)))
+
+end
