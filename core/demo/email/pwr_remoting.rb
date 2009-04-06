@@ -130,10 +130,28 @@ class Connection
       raise "URI '#{path}' not found" if resp.is_a?(Net::HTTPNotFound)
       raise "Request error '#{resp.message}' for '#{path}'"
     end
-    
-    @headers = { 'Cookie' => resp.response['set-cookie']} if resp.response['set-cookie']
+
+    parse_set_cookies resp.response['set-cookie'] if resp.response['set-cookie']
     
     data
+    
+  end
+  
+  def parse_set_cookies set
+    
+    @cookies = {} unless @cookies
+    
+    #TODO too simplistic cookie handling (should keep path for instance)
+    set.split(/,|;/).each do |part|
+      
+      if part =~ /(.*)=.*/
+        name = $1.strip
+        @cookies[name] = part unless name == 'Path'
+      end
+      
+    end
+    
+    @headers = { 'Cookie' => @cookies.map {|key, value| value }.join('; ') }
     
   end
   
