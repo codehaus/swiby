@@ -78,7 +78,8 @@ parser = create_parser_for('sweb_for_pwr', '1.0') {
     options.script = $2 ? "#{$2}" : script
     options.base_url = "http://#{options.host}:#{options.port}/#{$1}"
     
-    options.service = "/#{$1}/ruby"
+    options.service = '/ruby'
+    options.service = "/#{$1}/ruby" if $1
     
     if options.service_path
       
