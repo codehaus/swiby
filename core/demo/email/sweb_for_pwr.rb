@@ -66,7 +66,7 @@ parser = create_parser_for('sweb_for_pwr', '1.0') {
     
     reject "Invalid URL for script: #{options.script_url}" unless options.script_url =~ /^http[s]?:\/\//
     
-    options.script_url =~ /^(.*?\/\/)*([\w\.\d]*)(:(\d+))*(\/*)(.*)$/
+    options.script_url =~ /^(.*?\/\/)*([\w\.\d\-]*)(:(\d+))*(\/*)(.*)$/
 
     options.host = "#{$2}"
     options.port = $4
