@@ -48,6 +48,7 @@ class PWRCache
   # new method / no delegate
   def download_class class_name
     file = from_cache "ruby/classdefs?#{class_name}"
+    file = class_name unless file
     sys_require file
   end
 
@@ -73,10 +74,10 @@ parser = create_parser_for('sweb_for_pwr', '1.0') {
     
     script = "#{$6}"
     script =~ /(.*)\/([^\/]*)/
-
-    options.script = "#{$2}"
+    
+    options.script = $2 ? "#{$2}" : script
     options.base_url = "http://#{options.host}:#{options.port}/#{$1}"
-
+    
     options.service = "/#{$1}/ruby"
     
     if options.service_path
