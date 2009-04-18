@@ -30,8 +30,9 @@ module Swiby
     JOptionPane.showMessageDialog nil, text
   end
   
-  def exit (exit_code = 0)
-    System::exit(exit_code)
+  def exit exit_code = 0
+    exit_code = exit_code ? 0 : 1 unless exit_code.is_a?(Fixnum)
+    java.lang.System.exit(exit_code)
   end
   
   def create_icon(url)
