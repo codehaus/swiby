@@ -8,6 +8,7 @@
 #++
 
 require 'swiby/mvc'
+require 'swiby/component/slider'
 
 module Swiby
 

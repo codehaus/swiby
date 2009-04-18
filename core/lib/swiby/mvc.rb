@@ -183,6 +183,10 @@ module Swiby
       ViewDefinition.definitions[name]
     end
     
+    def exist? name
+      ViewDefinition.definitions.has_key?(name)
+    end
+    
   end
   
   class ViewDefinition
