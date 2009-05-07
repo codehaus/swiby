@@ -9,6 +9,8 @@
 
 import javax.swing.JTextField
 import javax.swing.JFormattedTextField
+import javax.swing.text.MaskFormatter
+import javax.swing.text.DefaultFormatterFactory
 
 require 'swiby/data/converter/date_converter'
 
