@@ -11,30 +11,7 @@ require 'test/unit'
 require 'swiby/mvc/test'
 
 require 'email_client'
-
-class Connection
-  def last_error
-    {:message => 'login error'}
-  end
-end
-
-class Auth
-  
-  def initialize connection
-  end
-  
-  def logIn login, password
-    login == 'bingo' and password == 'pwd'
-  end
-  
-end
-
-class Inbox
-  
-  def initialize connection
-  end
-  
-end
+require 'email_test_util'
 
 class LoginControllerTest < Test::Unit::TestCase
 

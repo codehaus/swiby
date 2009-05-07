@@ -42,7 +42,7 @@ Swiby.define_named_view(:login_view) {
       next_row
       
         button 'OK', :name => :ok
-        button 'Exit', :name => :exit
+        button 'Exit', :name => :exit_application
 
     }
 

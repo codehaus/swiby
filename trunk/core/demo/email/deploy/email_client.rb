@@ -41,7 +41,7 @@ class LoginController
     
   end
   
-  def exit
+  def exit_application
     @window.exit
   end
   

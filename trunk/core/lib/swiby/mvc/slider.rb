@@ -64,7 +64,7 @@ module Swiby
     end
       
     def display new_value
-      @component.value = new_value.to_ui_value
+      @component.value = new_value.to_i
     end
     
   end
