@@ -1,8 +1,0 @@
-begin
-  require 'swiby/sweb'
-rescue LoadError
-  require 'rubygems'
-  require 'swiby/sweb'
-end
-
-Swiby::Sweb::run
