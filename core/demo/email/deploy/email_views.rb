@@ -17,7 +17,7 @@ require 'swiby/mvc/editor'
 
 require 'swiby/component/form'
 
-Swiby.define_named_view(:login_view) {
+Swiby.define_view(:login_view) {
 
   form {
     
@@ -54,7 +54,7 @@ Swiby.define_named_view(:login_view) {
   
 }
 
-Swiby.define_named_view(:mailbox_view) {
+Swiby.define_view(:mailbox_view) {
 
   frame {
   
@@ -98,7 +98,7 @@ Swiby.define_named_view(:mailbox_view) {
   
 }
 
-Swiby.define_named_view(:mail_composer) {
+Swiby.define_view(:mail_composer) {
 
   form {
   

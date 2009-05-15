@@ -279,15 +279,11 @@ CODE
     
   end
   
-  def self.define_view &definition
-    ViewDefinition.new(&definition)
-  end
-  
   # define a view, registers it with the given name for later retrieval
   # returns the view definition
-  def self.define_named_view name, &definition
+  def self.define_view name = nil, &definition
     view_def = ViewDefinition.new(&definition)
-    ViewDefinition.definitions[name] = view_def
+    ViewDefinition.definitions[name] = view_def if name
     view_def
   end
   
