@@ -1,4 +1,3 @@
-#--
 # Copyright (C) Swiby Committers. All rights reserved.
 # 
 # The software in this package is published under the terms of the BSD
@@ -385,6 +384,8 @@ def setup_as_script_editor editor, tokenizer
 
 end
 
+Marker = Struct.new(:info_label, :target)
+
 class FrameInfoPanel
   
   #TODO make it part of Swiby wrappers?
@@ -448,12 +449,12 @@ class FrameInfoPanel
     
     origin = @parent.default_layer.location_on_screen
 
-    @markers.each_index do |i|
+    @markers.each do |marker|
     
-      d = @markers[i].preferred_size
-      p = @target[i].java_component.location_on_screen
+      d = marker.info_label.preferred_size
+      p = marker.target.java_component.location_on_screen
 
-      @markers[i].set_bounds(p.x - 2 - origin.x, p.y - 4 - origin.y, d.width, d.height)
+      marker.info_label.set_bounds(p.x - 2 - origin.x, p.y - 4 - origin.y, d.width, d.height)
     
     end
     
@@ -471,9 +472,9 @@ class FrameInfoPanel
       @border = ::BorderFactory.createCompoundBorder(outside, inside)
     end
     
-    index = 0
+    index = {0 => 0}
     
-    @target.each do |comp|
+    @target.inject(true, @markers) do |comp, level|
 
       text = 
         "<html>" +
@@ -482,7 +483,9 @@ class FrameInfoPanel
         "<b>Java:</b> #{comp.java_component.class}" +
         "</html>"
       
-      l = JLabel.new(index.to_s)
+      index[level] = 0 unless index[level]
+      
+      l = JLabel.new(index[level].to_s)
 
       l.setBorder(@border)
 
@@ -492,9 +495,9 @@ class FrameInfoPanel
 
       @panel.add(l)
       
-      @markers << l
-      
-      index += 1
+      index[level] += 1
+
+      Marker.new(l, comp)
       
     end
     
