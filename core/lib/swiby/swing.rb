@@ -221,6 +221,68 @@ module Swiby
       end
       
     end
+    
+    #
+    # Returns an array that is the result of iteration of the given block over all
+    # components of this container or all the components if no block is given.
+    #
+    # If +deep+ is +true+ it also collects recursively the components of the containers
+    #
+    # The block receives the component and the level, starting at 0, each time the
+    # iteration goes one level deeper the level is increment by 1
+    #
+    # EXAMPLE
+    #   # container contains 2 components a button named 'b1' and a lable named 'label1'
+    #   container.collect { |comp, level| comp.name }
+    #     => ['b1', 'label1']
+    #   container.collect
+    #     => [#<Swiby::Button:0x11067af>, #<Swiby::Label:0x1591b4d>]
+    #   container.collect { |comp, level| "#{level}: #{comp.name}" }
+    #     => ['0: b1', '0: label1']
+    #
+    def collect deep = true, level = 0, &block
+      
+      components = []
+      
+      @kids.each do |comp|
+        
+        components << comp unless block_given?
+        components << yield(comp, level) if block_given?
+        
+        if deep and comp.respond_to?(:each)
+          children = comp.collect(true, level + 1, &block)
+          components.concat children
+        end
+        
+      end
+      
+      components
+      
+    end
+
+    #
+    # Behaves as +collect+ but fills the given collection. It returns the same collection.
+    #
+    # The advantage of +inject+ is that less temporary arrays are created.
+    #
+    # see ComponentAccesssor.collect
+    #
+    def inject deep = true, result = [], level = 0, &block
+      
+      @kids.each do |comp|
+        
+        result << comp unless block_given?
+        result << yield(comp, level) if block_given?
+        
+        if deep and comp.respond_to?(:each)
+          comp.inject(true, result, level + 1, &block)
+        end
+        
+      end
+      
+      result
+      
+    end
 
   end
   
