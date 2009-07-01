@@ -472,9 +472,9 @@ class FrameInfoPanel
       @border = ::BorderFactory.createCompoundBorder(outside, inside)
     end
     
-    index = {0 => 0}
+    index = {}
     
-    @target.inject(true, @markers) do |comp, level|
+    @target.inject(true, @markers) do |comp|
 
       text = 
         "<html>" +
@@ -483,9 +483,10 @@ class FrameInfoPanel
         "<b>Java:</b> #{comp.java_component.class}" +
         "</html>"
       
-      index[level] = 0 unless index[level]
+      parent_id =  comp.java_component.parent.object_id
+      index[parent_id] = 0 unless index[parent_id]
       
-      l = JLabel.new(index[level].to_s)
+      l = JLabel.new(index[parent_id].to_s)
 
       l.setBorder(@border)
 
@@ -495,7 +496,7 @@ class FrameInfoPanel
 
       @panel.add(l)
       
-      index[level] += 1
+      index[parent_id] += 1
 
       Marker.new(l, comp)
       
