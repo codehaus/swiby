@@ -208,7 +208,9 @@ module Swiby
     end
     
     def clear
-      raise "Not implemented"
+      @values = []
+      @values_mapping.clear
+      @component.removeAllItems
     end
     
     def content= values
