@@ -228,29 +228,26 @@ module Swiby
     #
     # If +deep+ is +true+ it also collects recursively the components of the containers
     #
-    # The block receives the component and the level, starting at 0, each time the
-    # iteration goes one level deeper the level is increment by 1
+    # The block receives the component as argument.
     #
     # EXAMPLE
     #   # container contains 2 components a button named 'b1' and a lable named 'label1'
-    #   container.collect { |comp, level| comp.name }
+    #   container.collect { |comp| comp.name }
     #     => ['b1', 'label1']
     #   container.collect
     #     => [#<Swiby::Button:0x11067af>, #<Swiby::Label:0x1591b4d>]
-    #   container.collect { |comp, level| "#{level}: #{comp.name}" }
-    #     => ['0: b1', '0: label1']
     #
-    def collect deep = true, level = 0, &block
+    def collect deep = true, &block
       
       components = []
       
       @kids.each do |comp|
         
         components << comp unless block_given?
-        components << yield(comp, level) if block_given?
+        components << yield(comp) if block_given?
         
         if deep and comp.respond_to?(:each)
-          children = comp.collect(true, level + 1, &block)
+          children = comp.collect(true, &block)
           components.concat children
         end
         
@@ -267,15 +264,15 @@ module Swiby
     #
     # see ComponentAccesssor.collect
     #
-    def inject deep = true, result = [], level = 0, &block
+    def inject deep = true, result = [], &block
       
       @kids.each do |comp|
         
         result << comp unless block_given?
-        result << yield(comp, level) if block_given?
+        result << yield(comp) if block_given?
         
         if deep and comp.respond_to?(:each)
-          comp.inject(true, result, level + 1, &block)
+          comp.inject(true, result, &block)
         end
         
       end
