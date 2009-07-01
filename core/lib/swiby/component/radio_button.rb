@@ -150,12 +150,12 @@ module Swiby
       
       return unless styles
       
-      color = styles.resolver.find_color(:list, @style_id)
-      bgcolor = styles.resolver.find_background_color(:list, @style_id)
+      color = styles.resolver.find_color(:list, @style_id, @style_class)
+      bgcolor = styles.resolver.find_background_color(:list, @style_id, @style_class)
 
       if Defaults.enhanced_styling?
         
-        font = styles.resolver.find_css_font(:list, @style_id)
+        font = styles.resolver.find_css_font(:list, @style_id, @style_class)
         
         @radio_items.each_index do |i|
           
@@ -172,7 +172,7 @@ module Swiby
         
       else
         
-        font = styles.resolver.find_font(:list, @style_id)
+        font = styles.resolver.find_font(:list, @style_id, @style_class)
         
         @radio_items.each do |radio|
           radio.java_component.font = font if font

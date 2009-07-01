@@ -104,6 +104,7 @@ module Swiby
       declare :action, [Proc], true
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
       declare :input_component, [Object], true
+      declare :style_class, [String, Symbol], true
       
       overload :values
       overload :label, :values
@@ -152,6 +153,7 @@ module Swiby
       self.name = options[:name].to_s if options[:name]
       
       @style_id = self.name.to_sym if self.name
+      @style_class = options[:style_class] if options[:style_class]
       
       action(&options[:action]) if options[:action]
       
@@ -275,21 +277,21 @@ module Swiby
           
         end
         
-        font = styles.resolver.find_css_font(:list, @style_id)
+        font = styles.resolver.find_css_font(:list, @style_id, @style_class)
         renderer.swiby_set_enhanced_style(font) if font
        
       else
-        font = styles.resolver.find_font(:list, @style_id)
+        font = styles.resolver.find_font(:list, @style_id, @style_class)
         @component.font = font if font
       end
       
-      color = styles.resolver.find_color(:list, @style_id)
+      color = styles.resolver.find_color(:list, @style_id, @style_class)
       @component.foreground = color if color
       
-      color = styles.resolver.find_background_color(:list, @style_id)
+      color = styles.resolver.find_background_color(:list, @style_id, @style_class)
       @component.background = color if color
       
-      border = styles.resolver.create_border(:list, @style_id)
+      border = styles.resolver.create_border(:list, @style_id, @style_class)
         
       @component.border = border if border
       
