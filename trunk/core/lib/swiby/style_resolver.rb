@@ -36,11 +36,21 @@ module Swiby
       
     end
 
-    def find element, component_type, id = nil
+    def find element, component_type, id = nil, style_class = nil
 
       if id and @styles.has_class?(id)
 
         styles = @styles[id]
+
+        value = styles.resolver.find(element, component_type)
+
+        return value if value
+
+      end
+      
+      if style_class and @styles.has_class?(style_class)
+
+        styles = @styles[style_class]
 
         value = styles.resolver.find(element, component_type)
 
@@ -59,29 +69,29 @@ module Swiby
 
     end
     
-    def find_color component_type, id = nil
+    def find_color component_type, id = nil, style_class = nil
       
-      color = find(:color, component_type, id)
-      
-      create_color(color)
-      
-    end
-    
-    def find_background_color component_type, id = nil
-      
-      color = find(:background_color, component_type, id)
+      color = find(:color, component_type, id, style_class)
       
       create_color(color)
       
     end
     
-    def find_font component_type, id = nil
+    def find_background_color component_type, id = nil, style_class = nil
       
-      size = find(:font_size, component_type, id)
-      style = find(:font_style, component_type, id)
-      weight = find(:font_weight, component_type, id)
+      color = find(:background_color, component_type, id, style_class)
+      
+      create_color(color)
+      
+    end
+    
+    def find_font component_type, id = nil, style_class = nil
+      
+      size = find(:font_size, component_type, id, style_class)
+      style = find(:font_style, component_type, id, style_class)
+      weight = find(:font_weight, component_type, id, style_class)
 
-      family = find(:font_family, component_type, id)
+      family = find(:font_family, component_type, id, style_class)
 
       if style.nil? and weight.nil?
         style = Font::PLAIN
@@ -107,14 +117,14 @@ module Swiby
 
     end
 
-    def find_css_font component_type, id = nil
+    def find_css_font component_type, id = nil, style_class = nil
 
-      size = find(:font_size, component_type, id)
-      style = find(:font_style, component_type, id)
-      weight = find(:font_weight, component_type, id)
-      decoration = find(:text_decoration, component_type, id)
+      size = find(:font_size, component_type, id, style_class)
+      style = find(:font_style, component_type, id, style_class)
+      weight = find(:font_weight, component_type, id, style_class)
+      decoration = find(:text_decoration, component_type, id, style_class)
 
-      family = find(:font_family, component_type, id)
+      family = find(:font_family, component_type, id, style_class)
 
       css = ""
       
@@ -128,11 +138,11 @@ module Swiby
 
     end
 
-    def create_border element, id = nil
+    def create_border element, id = nil, style_class = nil
       
-      margin = find(:margin, element, id)
-      padding = find(:padding, element, id)
-      color = find(:border_color, element, id)
+      margin = find(:margin, element, id, style_class)
+      padding = find(:padding, element, id, style_class)
+      color = find(:border_color, element, id, style_class)
       
       color = create_color(color) if color
       border_color = BorderFactory.createLineBorder(color) if color

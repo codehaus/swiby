@@ -102,6 +102,7 @@ module Swiby
       declare :icon, [ImageIcon], true
       declare :name, [String, Symbol], true
       declare :label, [String, Symbol, IncrementalValue], true
+      declare :style_class, [String, Symbol], true
       
       overload :label
       overload :icon
@@ -138,6 +139,7 @@ module Swiby
       self.name = options[:name].to_s if options[:input_component].nil? && options[:name]
 
       @style_id = self.name.to_sym if self.name
+      @style_class = options[:style_class] if options[:style_class]
       
       action(&options[:action]) if options[:action]
       
@@ -150,17 +152,17 @@ module Swiby
       return unless styles
 
       if Defaults.enhanced_styling?
-        font = styles.resolver.find_css_font(:label, @style_id)
+        font = styles.resolver.find_css_font(:label, @style_id, @style_class)
         @component.text = "#{font}#{@real_text}" if font
       else
-        font = styles.resolver.find_font(:label, @style_id)
+        font = styles.resolver.find_font(:label, @style_id, @style_class)
         @component.font = font if font
       end
       
-      color = styles.resolver.find_color(:label, @style_id)
+      color = styles.resolver.find_color(:label, @style_id, @style_class)
       @component.foreground = color if color
       
-      border = styles.resolver.create_border(:label, @style_id)
+      border = styles.resolver.create_border(:label, @style_id, @style_class)
         
       @component.border = border if border
       

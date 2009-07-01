@@ -57,7 +57,37 @@ class ListStylesTest < ManualTest
         :text_decoration => 'line-through'
       )
     }
+    italic_only {
+      list(
+        :font_style => :italic
+      )
+    }
+    magenta {
+      list(
+        :color => :magenta
+      )
+    }
   }
+
+  manual 'Style class' do
+
+    form {
+
+      title "Class styling"
+
+      use_styles styles
+      
+      content {
+        list ["Current default style"] + values
+        list ["Class color: magenta"] + values, :style_class => :magenta
+        list ["Class + id: magenta/italic"] + values, :name => :italic_only, :style_class => :magenta
+      }
+      
+      visible true
+      
+    }
+    
+  end
   
   manual 'Default Swing styling' do
     

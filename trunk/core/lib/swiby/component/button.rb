@@ -60,6 +60,7 @@ module Swiby
       declare :action, [Proc], true
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
       declare :selected, [TrueClass, FalseClass, IncrementalValue], true
+      declare :style_class, [String, Symbol], true
       
       overload :text
       overload :icon
@@ -90,6 +91,7 @@ module Swiby
       self.selected = options[:selected] if options[:selected]
       
       @style_id = self.name.to_sym if self.name
+      @style_class = options[:style_class] if options[:style_class]
 
       icon options[:icon] if options[:icon]
       action(&options[:action]) if options[:action]
@@ -170,17 +172,17 @@ module Swiby
       return unless styles
       
       if Defaults.enhanced_styling?
-        font = styles.resolver.find_css_font(:button, @style_id)
+        font = styles.resolver.find_css_font(:button, @style_id, @style_class)
         @component.text = "#{font}#{@real_text}" if font
       else
-        font = styles.resolver.find_font(:button, @style_id)
+        font = styles.resolver.find_font(:button, @style_id, @style_class)
         @component.font = font if font
       end
       
-      color = styles.resolver.find_color(:button, @style_id)
+      color = styles.resolver.find_color(:button, @style_id, @style_class)
       @component.foreground = color if color
       
-      color = styles.resolver.find_background_color(:button, @style_id)
+      color = styles.resolver.find_background_color(:button, @style_id, @style_class)
       if color
         @component.background = color
         @component.content_area_filled = false

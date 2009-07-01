@@ -55,7 +55,37 @@ class LabelStylesTest < ManualTest
         :text_decoration => 'line-through'
       )
     }
+    italic_only {
+      label(
+        :font_style => :italic
+      )
+    }
+    magenta {
+      label(
+        :color => :magenta
+      )
+    }
   }
+
+  manual 'Style class' do
+
+    form {
+
+      title "Class styling"
+
+      use_styles styles
+      
+      content {
+        label "Current default style"
+        label "Class color: magenta", :style_class => :magenta
+        label "Class + id: magenta/italic", :name => :italic_only, :style_class => :magenta
+      }
+      
+      visible true
+      
+    }
+    
+  end
   
   manual 'Default Swing styling' do
     

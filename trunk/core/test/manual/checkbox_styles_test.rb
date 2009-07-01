@@ -57,7 +57,37 @@ class CheckboxStylesTest < ManualTest
         :text_decoration => 'line-through'
       )
     }
+    italic_only {
+      button(
+        :font_style => :italic
+      )
+    }
+    magenta {
+      button(
+        :color => :magenta
+      )
+    }
   }
+
+  manual 'Style class' do
+
+    frame(:layout => :stacked, :vgap => 5) {
+
+      title "Default Swing styling"
+
+      use_styles styles
+      
+      content {
+        check "Current default style"
+        check "Class color: magenta", :style_class => :magenta
+        check "Class + id: magenta/italic", :italic_only, :style_class => :magenta
+      }
+      
+      visible true
+      
+    }
+    
+  end
 
   manual 'Default Swing styling' do
 
@@ -65,7 +95,7 @@ class CheckboxStylesTest < ManualTest
 
     frame(:layout => :stacked, :vgap => 5) {
 
-      title "Default Swing styling"
+      title "Class styling"
       
       use_styles styles
       

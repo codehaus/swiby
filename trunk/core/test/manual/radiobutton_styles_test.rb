@@ -58,7 +58,37 @@ class RadioButtonStylesTest < ManualTest
         :text_decoration => 'line-through'
       )
     }
+    italic_only {
+      button(
+        :font_style => :italic
+      )
+    }
+    magenta {
+      button(
+        :color => :magenta
+      )
+    }
   }
+
+  manual 'Style class' do
+
+    frame(:layout => :stacked, :vgap => 5) {
+
+      title "Class styling"
+
+      use_styles styles
+      
+      content {
+        radio "Current default style"
+        radio "Class color: magenta", :style_class => :magenta
+        radio "Class + id: magenta/italic", :italic_only, :style_class => :magenta
+      }
+      
+      visible true
+      
+    }
+    
+  end
 
   manual 'Default Swing styling' do
     

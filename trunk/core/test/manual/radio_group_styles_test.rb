@@ -60,7 +60,37 @@ class RadioGroupStylesTest < ManualTest
           :text_decoration => 'line-through'
         )
       }
+      italic_only {
+        list(
+          :font_style => :italic
+        )
+      }
+      magenta {
+        list(
+          :color => :magenta
+        )
+      }
     }
+
+  manual 'Style class' do
+
+    form {
+
+      title "Class styling"
+
+      use_styles styles
+      
+      content {
+        radio_group ["Current default style"] + data
+        radio_group ["Class color: magenta"] + data, :style_class => :magenta
+        radio_group ["Class + id: magenta/italic"] + data, :name => :italic_only, :style_class => :magenta
+      }
+      
+      visible true
+      
+    }
+    
+  end
 
   manual 'Default Swing styling' do
     
