@@ -48,6 +48,9 @@ module Swiby
       if @component.border
         color = styles.resolver.find_color(:border)
         @component.border.title_color = color if color
+      
+        font = styles.resolver.find_font(:container)
+        @component.border.title_font = font if font
       end
       
       color = styles.resolver.find_background_color(:container)
