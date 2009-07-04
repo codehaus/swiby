@@ -12,15 +12,15 @@ require 'swiby/util/remote_loader'
 module Kernel
 
   # alias the orginal require/load
-  alias sys_require require
-  alias sys_load load
+  alias swiby_sys_require require
+  alias swiby_sys_load load
   
   def require file_name
-    sys_require to_local_file(file_name)
+    swiby_sys_require to_local_file(file_name)
   end
 
   def load file_name
-    sys_load to_local_file(file_name)
+    swiby_sys_load to_local_file(file_name)
   end
   
   def to_local_file file_name
