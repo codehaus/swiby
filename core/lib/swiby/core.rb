@@ -52,6 +52,10 @@ module Swiby
       " valid types are #{valid_types.join(', ')}"
     end
 
+    def each &block
+      @options.each &block
+    end
+    
     def [](key)
       @options[key]
     end
@@ -200,9 +204,9 @@ module Swiby
         
         if args.length == signature.length or 
            (signature.length + 1 == args.length and args.last.instance_of?(Hash))
-          
+            
           i = 0
-          
+            
           signature.each do |sym|
             
             break if !@metadata[sym].compatible?(args[i])
@@ -210,17 +214,19 @@ module Swiby
             i += 1
             
           end
-  
-          if i == signature.length
             
+          if i == signature.length
+           
+            consume_possible_last_arguments signature, args
+           
             i = 0
             
             signature.each do |sym|
-
-              @options[sym] = args[i]
-
+            
+              @options[sym] = args[i] if args[i]
+              
               i += 1
-
+            
             end
             
             return args.length > signature.length ? args.last : nil
@@ -243,6 +249,26 @@ module Swiby
       
     end
 
+    def consume_possible_last_arguments signature, args
+      
+      if args.last.is_a?(Hash) and @metadata[signature.last].types.include?(Object)
+        
+        last_arg = args.last
+        
+        contains_args = false
+        
+        signature.each do |sym|
+          contains_args = true if last_arg.has_key?(sym)
+        end
+        
+        @options.merge! last_arg
+        
+        args[args.length - 1] = nil
+        
+      end
+      
+    end
+    
     def validate
       
       @metadata.each do |key, value|

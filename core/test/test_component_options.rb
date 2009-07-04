@@ -372,10 +372,12 @@ module Swiby
         declare :text, [String, Symbol], true
         declare :height, [Integer], true
         declare :width, [Integer], true
+        declare :value, [Object], true
 
         overload :text
         overload :label
         overload :width
+        overload :label, :value
 
       end
 
@@ -395,6 +397,25 @@ module Swiby
       
       assert_equal "James", x[:text]
 
+    end
+    
+    def test_object_type_selected_last
+      
+      x = TestOptions.new(self, 'The label', [1, 2])
+      
+      assert_equal [1, 2], x[:value]
+      assert_equal 'The label', x[:label]
+      
+    end
+    
+    def test_last_hash_used_as_option_if_resolves_options
+      
+      x = TestOptions.new(self, 'The label', {:text => 'some text', :label => 'Hello', :value => [1, 4]})
+      
+      assert_equal [1, 4], x[:value]
+      assert_equal "The label", x[:label]
+      assert_equal "some text", x[:text]
+      
     end
 
   end
