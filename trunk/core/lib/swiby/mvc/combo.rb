@@ -14,11 +14,16 @@ module Swiby
   
   class ComboBox
     
+    include SelectableComponendBehavior
+    
     def register master, controller, id, method_naming_provider
       super
       
       need_getter_method
-      need_selection_handler_method
+      need_setter_method
+      
+      need_list_method
+      need_list_changed_method
       
       added_self = false
       
@@ -27,7 +32,7 @@ module Swiby
         added_self = true
       end
 
-      if @selection_handler_method
+      if @setter_method
         add_listener create_listener
         master.wrappers << self unless added_self
       end
@@ -43,12 +48,8 @@ module Swiby
     end
     
     def execute_action
-      @controller.send(@selection_handler_method, @component.selected_index)
+      @controller.send(@setter_method, self.value)
       @master.refresh
-    end
-    
-    def display new_value
-      #@component.text = new_value.to_s
     end
     
   end
