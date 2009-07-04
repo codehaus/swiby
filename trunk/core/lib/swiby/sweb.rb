@@ -25,6 +25,7 @@ class Sweb
   attr_reader :container, :top_container
 
   def start
+    @container.apply_styles
     @top_container.visible = true
   end
 
