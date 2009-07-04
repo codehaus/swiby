@@ -27,7 +27,7 @@ class Class
     end
     
     fields.each do |field|
-      self.bindable_fields << fields
+      self.bindable_fields << field unless self.bindable_fields.include?(field)
     end
     
   end
@@ -50,10 +50,6 @@ module Swiby
       id.to_sym
     end
     
-    def selection_handler_method(id)
-      "current_#{id}=".to_sym
-    end
-  
     def getter_method(id)
       id.to_sym
     end
@@ -65,9 +61,47 @@ module Swiby
     def value_changed_method(id)
       "#{id}_changed?".to_sym
     end
+
+    def list_method(id)
+      "list_of_#{id}".to_sym
+    end
+
+    def list_changed_method(id)
+      "list_of_#{id}_changed?".to_sym
+    end
     
     def validator_method(id)
       "#{id}_valid?".to_sym
+    end
+    
+  end
+  
+  module SelectableComponendBehavior
+    
+    def enable_disable
+      
+      if @list_method
+        
+        changed = false
+        changed = @controller.send(@list_changed_method) if @list_changed_method
+        
+        if changed
+          new_list = @controller.send(@list_method)
+          change_list new_list
+        end
+        
+      end
+      
+      super
+      
+    end
+    
+    def display new_value
+      self.value = new_value
+    end
+    
+    def change_list new_content
+      self.content = new_content
     end
     
   end
@@ -200,11 +234,24 @@ module Swiby
       @view_definitions
     end
     
+    def self.bind_controller view, controller, method_naming_provider = nil
+      prepare_mvc view, controller, method_naming_provider
+    end
+    
     def instantiate controller, method_naming_provider = nil
+      
+      window_wrapper = @def_block.call
+      
+      self.class.bind_controller window_wrapper, controller, method_naming_provider
+      
+    end
+
+    private
+    
+    def self.prepare_mvc window_wrapper, controller, method_naming_provider
       
       method_naming_provider = Swiby.default_method_naming_provider unless method_naming_provider
       
-      window_wrapper = @def_block.call
       window = window_wrapper.java_component
       
       master = MasterController.new
@@ -212,14 +259,14 @@ module Swiby
       register_components window_wrapper, master, controller, method_naming_provider
       
       if controller.class.respond_to?(:has_bindable?) and controller.class.has_bindable?
-        
+
         controller.class.bindable_fields.each do |field|
           
           setter = method_naming_provider.setter_method(field)
           
           if controller.respond_to?(setter)
             
-            orig = "orig_#{setter}".to_sym
+            orig = "swiby_mvc_orig_#{setter}".to_sym
             
             code =<<CODE
             class << self
@@ -232,8 +279,8 @@ module Swiby
               
             end
 CODE
-          
-            controller.instance_eval code
+            
+            controller.instance_eval code unless controller.respond_to?(orig)
             
             def controller.master= master
               @master = master
@@ -256,10 +303,10 @@ CODE
       window_wrapper
       
     end
-
+    
     private
     
-    def register_components parent, master, controller, method_naming_provider
+    def self.register_components parent, master, controller, method_naming_provider
       
       parent.each do |wrapper|
 
