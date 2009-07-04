@@ -8,7 +8,7 @@
 #++
 
 require 'yaml'
-require 'ftools'
+require 'fileutils'
 require 'open-uri'
 require 'pathname'
 
