@@ -41,8 +41,8 @@ Swiby.define_view(:login_view) {
 
       next_row
       
-        button 'OK', :name => :ok
-        button 'Exit', :name => :exit_application
+        command 'OK', :name => :ok
+        command 'Exit', :name => :exit_application
 
     }
 
@@ -68,10 +68,10 @@ Swiby.define_view(:mailbox_view) {
     toolbar {
       combo ['In box', 'Sent box'], :name => :mailbox
       label ' '
-      button 'New', :name => :new_mail
+      command 'New', :name => :new_mail
       label ' '
       separator
-      button 'Exit', :name => :exit
+      command 'Exit', :name => :exit
     }
     
     form {
@@ -88,7 +88,7 @@ Swiby.define_view(:mailbox_view) {
       next_row
       section
       
-        button 'Reply', :name => :reply
+        command 'Reply', :name => :reply
 
     }
 
@@ -113,8 +113,8 @@ Swiby.define_view(:mail_composer) {
     next_row
       editor :name => :body
 
-      button 'Send', :name => :send_mail
-      button 'Cancel', :name => :cancel
+      command 'Send', :name => :send_mail
+      command 'Cancel', :name => :cancel
     
     visible true
     

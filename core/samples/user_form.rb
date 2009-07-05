@@ -46,10 +46,10 @@ user_form = form {
     input "First Name", :first_name
     input "Last Name", :last_name
     next_row
-    button("Save") {
+    command("Save") {
       message_box("Save data!")
     }
-    button("Cancel") {
+    command("Cancel") {
       exit
     }
   }

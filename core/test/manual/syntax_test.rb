@@ -167,7 +167,7 @@ class SyntaxTest < ManualTest
             }
           }
 
-          button {
+          command {
             text 'Console'
             action {
               show_console context
@@ -274,7 +274,7 @@ class SyntaxTest < ManualTest
               comp.tool_tip_text = "My name is <#{comp.name}>"
             }
 
-        button('Console') {
+        command('Console') {
           open_console context
         }
 

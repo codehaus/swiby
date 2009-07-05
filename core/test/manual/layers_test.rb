@@ -35,7 +35,7 @@ class LayersTest < ManualTest
         input 'Input 4', ''
         input 'Input 5', ''
         
-        button('Show popup', :button) {
+        command('Show popup', :button) {
         
           if context.layers[:popup].visible?
             context.layers[:popup].visible false
@@ -110,7 +110,7 @@ class LayersTest < ManualTest
       content {
           input 'Input 1', 'Hello', :name => :input_1
           input 'Input 2', 'world ...'
-          button('Open console') {
+          command('Open console') {
             open_console context
           }
       }

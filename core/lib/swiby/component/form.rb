@@ -158,7 +158,7 @@ module Swiby
       @main_layout.add_area :next_row
     end
     
-    def command *args, &block
+    def commands *args, &block
       
       if block
         
@@ -191,7 +191,7 @@ module Swiby
         case arg
         when :ok
       
-          button "Ok", :name => :ok_but do
+          command "Ok", :name => :ok_but do
 
             valid = true
             
@@ -219,7 +219,7 @@ module Swiby
           
         when :cancel
       
-          button "Cancel", :name => :cancel_but do
+          command "Cancel", :name => :cancel_but do
             if block.respond_to?(:on_cancel)
               block.on_cancel
             else
@@ -229,7 +229,7 @@ module Swiby
           
         when :apply
       
-          button "Apply", :name => :apply_but do
+          command "Apply", :name => :apply_but do
 
             valid = true
             
@@ -260,7 +260,7 @@ module Swiby
 
         when :restore
       
-          button "Restore", :name => :restore_but  do
+          command "Restore", :name => :restore_but  do
 
             if block.respond_to?(:on_restore)
               block.on_restore

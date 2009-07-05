@@ -16,7 +16,7 @@ class AutosizeTest < ManualTest
       input "Login:", ""
       password "Password:", ""
     
-      button 'Ok'
+      command 'Ok'
      
   }
       

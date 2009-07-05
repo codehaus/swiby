@@ -33,9 +33,9 @@ content {
   input "Account", :account_to / :number
   input "Name", :account_to / :owner
   input "Address", :account_to / :address
-  button "Save beneficiary"
+  command "Save beneficiary"
   next_row
-  command :apply, :restore
+  commands :apply, :restore
 }
 
 $context.apply_styles $context.session.styles if $context.session.styles

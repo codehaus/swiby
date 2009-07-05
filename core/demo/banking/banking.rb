@@ -44,11 +44,11 @@ def open_settings target
         panel(:name => 'preview') {
           input "Label", "Input"
           combo ['Combo']
-          button "Button"
+          command "Button"
         }
 
       next_row
-        command(:ok, :cancel) {
+        commands(:ok, :cancel) {
       
           @target = target
           
@@ -84,10 +84,10 @@ height 300
 
 content(:layout => :border) {
   section nil, :layout => :stacked, :vgap => 10, :hgap => 10
-    button("Accounts [#{Account.count_from_accounts}]") {
+    command("Accounts [#{Account.count_from_accounts}]") {
       $context.goto "account/list.rb"
     }
-    button("Transfers [#{Transfer.count}]") {
+    command("Transfers [#{Transfer.count}]") {
       $context.goto "transfer/list.rb"
     }
     bottom

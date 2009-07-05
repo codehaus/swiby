@@ -206,7 +206,7 @@ def open_console run_context, container = nil
     }
   }
   
-  frm = form {
+  frm = Swiby::form {
     
     use_styles styles
     
@@ -224,13 +224,13 @@ def open_console run_context, container = nil
     section :expand => 100
       editor :name => :editor
     
-    button("Show Info", :name => :frame_info_button) {
+    command("Show Info", :name => :frame_info_button) {
       context.show_hide_info
     }
-    button("Execute") {
+    command("Execute") {
       context.execute(context[:editor].text)
     }
-    button("Close") {
+    command("Close") {
       close
     }
     
@@ -241,7 +241,7 @@ def open_console run_context, container = nil
     layer(:popup) {
       content(:layout => :form, :vgap => 10, :hgap => 10) {
         input 'Command:', '', :name => :command, :columns => 40
-        button 'Close', :close
+        command 'Close', :close
       }
     }
     

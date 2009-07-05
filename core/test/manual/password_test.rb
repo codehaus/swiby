@@ -25,7 +25,7 @@ class PasswordTest < ManualTest
           input "Login:", "", :name => :login
           password "Password:", "", :name => :pwd
         
-          button('Ok') {
+          command('Ok') {
             message_box "Login is #{context[:login].value}/#{context[:pwd].value}"
           }
          

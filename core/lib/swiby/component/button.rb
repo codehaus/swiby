@@ -16,6 +16,19 @@ module Swiby
   
     def layout_button button
     end
+
+    def layout_input label, text
+    end
+    
+    def command text = nil, image = nil, options = nil, &block
+      
+      but = button_factory(text, image, options, block) do |opt|
+        Button.new(opt)
+      end
+      
+      layout_button but
+      
+    end
     
     def button text = nil, image = nil, options = nil, &block
       
@@ -23,7 +36,7 @@ module Swiby
         Button.new(opt)
       end
       
-      layout_button but
+      layout_input nil, but
       
     end
     
@@ -124,7 +137,7 @@ module Swiby
 
     def text=(t)
       @real_text = t
-      @component.text = t      
+      @component.text = t
     end
 
     def text

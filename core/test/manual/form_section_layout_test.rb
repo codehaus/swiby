@@ -21,6 +21,7 @@ class FormSectionLayoutTest < ManualTest
         section "::1", :layout => :flow
         input "Name", "James"  
         button "Button 1"
+        command "Ok1"
         section "::2", :layout => :flow, :align => :right
         input "Code", "007"  
         input "Nickname", "Bond"

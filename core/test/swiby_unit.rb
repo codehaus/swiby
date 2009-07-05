@@ -30,7 +30,7 @@ module Swiby
           input 'label 2', 'value 3'
           next_row
           section "section 3"
-          button 'button 4'
+          command 'button 4'
           next_row
           combo 'label 5', ['list 6']
         }
@@ -52,7 +52,7 @@ module Swiby
           input 'label', 'value'
           next_row
           section "section"
-          button 'button'
+          command 'button'
           next_row
           combo 'label', ['value']
         }
@@ -122,7 +122,7 @@ module Swiby
             text 'value'
             name 'v2'
           }
-          button {
+          command {
             text 'button'
             name 'b3'
           }

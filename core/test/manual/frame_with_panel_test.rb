@@ -15,7 +15,7 @@ class FrameWithPanelTest < ManualTest
     
     frame {
       
-      title 'frame with centerd panel (default layouts)'
+      title 'frame with centered panel (default layouts)'
 
       width 500
       height 150
