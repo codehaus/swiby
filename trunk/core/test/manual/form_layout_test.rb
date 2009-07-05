@@ -26,6 +26,8 @@ class FormLayoutTest < ManualTest
         button "Hello", :hello_but
         button "World!", :world_but
         
+        command "Ok"
+        
       }
       
       visible true
@@ -47,8 +49,8 @@ class FormLayoutTest < ManualTest
           input "Surname", "Bond"
           button "But 1"
           button "Button 2"
-          button "Ok"
-          button "Cancel"
+          command "Ok"
+          command "Cancel"
       }
       
       visible true

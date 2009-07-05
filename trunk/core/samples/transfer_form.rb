@@ -116,9 +116,12 @@ transfer_form = form {
       input "Account", :account_to / :number
       input "Name", :account_to / :owner
       input "Address", :account_to / :address
-      button "Save beneficiary"
+      command "Save beneficiary"
     next_row
-      command(:ok, :cancel) {
+      command("Console") {
+        open_console self
+      }
+      commands(:ok, :cancel) {
 
         def on_validate
 
@@ -133,10 +136,6 @@ transfer_form = form {
 
         end
 
-      }
-    next_row
-      button("Console") {
-        open_console self
       }
   }
   

@@ -14,7 +14,7 @@ class FormInnerLayoutTest < ManualTest
   form_content = proc {
       section "::1"
         input "Name", "James" 
-        button "Button 1"
+        command "Button 1"
       section "::2"
         input "Code", "007"  
         input "Nickname", "Bond"

@@ -18,10 +18,10 @@ title "Transfer List"
 content {
   section "Transfer List"
   table ["From", "To", "Amount", "Date"], bind {transfers}
-  button("Add") {
+  command("Add") {
     $context.goto "transfer_form.rb"
   }
-  button("Edit") {
+  command("Edit") {
     $context.goto "transfer_form.rb"
   }
 }

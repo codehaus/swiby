@@ -36,6 +36,8 @@ class StyleSettingTest < ManualTest
       combo "Country:", ['Belgium', 'France', 'Italy']
       button "Hello"
       
+      command 'Ok'
+      
       visible true
       
     }
@@ -65,6 +67,8 @@ class StyleSettingTest < ManualTest
       combo "Country:", ['Belgium', 'France', 'Italy']
       button "Hello"
       
+      command 'Ok'
+      
       visible true
       
     }
@@ -86,6 +90,8 @@ class StyleSettingTest < ManualTest
       combo "Country:", ['Belgium', 'France', 'Italy']
       button "Hello"
       
+      command 'Ok'
+      
       visible true
       
     }
@@ -104,6 +110,8 @@ class StyleSettingTest < ManualTest
       input "Name: ", "Joe"
       combo "Country:", ['Belgium', 'France', 'Italy']
       button "Hello"
+      
+      command 'Ok'
       
       visible true
       
