@@ -106,4 +106,8 @@ class StackedLayoutTest < ManualTest
     }
   end
   
+  manual 'vgap and hgap' do
+    create_test('vgap = 40 and hgap = 70', :vgap => 40, :hgap => 70)
+  end
+  
 end
