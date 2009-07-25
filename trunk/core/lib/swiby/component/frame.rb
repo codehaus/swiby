@@ -311,6 +311,7 @@ module Swiby
       @component.content_pane
     end
     
+    #TODO remove 'swing' directive duplication (see frame.rb and form.rb)
     def swing &block
       
       component = @last_added.java_component(true) if @last_added
