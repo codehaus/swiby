@@ -55,7 +55,7 @@ module Swiby
           
           align = FLOW_ALIGNMENTS[data[:align]]
           
-          layout = AWT::FlowLayout.new
+          layout = FlowLayout.new
           
           layout.hgap = data[:hgap] if data[:hgap]
           layout.vgap = data[:vgap] if data[:vgap]
