@@ -41,8 +41,8 @@ module Swiby
     
     define "Slider" do
       
-      declare :start, [Fixnum], true
-      declare :end, [Fixnum], true
+      declare :minimum, [Fixnum], true
+      declare :maximum, [Fixnum], true
       declare :value, [Fixnum], true
       declare :name, [String, Symbol], true
       declare :orientation, [Symbol], true
@@ -50,9 +50,9 @@ module Swiby
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
       
       overload :orientation, :name
-      overload :orientation, :start, :name
-      overload :orientation, :start, :end, :name
-      overload :orientation, :start, :end, :value, :name
+      overload :orientation, :minimum, :name
+      overload :orientation, :minimum, :maximum, :name
+      overload :orientation, :minimum, :maximum, :value, :name
       
     end
     
@@ -70,13 +70,13 @@ module Swiby
       
       args = []
       args << map_orientation(options[:orientation]) if options[:orientation]
-      args << options[:start] if options[:start]
-      args << options[:end] if options[:end]
+      args << options[:minimum] if options[:minimum]
+      args << options[:maximum] if options[:maximum]
       args << options[:value] if options[:value]
       
       if options[:orientation] and (args.length != 1 or args.length != 4)
-        raise "Must provide start and end values for slider" if options[:value] or args.length != 3
-        args << options[:start]
+        raise "Must provide minimum and maximum values for slider" if options[:value] or args.length != 3
+        args << options[:minimum]
       end
 
       @component = JSlider.new(*args)
