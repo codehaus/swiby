@@ -8,6 +8,7 @@
 #++
 
 require 'yaml'
+require 'ftools'
 require 'fileutils'
 require 'open-uri'
 require 'pathname'
@@ -169,6 +170,12 @@ module Swiby
     
       p.rmtree if p.exist?
 
+    end
+    
+    # forgets all loaded files since cache opening, will reload all files from their original location, as they 
+    # are loaded again, if they changed otherwise from the local cache
+    def reset
+      @resolved.clear
     end
     
     # Closes the cache

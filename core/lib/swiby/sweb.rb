@@ -58,6 +58,37 @@ class Sweb
     # exit the application...
   end
 
+  # Register the hook block when the Sweb reload is called.
+  # If the block returns true, default reload is disabled
+  def reload_hook &hook
+    @reload_hook = hook
+  end
+
+  def reload
+    
+    if @reload_hook
+      return if @reload_hook.call
+    end
+    
+    return unless defined?(AUTO_RELOADER)
+    
+    Swiby::RemoteLoader.cache_manager.reset if Swiby::RemoteLoader.cache_manager
+    
+    AUTO_RELOADER.clear
+    
+    @container = form(:as_panel)
+    @history[@history_index] = @container
+    
+    @top_container.default_layer.remove 1
+    @top_container.default_layer.add @container.java_component
+    @top_container.java_component.validate
+    
+    require @sources[@history_index]
+
+    @console.run_context = @container if @console
+    
+  end
+  
   def back
 
     return if first_page?
@@ -134,12 +165,6 @@ class Sweb
     @sources = []
     @history = []
 
-    if $0 == __FILE__ or $0 == '-e' # $0 = -e if run from installed gem/bin command
-      @source = ARGV[0]
-    else
-      @source = $0
-    end
-
     @container = form(:as_panel)
     
     @top_container = frame do
@@ -155,6 +180,10 @@ class Sweb
           action proc {$context.forward}
         end
         separator
+        button create_icon(image_path("reload.png")) do
+          $context.reload
+        end
+        separator
         button create_icon(image_path("console.png")) do
           $context.show_console
         end
@@ -168,10 +197,16 @@ class Sweb
 
     @top_container.default_layer.add @container.java_component
 
+    @source = ''
     @history << @container
     @titles << ""
     @sources << @source
 
+  end
+  
+  def page_source= source
+    self.source = source
+    @sources[@history_index] = source
   end
   
   def show_console
@@ -209,7 +244,10 @@ end
 
 def content *layout, &block
   $context.container.content(*layout, &block)
+  $context.container
 end
+
+require 'swiby/util/arguments_parser'
 
 module Swiby
   
@@ -217,7 +255,18 @@ module Swiby
     
     def self.run
 
-      if ARGV.length == 0
+      @parser = create_parser_for('Sweb', SWIBY_VERSION) {
+
+        accept optional, :auto_reaload, '-r', '--enable-reload', :doc => 'Enable file reload'
+        accept optional, :script, :doc => 'Script to run'
+
+        exception_on_error
+
+      }
+
+      options = @parser.parse
+
+      unless options.script
 
         $context.source = ""
 
@@ -228,12 +277,12 @@ module Swiby
 
       else
 
-        if ARGV[0] =~ /http\:\/\/.*|https\:\/\/.*/
+        if options.script =~ /http\:\/\/.*|https\:\/\/.*/
 
           require "swiby/util/simple_cache"
           require "swiby/util/remote_require"
 
-          match_data = /(.*)\/(.*)/.match(ARGV[0])
+          match_data = /(.*)\/(.*)/.match(options.script)
 
           base = match_data[1]
           script = match_data[2]
@@ -244,30 +293,38 @@ module Swiby
 
           $:.unshift cache_dir
 
+          if options.auto_reaload
+            require "swiby/util/auto_reloader"
+          end
+
           puts "Starting remote, base is #{base}, script is #{script}" #TODO write in a log file?
 
+          $context.page_source = script
+          
           require script
 
         else
 
-          $:.unshift File.dirname(File.expand_path(ARGV[0]))
+          $:.unshift File.dirname(File.expand_path(options.script))
 
-          require "swiby/util/remote_loader"
+          if options.auto_reaload
+            require "swiby/util/auto_reloader"
+          end
 
           # replace resolve_file defined in remote_loader
           eval %{
             module ::Kernel
 
               def resolve_file file_name
-
                 return $:[0] + '/' + file_name if not File.exist?(file_name)
-
               end
 
             end
           }
 
-          require ARGV[0]
+          $context.page_source = options.script
+          
+          require options.script
 
         end
 
