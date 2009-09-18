@@ -480,8 +480,10 @@ class FrameInfoPanel
         "<html>" +
         "<b>Name:</b> #{comp.name}<br>" +
         "<b>Class:</b> #{comp.class}<br>" +
-        "<b>Java:</b> #{comp.java_component.class}" +
-        "</html>"
+        "<b>Java:</b> #{comp.java_component.class}"
+      
+      text += "<hr><b>Style class:</b> #{comp.style_class}" if comp.style_class
+      text += "</html>"
       
       parent_id =  comp.java_component.parent.object_id
       index[parent_id] = 0 unless index[parent_id]
