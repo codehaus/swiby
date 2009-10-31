@@ -65,10 +65,8 @@ class Sweb
   end
 
   def reload
-    
-    if @reload_hook
-      return if @reload_hook.call
-    end
+
+    @reload_hook.cal if @reload_hook
     
     return unless defined?(AUTO_RELOADER)
     
