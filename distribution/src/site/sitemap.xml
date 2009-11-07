@@ -9,6 +9,10 @@
         <!--<page>faq.html</page>-->
     </section>
     <section>
+        <name>Documentation</name>
+        <page>doc-main.html</page>
+    </section>
+    <section>
         <name>Blob mode</name>
         <page>blob-mode.html</page>
     </section>
