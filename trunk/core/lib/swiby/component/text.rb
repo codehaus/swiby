@@ -167,6 +167,7 @@ module Swiby
   class TextField < SwingBase
 
     DATA_CONVERTERS = {:default => nil, :date => DateConverter.new}
+    ALIGNMENT_TYPES = {:left => JTextField::LEFT, :center => JTextField::CENTER, :right => JTextField::RIGHT}
     
     attr_accessor :linked_label
     swing_attr_accessor :columns, :editable
@@ -197,6 +198,7 @@ module Swiby
       self.editable = !options[:readonly] if options[:readonly]
       
       @style_id = self.name.to_sym if self.name      
+      @style_class = options[:style_class] if options[:style_class]
       @component.columns = options[:columns] if options[:columns]
       
       @converter = DATA_CONVERTERS[options[:type]] if options[:type]
@@ -211,14 +213,21 @@ module Swiby
       
       return unless styles
       
-      font = styles.resolver.find_font(:input, @style_id)
+      puts "text.rb wants the class styles!"
+      font = styles.resolver.find_font(:input, @style_id, @style_class)
       @component.font = font if font
       
-      color = styles.resolver.find_color(:input, @style_id)
+      color = styles.resolver.find_color(:input, @style_id, @style_class)
       @component.foreground = color if color
       
-      color = styles.resolver.find_background_color(:input, @style_id)
+      color = styles.resolver.find_background_color(:input, @style_id, @style_class)
       @component.background = color if color
+      
+      align = styles.resolver.find(:text_align, :input, @style_id, @style_class)
+      @component.horizontal_alignment = ALIGNMENT_TYPES[align] if align and ALIGNMENT_TYPES[align]
+      
+      readonly = styles.resolver.find(:readonly, :input, @style_id, @style_class)
+      @component.editable = !readonly unless readonly.nil?
       
     end
 
