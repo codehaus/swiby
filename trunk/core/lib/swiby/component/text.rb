@@ -213,7 +213,6 @@ module Swiby
       
       return unless styles
       
-      puts "text.rb wants the class styles!"
       font = styles.resolver.find_font(:input, @style_id, @style_class)
       @component.font = font if font
       
