@@ -140,7 +140,7 @@ module Swiby
         if layout_change_index < @change_layout.length
           
           while layout_change_index < @change_layout.length and 
-              @change_layout[layout_change_index][0] == component_index
+                @change_layout[layout_change_index][0] == component_index
             
             if @change_layout[layout_change_index][1] == :bottom
               bottom_index = component_index
@@ -148,7 +148,7 @@ module Swiby
               alignment = @change_layout[layout_change_index][1]
             end
             
-             layout_change_index += 1
+            layout_change_index += 1
               
           end
           
@@ -233,7 +233,7 @@ module Swiby
               alignment = @change_layout[layout_change_index][1]
             end
             
-             layout_change_index += 1
+            layout_change_index += 1
               
           end
           
