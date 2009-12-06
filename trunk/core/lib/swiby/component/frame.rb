@@ -9,6 +9,7 @@
 
 require 'swiby/swing'
 require 'swiby/layout/border'
+require 'swiby/component/layer'
 require 'swiby/component/panel'
 require 'swiby/component/toolbar'
 
@@ -311,16 +312,6 @@ module Swiby
       @component.content_pane
     end
     
-    #TODO remove 'swing' directive duplication (see frame.rb and form.rb)
-    def swing &block
-      
-      component = @last_added.java_component(true) if @last_added
-      component = self.java_component unless component
-      
-      block.call(component)
-
-    end
-
     def content= child
       add child
     end

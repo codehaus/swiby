@@ -82,6 +82,16 @@ module Swiby
       end
       
     end
+    
+    def swing &block
+      
+      component = @last_added.java_component(true) if @last_added
+      component = self.java_component unless component
+      
+      block.call(component)
+
+    end
+
 
     protected
 
