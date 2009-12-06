@@ -115,6 +115,14 @@ module Swiby
 
   class SimpleLabel < SwingBase
 
+    ALIGN_MAPPING = {
+      :left => javax.swing.SwingConstants::LEFT,
+      :center => javax.swing.SwingConstants::CENTER,
+      :right => javax.swing.SwingConstants::RIGHT,
+      :leading => javax.swing.SwingConstants::LEADING,
+      :trailing => javax.swing.SwingConstants::TRAILING
+    }
+
     def initialize options = nil
       
       @component = JLabel.new
@@ -166,6 +174,9 @@ module Swiby
         
       @component.border = border if border
       
+      align = styles.resolver.find(:text_align, :label, @style_id, @style_class)
+      @component.horizontal_alignment = ALIGN_MAPPING[align] if align
+      
     end
     
     def action(&block)
@@ -208,6 +219,10 @@ module Swiby
       @real_text
     end
 
+    def icon= image
+      @component.icon = image
+    end
+    
   end
   
 end
