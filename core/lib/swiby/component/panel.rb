@@ -71,7 +71,7 @@ module Swiby
     end
 
   end
-  
+
   class Panel < Container
     
     def initialize options = nil
@@ -89,6 +89,7 @@ module Swiby
       end
       
       @style_id = self.name.to_sym if self.name
+      @style_class = options[:style_class] if options[:style_class]
       
     end
 
@@ -105,7 +106,7 @@ module Swiby
     def java_container
       @component
     end
-
+    
     def add_child child
 
       @children = [] unless @children
@@ -124,10 +125,10 @@ module Swiby
         styles = @styles
       end
       
-      color = styles.resolver.find_background_color(:container, @style_id)
+      color = styles.resolver.find_background_color(:container, @style_id, @style_class)
       @component.background = color if color
       
-      border = styles.resolver.create_border(:container, @style_id)
+      border = styles.resolver.create_border(:container, @style_id, @style_class)
       @component.border = border if border
       
       if @children
