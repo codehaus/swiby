@@ -188,6 +188,8 @@ module Swiby
 
       return nil unless family and size
 
+      awt_style = Font::PLAIN unless awt_style
+      
       font_key = [family, awt_style, size]
 
       return @cache[font_key] if  @cache.has_key?(font_key)
