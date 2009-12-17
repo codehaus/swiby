@@ -128,7 +128,7 @@ module Swiby
       if @section.respond_to?(symbol)
         @section.send(symbol, *args)
       else
-        raise NoMethodError.new("undefined method `#{symbol}' for #{self}", symbol, args)
+        super
       end
       
     end
