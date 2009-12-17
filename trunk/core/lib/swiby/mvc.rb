@@ -380,7 +380,7 @@ CODE
     
     def method_missing(meth, *args)
 
-      raise NoMethodError.new("undefined method `#{meth}' for #{self}", meth, args) unless meth.to_s =~ /^need_(.*)/
+      super unless meth.to_s =~ /^need_(.*)/
       
       name = $1
       
