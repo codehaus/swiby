@@ -83,7 +83,7 @@ module Swiby
   
   class SwingBase
 
-    attr_reader :style_class
+    attr_accessor :style_class
     
     def self.swing_attr_accessor(symbol, *args)
       generate_swing_attribute to_map(symbol, args), :include_attr_reader
