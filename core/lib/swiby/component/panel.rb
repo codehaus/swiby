@@ -34,6 +34,8 @@ module Swiby
 
       pane.instance_eval(&block) unless block.nil?
     
+      pane
+      
     end
 
     def create_panel options
@@ -120,7 +122,7 @@ module Swiby
       return unless styles or @styles
       
       if styles
-        @style = nil
+        @styles = styles
       else
         styles = @styles
       end
