@@ -257,6 +257,8 @@ module Swiby
 
         accept optional, :auto_reaload, '-r', '--enable-reload', :doc => 'Enable file reload'
         accept optional, :script, :doc => 'Script to run'
+        
+        accept_remaining optional, :script_args, "Arguments for the script.\nReplaces the ARGV values when the script is run."
 
         exception_on_error
 
@@ -274,6 +276,9 @@ module Swiby
         $context.start
 
       else
+        
+        ARGV.clear
+        ARGV.concat  options.script_args
 
         if options.script =~ /http\:\/\/.*|https\:\/\/.*/
 
@@ -284,7 +289,9 @@ module Swiby
 
           base = match_data[1]
           script = match_data[2]
-
+          
+          $0 = script
+          
           cache_dir = System::get_property('user.home') + "/.swiby/cache/"
 
           Swiby::RemoteLoader.cache_manager = Swiby::SimpleCache.new base, cache_dir
@@ -303,6 +310,8 @@ module Swiby
 
         else
 
+          $0 = options.script
+        
           $:.unshift File.dirname(File.expand_path(options.script))
 
           if options.auto_reaload
