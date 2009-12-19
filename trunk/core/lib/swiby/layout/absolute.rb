@@ -162,6 +162,8 @@ module Swiby
             y = relative.y - d.height
           when :center
             y = relative.y + (relative.height - d.height) / 2
+          when :align_bottom_edge
+            y = relative.y + relative.height - d.height
           end
           
           case lay.h_relation
@@ -173,6 +175,8 @@ module Swiby
             x = relative.x - d.width
           when :center
             x = relative.x + (relative.width - d.width) / 2
+          when :align_right_edge
+            x = relative.x + relative.width - d.width
           end
           
           lay.comp.setBounds(x + lay.x, y + lay.y, d.width, d.height)
