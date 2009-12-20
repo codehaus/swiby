@@ -10,10 +10,15 @@
 import java.awt.Dimension
 import javax.swing.JEditorPane
 
+require 'swiby/component/label'
+
 module Swiby
   
   module Builder
       
+    def layout_list label, list
+    end
+    
     def layout_panel pane
     end
     
