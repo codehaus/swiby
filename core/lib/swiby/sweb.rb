@@ -278,7 +278,7 @@ module Swiby
       else
         
         ARGV.clear
-        ARGV.concat  options.script_args
+        ARGV.concat  options.script_args if options.script_args
 
         if options.script =~ /http\:\/\/.*|https\:\/\/.*/
 
