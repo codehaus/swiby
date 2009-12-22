@@ -82,21 +82,21 @@ module Swiby
             
       return unless options
 
+      self.name = options[:name].to_s if options[:name]
+      self.editable = !options[:readonly] if options[:readonly]
+      
+      scrollable
+
       if options[:width] and options[:height]
         
         w = options[:width]
         h = options[:height]
         
-        @component.preferred_size = Dimension.new(w, h)
+        @scroll_pane.preferred_size = Dimension.new(w, h)
 
       else
-        @component.preferred_size = Dimension.new(32, 32767)
+        @scroll_pane.preferred_size = Dimension.new(32, 32767)
       end
-
-      self.name = options[:name].to_s if options[:name]
-      self.editable = !options[:readonly] if options[:readonly]
-      
-      scrollable
 
     end
     
