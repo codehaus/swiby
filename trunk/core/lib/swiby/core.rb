@@ -140,10 +140,7 @@ module Swiby
         @valid_props = defn.valid_props
         @overloadings = defn.overloadings
       
-        # as sort is stable, we can use it because the overloading declaration order is important 
-        @overloadings.reverse!.sort! do |a, b|
-          a.length <=> b.length
-        end
+        sort_overloadings
         
       end
     
@@ -162,11 +159,29 @@ module Swiby
     end
     
     def overload *arg_list
-      @overloadings += [arg_list]
+      @overloadings << arg_list
     end
     
     private
 
+    # The Ruby sort is not garanteed to be stable, therefore
+    # we implement a stable (bubble) sort, because the 
+    # overloading declaration order is important
+    # (based on MitkOK's proposed implementation)
+    def self.sort_overloadings
+      
+      list = @overloadings.reverse!
+      
+      for i in 0..(list.length - 1)
+        for j in 0..(list.length - i - 2)
+          if (list[j + 1].length <=> list[j].length) == -1
+            list[j], list[j + 1] = list[j + 1], list[j]
+          end
+        end
+      end
+      
+    end
+    
     def initialize_options *args, &block
       
       while args.length > 0 and args.last.nil?
@@ -180,7 +195,7 @@ module Swiby
         args.pop
       end
       
-      hash = prepare(args)
+      hash = prepare(args, &block)
       
       self << hash unless hash.nil?
       
@@ -194,7 +209,22 @@ module Swiby
       
     end
     
-    def prepare args
+    def prepare args, &block_arg
+      
+      unless args.last.is_a?(Hash) or block_arg.nil?
+
+        n = args.length + 1
+        
+        @overloadings.reverse_each do |signature|
+          
+          if signature.length == n and @metadata[signature.last].compatible?(block_arg)
+            args << block_arg
+            break
+          end
+          
+        end
+        
+      end
       
       if args.length == 1 && args[0].instance_of?(Hash)
         return args[0]

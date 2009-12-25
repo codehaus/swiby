@@ -536,4 +536,108 @@ module Swiby
     
   end
   
+  ##-----
+  class TestBlockArg < ComponentOptionTestCase
+  
+    class TestOptions < ComponentOptions
+
+      define "Test" do
+
+        declare :name, [String, Symbol], true
+        declare :text, [String], true
+        declare :height, [Integer], true
+        declare :width, [Integer], true
+        declare :runner, [Proc], false
+
+        overload :runner
+        overload :text
+        overload :name, :runner, :text
+
+      end
+
+    end
+
+    def test_block_arg_not_used_as_more_options
+      
+      block = proc {"Hello"}
+      
+      x = TestOptions.new(self, &block) 
+      
+      assert_equal "Hello", x[:runner].call
+
+    end
+
+    def test_block_arg_not_used_as_more_options_alternate_syntax
+      
+      x = TestOptions.new(self) {"Hello"}
+      
+      assert_equal "Hello", x[:runner].call
+
+    end
+
+    def test_block_arg_as_proc_value
+      
+      block = proc {"Hello"}
+      
+      x = TestOptions.new(self, block)
+      
+      assert_equal "Hello", x[:runner].call
+
+    end
+
+    def test_block_arg_with_other_args
+      
+      block = proc {"Hello"}
+      
+      x = TestOptions.new(self, 'My Name', block, 'a text')
+      
+      assert_equal "Hello", x[:runner].call
+      assert_equal "My Name", x[:name]
+      assert_equal "a text", x[:text]
+
+    end
+  
+    def test_block_arg_with_other_args_and_final_hash
+      
+      block = proc {"Hello"}
+      
+      x = TestOptions.new(self, 'My Name', block, 'a text', :width => 33, :height => 55)
+      
+      assert_equal "Hello", x[:runner].call
+      assert_equal "My Name", x[:name]
+      assert_equal "a text", x[:text]
+      assert_equal 33, x[:width]
+      assert_equal 55, x[:height]
+
+    end
+  
+    def test_complains_if_mandatory_block_arg_is_missing
+      
+      ex = assert_raise ArgumentError do
+        TestOptions.new(self, :width => 33, :height => 55) {"Hello"}
+      end
+      
+      assert_equal ComponentOptions.missing_option_error('Test', 'runner'), ex.message
+
+    end
+
+    def test_block_arg_with_other_args_all_set_to_nil
+      
+      x = TestOptions.new(self, nil, nil) {"Hello"}
+      
+      assert_equal "Hello", x[:runner].call
+
+    end
+
+    def test_block_arg_with_other_args_all_set_to_nil_alternate_syntax
+      
+      block = proc {"Hello"}
+      
+      x = TestOptions.new(self, nil, nil, &block)
+      
+      assert_equal "Hello", x[:runner].call
+
+    end    
+  end
+  
 end
