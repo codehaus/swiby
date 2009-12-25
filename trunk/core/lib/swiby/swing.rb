@@ -80,6 +80,14 @@ module Swiby
     
   end
   
+  def async_swing_thread &block
+    
+      runnable = SwibyRunnable.new(&block)
+
+      AWT::EventQueue.invokeLater(runnable)
+      
+  end
+  
   def sync_swing_thread &block
     
     if AWT::EventQueue.isDispatchThread
