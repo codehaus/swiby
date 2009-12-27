@@ -211,15 +211,24 @@ module Swiby
     
     def prepare args, &block_arg
       
-      unless args.last.is_a?(Hash) or block_arg.nil?
+      unless (args.length > 1 and args.last.is_a?(Hash)) or block_arg.nil?
 
-        n = args.length + 1
+        last_is_hash = args.last.is_a?(Hash)
+        
+        n = args.length + (last_is_hash ? 0 : 1)
         
         @overloadings.reverse_each do |signature|
           
           if signature.length == n and @metadata[signature.last].compatible?(block_arg)
-            args << block_arg
+            
+            if last_is_hash
+              args = [block_arg, args.last]
+            else
+              args << block_arg
+            end
+          
             break
+            
           end
           
         end

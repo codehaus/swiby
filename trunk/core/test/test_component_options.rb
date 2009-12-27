@@ -614,10 +614,18 @@ module Swiby
     def test_complains_if_mandatory_block_arg_is_missing
       
       ex = assert_raise ArgumentError do
-        TestOptions.new(self, :width => 33, :height => 55) {"Hello"}
+        TestOptions.new(self, :width => 33, :height => 55)
       end
       
       assert_equal ComponentOptions.missing_option_error('Test', 'runner'), ex.message
+
+    end
+  
+    def test_use_block_as_arg_if_only_hash
+      
+      x = TestOptions.new(self, :width => 33, :height => 55) {"Hello"}
+      
+      assert_equal "Hello", x[:runner].call
 
     end
 
