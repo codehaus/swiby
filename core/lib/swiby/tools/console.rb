@@ -512,15 +512,19 @@ if $0 == __FILE__
   
   if ARGV.length > 0
     
-    alias :frame_original :frame
-    alias :form_original :form
-    
-    def form *args, &block
-      $main_form = form_original(*args, &block)
-    end
-    
-    def frame *args, &block
-      $main_form = frame_original(*args, &block)
+    module Swiby
+      
+      alias :frame_original :frame
+      alias :form_original :form
+
+      def form *args, &block
+        $main_form = form_original(*args, &block)
+      end
+      
+      def frame *args, &block
+        $main_form = frame_original(*args, &block)
+      end
+      
     end
     
     require ARGV[0]
