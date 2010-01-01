@@ -7,6 +7,7 @@
 #++
 
 require 'swiby/component/form'
+require 'swiby/component/text'
 require 'swiby/component/layer'
 require 'swiby/component/editor'
 
@@ -527,7 +528,9 @@ if $0 == __FILE__
       
     end
     
-    require ARGV[0]
+    main_script = ARGV.shift
+    
+    require main_script
     
     open_console $main_form
     
