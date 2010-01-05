@@ -109,8 +109,8 @@ module Swiby
       init = proc do
         %{
         def initialize *args, &block
-          raise ArgumentError.new(ComponentOptions.missing_component_error(#{name})) if args.length == 0
-          raise ArgumentError.new(ComponentOptions.not_a_component_error(#{name}, args[0])) unless args[0].nil? or args[0].respond_to?(:gui_wrapper?)
+          raise ArgumentError.new(ComponentOptions.missing_component_error("#{name}")) if args.length == 0
+          raise ArgumentError.new(ComponentOptions.not_a_component_error("#{name}", args[0])) unless args[0].nil? or args[0].respond_to?(:gui_wrapper?)
 
           super "#{name}", args.shift
         
