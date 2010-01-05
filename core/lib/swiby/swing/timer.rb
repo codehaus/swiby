@@ -37,4 +37,34 @@ module Swiby
     
   end
 
+  def repeat times, delay_millis, &handler
+    
+    return if times == 0
+    
+    listener = ActionListener.new
+    
+    count = 0
+    
+    t = Timer.new(delay_millis, listener)
+    
+    listener.register {
+      
+      count += 1
+      
+      handler.call count
+      
+      if count < times
+        t.repeats = false
+        t.start
+      end
+      
+    }
+    
+    t.repeats = false
+    t.start
+    
+    t
+    
+  end
+
 end
