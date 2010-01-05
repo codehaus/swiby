@@ -55,6 +55,24 @@ module Swiby
     
   end
 
+  # top is the java component instance that is the top element
+  # from which to start dumping hierachy components' locations
+  def dump_hierachy_locations msg, top, indent = ''
+    
+    puts "for each component display location" if indent.length == 0
+    
+    pos = top.bounds
+    state = top.visible? ? 'visible' : 'hidden'
+    
+    puts "#{indent}#{msg}: #{top.class} @ (#{pos.x}, #{pos.y}) - [#{pos.width} x #{pos.height}] (#{state})"
+    
+    top.component_count.times do |i|
+      comp = top.getComponent(i)
+      dump_hierachy_locations "[#{i}]",  comp, indent + ' '
+    end
+    
+  end
+
   class SwibyRunnable
     
     attr_reader :result, :error
