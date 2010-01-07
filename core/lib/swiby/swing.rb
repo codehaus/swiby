@@ -29,7 +29,9 @@ module Swiby
   # top is the java component instance that is the top element
   # from which to start dumping hierachy components' information
   def dump_hierachy msg, top, indent = ''
-    puts "#{indent}#{msg}: #{top.class} <layout #{top.get_layout.class}> contains #{top.component_count} component(s)"
+    name = top.name ? "(#{top.name}) " : ""
+    layout = top.get_layout ? "<layout #{top.get_layout.class}> " : ""
+    puts "#{indent}#{msg}: #{top.class} #{name}#{layout}contains #{top.component_count} component(s)"
     top.component_count.times do |i|
       comp = top.getComponent(i)
       dump_hierachy "[#{i}]",  comp, indent + ' '
@@ -46,7 +48,9 @@ module Swiby
     min = top.minimum_size
     max = top.maximum_size
     
-    puts "#{indent}#{msg}: #{top.class} [#{s.width} x #{s.height}] - [#{min.width} x #{min.height}] - [#{max.width} x #{max.height}]"
+    name = top.name ? "(#{top.name}) " : ""
+    
+    puts "#{indent}#{msg}: #{top.class} #{name}[#{s.width} x #{s.height}] - [#{min.width} x #{min.height}] - [#{max.width} x #{max.height}]"
     
     top.component_count.times do |i|
       comp = top.getComponent(i)
@@ -64,7 +68,9 @@ module Swiby
     pos = top.bounds
     state = top.visible? ? 'visible' : 'hidden'
     
-    puts "#{indent}#{msg}: #{top.class} @ (#{pos.x}, #{pos.y}) - [#{pos.width} x #{pos.height}] (#{state})"
+    name = top.name ? "(#{top.name}) " : ""
+    
+    puts "#{indent}#{msg}: #{top.class} @ #{name}(#{pos.x}, #{pos.y}) - [#{pos.width} x #{pos.height}] (#{state})"
     
     top.component_count.times do |i|
       comp = top.getComponent(i)
