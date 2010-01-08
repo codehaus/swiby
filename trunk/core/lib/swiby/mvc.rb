@@ -313,7 +313,7 @@ CODE
         id = wrapper.name
         
         if id
-          wrapper.register(master, controller, id, method_naming_provider)
+          wrapper.register(master, controller, id, method_naming_provider) unless wrapper.registered?
         end
 
         if wrapper.respond_to?(:each)
@@ -340,18 +340,27 @@ CODE
 
     def initialize component
       @component = component
+      @registered = false
       @master = nil
     end
   
     def register master, controller, id, method_naming_provider
+      
       @id = id
       @master = master
       @controller = controller
       @method_naming_provider = method_naming_provider
       
+      @registered = true
+      
       need_enabled_state_check_method
       need_readonly_check_method
       need_value_changed_method
+      
+    end
+    
+    def registered?
+      @registered
     end
     
     def enable_disable
