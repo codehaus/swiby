@@ -21,6 +21,7 @@ module Swiby
       @options = {}
       @metadata = {}
       @overloadings = []
+      @strict_mode = true
       @valid_props = [:more_options]
     end
 
@@ -62,7 +63,7 @@ module Swiby
 
     def []=(key, value)
 
-      if not @valid_props.include?(key)
+      if @strict_mode and not @valid_props.include?(key)
         raise "[#{@name}] Invalid property '#{key}' (of type #{key.class}). " \
         "Valid set is #{@valid_props.join(', ')}"
       end
@@ -100,7 +101,7 @@ module Swiby
 
     end
 
-    attr_accessor :metadata, :valid_props, :overloadings
+    attr_accessor :metadata, :valid_props, :overloadings, :strict_mode
 
     protected
     
@@ -132,6 +133,7 @@ module Swiby
         instance.metadata = @metadata
         instance.valid_props = @valid_props
         instance.overloadings = @overloadings
+        instance.strict_mode = @strict_mode
       end
       
       def self.register_definition defn
@@ -139,6 +141,7 @@ module Swiby
         @metadata = defn.metadata
         @valid_props = defn.valid_props
         @overloadings = defn.overloadings
+        @strict_mode = defn.strict_mode
       
         sort_overloadings
         
@@ -160,6 +163,10 @@ module Swiby
     
     def overload *arg_list
       @overloadings << arg_list
+    end
+    
+    def strict strict_on
+      @strict_mode = strict_on
     end
     
     private
