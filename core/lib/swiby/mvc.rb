@@ -186,7 +186,7 @@ module Swiby
     include javax.swing.event.ListSelectionListener
     
     def valueChanged(e)
-      @wrapper.selection_changed
+      @wrapper.selection_changed unless e.getValueIsAdjusting
     end
   
     def install component
