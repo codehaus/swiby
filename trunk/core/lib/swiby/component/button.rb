@@ -55,10 +55,6 @@ module Swiby
         
       end
       
-      def mouseClicked ev
-        mouseExited nil # simulate mouse out
-      end
-     
       def mouseEntered ev
         return if @is_over
         @is_over = true
