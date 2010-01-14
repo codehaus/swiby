@@ -7,20 +7,20 @@
 #
 #++
 
-require 'swiby/component/label'
+require 'swiby/component/button'
 
-class HoverLabelTest < ManualTest
+class HoverButtonTest < ManualTest
 
-  manual 'Hover label w/o options' do
+  manual 'Hover button w/o options' do
     
     form {
       
-      title "Hover label w/o options"
+      title "Hover button w/o options"
       
       width 250
       height 70
 
-      hover_label("Click me!")  {
+      hover_button("Click me!") {
         message_box "Hello"
       }
       
@@ -30,16 +30,16 @@ class HoverLabelTest < ManualTest
 
   end
   
-  manual 'Hover label in blue' do
+  manual 'Hover button in blue' do
     
     form {
       
-      title "Hover label in blue"
+      title "Hover button in blue"
       
       width 250
       height 70
 
-      hover_label("Click me!", :hover_color => Color::BLUE)  {
+      hover_button("Click me!", :hover_color => Color::BLUE) {
         message_box "Hello"
       }
       
@@ -49,16 +49,16 @@ class HoverLabelTest < ManualTest
 
   end
   
-  manual 'Hover label w/ :action' do
+  manual 'Hover button w/ :action' do
     
     form {
       
-      title "Hover label w/ :action"
+      title "Hover button w/ :action"
       
       width 250
       height 70
 
-      hover_label "Click me!", :action => proc {
+      hover_button "Click me!", :action => proc {
         message_box "Hello"
       }
       

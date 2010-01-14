@@ -13,9 +13,12 @@ create_styles {
     :font_style => :normal,
     :font_size => 10
   )
-  label(
-    :color => 0x5C458A
-  )
+  language {
+    button(
+      :font_size => 10,
+      :color => 0x5C458A
+    )
+  }
   list_view {
     list(
       :color => 0xDCD5DA,

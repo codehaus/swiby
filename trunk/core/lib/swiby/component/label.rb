@@ -40,57 +40,6 @@ module Swiby
 
     end
     
-    def hover_label text = nil, options = nil, &block
-      
-      handler = block
-      hover_color = Color::RED
-      
-      if options and options.respond_to?(:[])
-        
-        if options[:action]
-          handler = options[:action]
-          options.delete :action
-        end
-        
-        if options[:hover_color]
-          hover_color = options[:hover_color]
-          options.delete :hover_color
-        end
-        
-      end
-      
-      l = label(text, options)
-              
-      if handler
-        l.action do
-          
-          @label = l
-          @handler = handler
-          @color = hover_color
-          
-          def on_click ev
-            on_mouse_out nil # simulate mouse out
-            @handler.call
-          end
-          
-          def on_mouse_over ev
-            return if @is_over
-            @is_over = true
-            @normal_color = @label.java_component.foreground
-            @label.java_component.foreground = @color
-          end
-          
-          def on_mouse_out ev
-            return unless @is_over
-            @is_over = false
-            @label.java_component.foreground = @normal_color
-          end
-        
-        end
-      end
-      
-    end
-
   end
 
   class LabelOptions < ComponentOptions
@@ -98,7 +47,6 @@ module Swiby
     define "Label" do
       
       declare :swing, [Proc], true
-      declare :action, [Proc], true
       declare :icon, [ImageIcon], true
       declare :name, [String, Symbol], true
       declare :label, [String, Symbol, IncrementalValue], true
@@ -149,8 +97,6 @@ module Swiby
       @style_id = self.name.to_sym if self.name
       @style_class = options[:style_class] if options[:style_class]
       
-      action(&options[:action]) if options[:action]
-      
       options[:swing].call(java_component) if options[:swing]
       
     end
@@ -179,18 +125,6 @@ module Swiby
       
     end
     
-    def action(&block)
-
-      listener = MouseListener.new
-
-      @component.addMouseListener(listener)
-
-      block.instance_eval(&block)
-      
-      listener.register(&block)
-
-    end
-
     def linked_field=(comp)
       comp.linked_label = self
       @linked_field = comp

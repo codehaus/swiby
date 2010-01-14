@@ -92,7 +92,7 @@ content(:layout => :border) {
     }
     bottom
       align :right
-      hover_label('settings') {
+      hover_button('settings') {
         open_settings $context
       }
 }
