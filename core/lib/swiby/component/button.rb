@@ -28,6 +28,8 @@ module Swiby
       
       layout_button but
       
+      but
+      
     end
     
     def button text = nil, image = nil, options = nil, &block
@@ -38,6 +40,61 @@ module Swiby
       
       layout_input nil, but
       
+      but
+      
+    end
+    
+    class HoverMouseListener < java.awt.event.MouseAdapter
+
+      def initialize component, hover_color
+        
+        super()
+        
+        @color = hover_color
+        @component = component
+        
+      end
+      
+      def mouseClicked ev
+        mouseExited nil # simulate mouse out
+      end
+     
+      def mouseEntered ev
+        return if @is_over
+        @is_over = true
+        @normal_color = @component.java_component.foreground
+        @component.java_component.foreground = @color
+      end
+     
+      def mouseExited ev
+        return unless @is_over
+        @is_over = false
+        @component.java_component.foreground = @normal_color
+      end
+      
+    end
+    
+    def hover_button text = nil, options = nil, &block
+      
+      hover_color = Color::RED
+      
+      if options and options.respond_to?(:[])
+        
+        if options[:hover_color]
+          hover_color = options[:hover_color]
+          options.delete :hover_color
+        end
+        
+      end
+      
+      button = button(text, options, &block)
+     
+      button.java_component.content_area_filled = false
+      
+      listener = HoverMouseListener.new(button, hover_color)
+      
+      button.java_component.addMouseListener(listener)
+     
     end
     
     # Needs a block that returns the Swiby component

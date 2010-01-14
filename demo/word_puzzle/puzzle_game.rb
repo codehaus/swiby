@@ -104,7 +104,7 @@ class PuzzleGame
                   }
                   
                 at [0, 110], relative_to(:resolve, :align, :below)
-                  hover_label('french', :name => :language)  {game.change_language}
+                  hover_button('french', :name => :language)  {game.change_language}
                   
               }
               
