@@ -7,8 +7,8 @@
 #
 #++
 
+import javax.swing.Icon
 import javax.swing.JButton
-import javax.swing.ImageIcon
 
 module Swiby
   
@@ -68,7 +68,7 @@ module Swiby
       
       declare :name, [String, Symbol], true
       declare :text, [String, Symbol], true
-      declare :icon, [ImageIcon, String], true
+      declare :icon, [Icon, String], true
       declare :swing, [Proc], true
       declare :action, [Proc], true
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
