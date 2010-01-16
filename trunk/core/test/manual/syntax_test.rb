@@ -97,7 +97,7 @@ class SyntaxTest < ManualTest
           }
 
         next_row
-        section 'Radio Group'
+        section 'Radio group'
           radio_group {
             name :radio_group_name
             label 'List [radio_group_name]'
@@ -115,7 +115,7 @@ class SyntaxTest < ManualTest
         section 'Check box'
           check {
             name :check_name
-            text 'diabled [check_name]'
+            text 'disabled [check_name]'
             enabled false
             swing { |comp|
               comp.tool_tip_text = "My name is <#{comp.name}>"
@@ -135,7 +135,7 @@ class SyntaxTest < ManualTest
         section 'Radio button'
           radio {
             name :radio_name
-            text 'diabled [radio_name]'
+            text 'disabled [radio_name]'
             enabled false
             swing { |comp|
               comp.tool_tip_text = "My name is <#{comp.name}>"
@@ -143,7 +143,7 @@ class SyntaxTest < ManualTest
           }
           radio {
             name :radio_name_2
-            text 'diabled [radio_name_2]'
+            text 'disabled [radio_name_2]'
             enabled true
             action {
               message_box "Clicked!"
@@ -205,7 +205,7 @@ class SyntaxTest < ManualTest
             }
       
         section 'TextField'
-          input 'Label;', 'read-only and disabled [input_name]', :name => :input_name
+          input 'Label:', 'read-only and disabled [input_name]', :name => :input_name
             swing { |comp|
               comp.editable = false
               comp.enabled = false
@@ -231,7 +231,7 @@ class SyntaxTest < ManualTest
             }
             
         next_row
-        section 'Radio Group'
+        section 'Radio group'
           radio_group('List [radio_group_name]', list_data,
             initial_selection, :name => :radio_group_name) { |value|
               message_box "You selected: #{value}"
@@ -242,7 +242,7 @@ class SyntaxTest < ManualTest
 
         next_row
         section 'Check box'
-          check 'diabled [check_name]', :check_name, :enabled => false
+          check 'disabled [check_name]', :check_name, :enabled => false
             swing { |comp|
               comp.tool_tip_text = "My name is <#{comp.name}>"
             }
@@ -254,11 +254,11 @@ class SyntaxTest < ManualTest
             }
             
         section 'Radio button'
-          radio('diabled [radio_name]', :radio_name, :enabled => false)
+          radio('disabled [radio_name]', :radio_name, :enabled => false)
             swing { |comp|
               comp.tool_tip_text = "My name is <#{comp.name}>"
             }
-          radio('diabled [radio_name_2]', :radio_name_2) {
+          radio('disabled [radio_name_2]', :radio_name_2) {
             message_box "Clicked!"
           }
             swing { |comp|
