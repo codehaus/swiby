@@ -43,17 +43,37 @@ class TestSuite
     cname = @name
     cname = cname[0..-5] if cname =~ /.*Test/
     
-    i = 0
     name = ''
-    arr = cname.split(/[A-Z]/)
+    last_char = ''
+    last_was_uppercase = false
     
-    arr.each do |elem|
-      next if elem.length == 0
-      name += cname[i..i] + elem + ' '
-      i += elem.length + 1
+    cname.length.times do |i|
+      
+      char = cname[i..i]
+      
+      if char =~ /[A-Z]/
+        
+        name += last_char
+        name += ' ' if name.length > 0 and !last_was_uppercase
+        
+        last_was_uppercase = true
+        
+      else
+        
+        last_char.downcase! if name.length > 0
+        
+        name += ' ' if name.length > 0 and last_was_uppercase
+        name += last_char
+        
+        last_was_uppercase = false
+        
+      end
+      
+      last_char = char
+      
     end
     
-    name[0..0].upcase + name[1..-1].downcase
+    name + last_char
     
   end
   
