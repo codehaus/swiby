@@ -13,43 +13,27 @@ require 'swiby/component/combo'
 module Swiby
   
   class ComboBox
-    
-    include SelectableComponendBehavior
-    
-    def register master, controller, id, method_naming_provider
-      super
+        
+    class ComboRegistrar < Registrar
       
-      need_getter_method
-      need_setter_method
+      include SelectableComponendBehavior
       
-      need_list_method
-      need_list_changed_method
-      
-      added_self = false
-      
-      if @getter_method
-        master.wrappers << self
-        added_self = true
+      def create_listener
+        ClickAction.new(self)
       end
+      
+      def handles_actions?
+        !@setter_method.nil? or !@value_index_setter_method.nil?
+      end
+      
+    end
+    
+    def create_registrar wrapper, master, controller, id, method_naming_provider
+      ComboRegistrar.new(wrapper, master, controller, id, method_naming_provider)
+    end
 
-      if @setter_method
-        add_listener create_listener
-        master.wrappers << self unless added_self
-      end
-      
-    end
-    
-    def create_listener
-      ClickAction.new(self)
-    end
-    
-    def add_listener listener
-      listener.install @component
-    end
-    
-    def execute_action
-      @controller.send(@setter_method, self.value)
-      @master.refresh
+    def registration_done *registrars
+      self.enabled = registrars.any? {|reg| reg.handles_actions?}
     end
     
   end

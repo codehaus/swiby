@@ -20,6 +20,29 @@ module Swiby
       panel(*args, &block)
     end
     
+    def palette x, y, closeable, options = nil, &block
+      
+      options = options ? options : {}
+      
+      pane = panel(options, &block)
+      
+      comp = pane.java_component
+      
+      comp.border = org.codehaus.swiby.component.ToolboxBorder.new(comp, closeable, context.java_component.parent)
+
+      if options[:width] and options[:height]
+        comp.set_bounds x, y, options[:width], options[:height]
+      else
+        dim = comp.preferred_size
+        comp.set_bounds x, y, dim.width, dim.height
+      end
+      
+      pane.palette = true
+      
+      pane
+      
+    end
+    
     def panel options = nil, &block
 
       ensure_section
@@ -95,6 +118,14 @@ module Swiby
       
     end
 
+    def palette= panel_is_palette
+      @palette = panel_is_palette
+    end
+    
+    def palette?
+      @palette
+    end
+    
     def add(child, layout_hint = nil)
       
       if layout_hint
@@ -117,8 +148,20 @@ module Swiby
       
     end
     
-    def apply_styles styles = nil
+    def change_language
       
+      if @children
+        
+        @children.each do |kid|
+          kid.change_language
+        end
+        
+      end
+      
+    end
+    
+    def apply_styles styles = nil
+     
       return unless styles or @styles
       
       if styles
@@ -141,6 +184,16 @@ module Swiby
         
       end
 
+      if self.palette?
+        
+        x = @component.x
+        y = @component.y
+        
+        dim = @component.preferred_size
+        @component.set_bounds x, y, dim.width, dim.height
+        
+      end
+    
     end
     
   end

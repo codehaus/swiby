@@ -9,6 +9,7 @@
 
 require 'swiby/mvc'
 require 'swiby/component/slider'
+require 'swiby/util/developer'
 
 module Swiby
 
@@ -22,49 +23,73 @@ module Swiby
   
   class Slider
     
-    def register master, controller, id, method_naming_provider
-      super
+    class SliderRegistrar < Registrar
       
-      need_setter_method
-      need_getter_method
-      need_value_adjusting_method
+      def register
+        
+        super
+        
+        need_setter_method
+        need_getter_method
+        need_value_adjusting_method
 
-      if @setter_method
-        
-        listener = create_listener
-        
-        if listener
-          master.wrappers << self
-          add_listener(listener)
+        if @setter_method or @value_adjusting_method
+          
+          listener = create_listener
+          
+          if listener
+            @master << self
+            add_listener(listener)
+          end
+          
         end
+      end
+      
+      def create_listener
+        ChangeAction.new(self)
+      end
         
+      def add_listener listener
+        listener.install @component
       end
-    end
-    
-    def create_listener
-      ChangeAction.new(self)
-    end
       
-    def add_listener listener
-      listener.install @component
-    end
-    
-    def value_change value
-      @controller.send(@setter_method, value)
-      @master.refresh
-    end
-    
-    def value_adjusting value
+      def value_change value
+        
+        if @setter_method
+          @controller.send(@setter_method, value)
+          @master.refresh
+        elsif @value_adjusting_method
+          @controller.send(@value_adjusting_method, value)
+          @master.refresh
+        end
       
-       if @value_adjusting_method
-         @controller.send(@value_adjusting_method, value)
-         @master.refresh
+      end
+      
+      def value_adjusting value
+        
+        if @value_adjusting_method
+          @controller.send(@value_adjusting_method, value)
+          @master.refresh
+        end
+      
+      end
+        
+      def display new_value
+        @wrapper.value = new_value.to_i
+      end
+    
+      def handles_actions?
+        !@setter_method.nil? or !@value_adjusting_method.nil?
       end
     
     end
-      
-    def display new_value
-      @component.value = new_value.to_i
+    
+    def create_registrar wrapper, master, controller, id, method_naming_provider
+      SliderRegistrar.new wrapper, master, controller, id, method_naming_provider
+    end
+
+    def registration_done *registrars
+      @component.enabled = registrars.any? {|reg| reg.handles_actions?}
     end
     
   end

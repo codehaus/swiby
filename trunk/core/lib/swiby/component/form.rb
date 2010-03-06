@@ -59,6 +59,9 @@ module Swiby
 
       x.instance_eval(&block) unless block.nil?
 
+      x.refresh_tooltips
+      x.apply_styles
+      
       x
       
     end
@@ -89,6 +92,7 @@ module Swiby
 
       x.instance_eval(&block) unless block.nil?
 
+      x.refresh_tooltips
       x.apply_styles
 
       x
@@ -116,13 +120,19 @@ module Swiby
       @section = nil
 
       if is_panel
+
+        def self.refresh_tooltips
+        end
+      
         @content_pane = self.java_component
+        
       else
         @content_pane = @default_layer
       end
 
     end
 
+    
     def method_missing(symbol, *args)
       
       if @section.respond_to?(symbol)

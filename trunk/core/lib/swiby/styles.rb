@@ -54,6 +54,40 @@ module Swiby
       self
     end
    
+    def change! element, new_value = nil
+      
+      @data.each do |k, x|
+        
+        path = k.to_s
+        
+        if x.is_a?(StyleClass)
+          
+          x.data.each do |k, s|
+            
+            if s.data[element]
+              
+              value = new_value
+              value = yield("#{path}.#{k}", s.data[element]) unless new_value
+              
+              s.data[element] = value if value
+              
+            end
+          
+          end
+          
+        elsif x.data[element]
+          
+          value = new_value
+          value = yield(path, x.data[element]) unless new_value
+            
+          x.data[element] = value if value
+          
+        end
+        
+      end
+      
+    end
+    
     def data
       @data
     end

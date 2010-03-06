@@ -127,7 +127,7 @@ class ManualTest
     @succeeded = false
     
     setup
-    @block.call
+    @block.call    
     tear_down
     
   end

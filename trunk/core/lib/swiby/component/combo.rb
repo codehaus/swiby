@@ -117,7 +117,7 @@ module Swiby
   class ComboBox < SwingBase
 
     attr_accessor :linked_label
-    swing_attr_accessor :editable, :selection => :selected_index
+    swing_attr_accessor :editable, :enabled, :selection => :selected_index
 
     def initialize options = nil
       
@@ -202,7 +202,9 @@ module Swiby
     end
 
     def selection=(index)
-      @component.selected_index = index.to_i
+      # check if selection changed to prevent Swing from firing useless events,
+      # yes! Swing fires selection events even if selection changes by program...
+      @component.selected_index = index.to_i unless @component.selected_index == index.to_i
     end
     
     def item_count
@@ -348,6 +350,7 @@ module Swiby
         end
 
         value = to_human_readable(value)
+        value = value.translate
 
         super
         

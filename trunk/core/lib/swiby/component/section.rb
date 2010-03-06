@@ -14,10 +14,21 @@ module Swiby
     def initialize title
 
       @component = JPanel.new
-      @component.border = ::BorderFactory.createTitledBorder(title) unless title.nil?
-
+      
+      unless title.nil?
+        
+        @component.border = javax.swing.BorderFactory.createTitledBorder(title)
+        
+        self.text = title
+        
+      end
+    
       @kids = []
       
+    end
+    
+    def change_language
+      self.text = @en_text if @en_text
     end
     
     def layout= layout_manager
@@ -34,13 +45,14 @@ module Swiby
     end
     
     def text
-      @component.border.title unless @component.border.nil?
+      @en_text
     end
     
     def text= t
-      @component.border.title = t
+      @en_text = t
+      @component.border.title = t.translate if @component.border
     end
-
+    
     def apply_styles styles
 
       return unless styles

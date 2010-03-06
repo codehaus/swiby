@@ -23,3 +23,32 @@ def print_stack_trace msg
   end
   
 end
+
+def merge_defaults! options, default_values
+  
+  if options.is_a?(Array)
+    
+    if options.last.is_a?(Hash)
+      
+      hash = options.last
+      
+      default_values.each do |k, v|
+        hash[k] = v unless hash.key?(k)
+      end
+      
+    else
+      options << default_values
+    end
+    
+  elsif options.is_a?(Hash)
+      
+      default_values.each do |k, v|
+        options[k] = v unless options.key?(k)
+      end
+      
+  end
+  
+  options
+  
+end
+

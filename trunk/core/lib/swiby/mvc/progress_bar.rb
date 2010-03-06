@@ -22,26 +22,35 @@ module Swiby
 
   class Progress
     
-    def register master, controller, id, method_naming_provider
-      super
-      
-      need_getter_method
-      need_formated_value_method
-      
-      master.wrappers << self if @getter_method
+    class ProgressRegistrar < Registrar
         
+      def register
+        
+        super
+        
+        need_getter_method
+        need_formated_value_method
+        
+        @master << self if @getter_method
+          
+      end
+        
+      def display new_value
+        
+        @wrapper.value = new_value.to_i
+        
+        if @formated_value_method
+          text = @controller.send(@formated_value_method)
+          @component.string = text
+          @component.string_painted = true
+       end
+        
+      end
+      
     end
-      
-    def display new_value
-      
-      @component.value = new_value.to_i
-      
-      if @formated_value_method
-        text = @controller.send(@formated_value_method)
-        @component.string = text
-        @component.string_painted = true
-     end
-      
+  
+    def create_registrar wrapper, master, controller, id, method_naming_provider
+      ProgressRegistrar.new(wrapper, master, controller, id, method_naming_provider)
     end
     
   end

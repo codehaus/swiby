@@ -14,6 +14,163 @@ import javax.swing.table.DefaultTableCellRenderer
 module Swiby
 
   module Builder
+    
+    def table headers, values = nil, options = nil, &block
+
+      ensure_section
+      
+      x = TableOptions.new(context, headers, values, options, &block)
+      
+      comp = Table.new(x)
+
+      context[x[:name].to_s] = comp if x[:name]
+
+      add comp
+      context << comp
+      layout_panel comp
+      
+      comp
+
+    end
+
+  end
+  
+  class TableOptions < ComponentOptions
+    
+    define "Table" do
+      
+      declare :label, [String], true
+      declare :name, [String, Symbol], true
+      declare :fields, [Array], true
+      declare :columns, [Array], true
+      declare :values, [Array]
+      
+      declare :swing, [Proc], true
+      declare :enabled, [TrueClass, FalseClass], true
+      declare :style_class, [String, Symbol], true
+      
+      overload :values
+      overload :columns, :values
+      
+      overload :label, :values
+      overload :label, :columns, :values
+      
+    end
+
+  end
+  
+  class Table < SwingBase
+
+    attr_accessor :fields
+    swing_attr_accessor :enabled
+    
+    def initialize options = nil
+      
+      @component = JTable.new
+      
+      @component.auto_resize_mode = JTable::AUTO_RESIZE_SUBSEQUENT_COLUMNS
+      @component.selection_model.selection_mode = javax.swing.ListSelectionModel::SINGLE_SELECTION
+      
+      return unless options
+      
+      @content_data = options[:values] if options[:values]
+      
+      values = []
+      
+      name = options[:name] if options[:name]
+      values = options[:values] if options[:values]
+      fields = options[:fields] if options[:fields]
+      headers = options[:columns] if options[:columns]
+
+      model = TM.new
+      model.headers = headers if headers
+      model.fields = fields
+      model.values = values
+      
+      self.model = model
+      self.fields = fields
+      
+      self.name = options[:name].to_s if options[:name]
+      self.enabled_state = options[:enabled] unless options[:enabled].nil?
+      
+      @style_id = self.name.to_sym if self.name
+      @style_class = options[:style_class] if options[:style_class]
+
+      options[:swing].call(java_component) if options[:swing]
+
+      scrollable
+      
+    end
+    
+    def model= model
+      @component.model = model
+    end
+    
+    def model
+      @component.model
+    end
+    
+    def clear
+      self.model.row_count = 0
+    end
+
+    def content= values
+      self.model.row_count = 0
+      self.model.values = values
+    end
+    
+    def value= value
+      self.selection = @content_data.index(value)
+    end
+    
+    def selection= index
+      @component.setRowSelectionInterval(index, index)
+    end
+      
+    def apply_styles styles
+      
+      set_renderers
+      
+      color = styles.resolver.find_color(:table)
+        
+      bg_color = styles.resolver.find_background_color(:table, @style_id, @style_class)
+      bg_color = styles.resolver.find_background_color(:container, @style_id, @style_class) unless bg_color
+      @component.parent.background = bg_color if bg_color
+
+      font = styles.resolver.find_font(:table_header, @style_id, @style_class)
+      font = styles.resolver.find_font(:table, @style_id, @style_class) unless font
+      @header_renderer.font = font
+      
+      header_bg_color = styles.resolver.find_background_color(:table_header, @style_id, @style_class)
+      header_bg_color = bg_color unless header_bg_color
+      @header_renderer.background = header_bg_color if header_bg_color
+      
+      header_color = styles.resolver.find_color(:table_header, @style_id, @style_class)
+      header_color = color unless header_bg_color
+      @header_renderer.foreground = header_color if header_color
+        
+      if @component.model.row_count > 0
+
+        row_bg_color = styles.resolver.find_background_color(:table_row, @style_id, @style_class)
+        row_bg_color = bg_color unless row_bg_color
+        @renderer.background = row_bg_color if row_bg_color
+        
+        row_color = styles.resolver.find_color(:table_row, @style_id, @style_class)
+        row_color = color unless row_color
+        @renderer.foreground = row_color if row_color
+        
+        @renderer.text = 'test'
+        height = @renderer.preferred_size.height
+        font = styles.resolver.find_font(:table_row, @style_id, @style_class)
+        font = styles.resolver.find_font(:table, @style_id, @style_class) unless font
+        @component.font = font if font
+        @renderer.font = font if font
+        height = @renderer.preferred_size.height - height
+        @component.row_height += height unless @component.row_height + height < 1
+        
+      end
+      
+    end
 
     class TM < javax.swing.table.DefaultTableModel
       
@@ -48,13 +205,14 @@ module Swiby
             end
               
           else
-          
+
             row.each do |cell|
               vector.addElement cell
             end
               
           end
 
+addColumn '' if getColumnCount() == 0 #TODO what is better for default table header?
           addRow vector
 
         end
@@ -63,118 +221,6 @@ module Swiby
       
       def fields= fields
         @fields = fields
-      end
-      
-    end
-    
-    def table headers, values = nil
-
-      ensure_section
-      
-      name, fields = nil, nil
-      
-      options = values if values.is_a?(Hash)
-      options = headers if headers.is_a?(Hash) and values.nil?
-      
-      if options
-        
-        values = []
-        
-        name = options[:name] if options[:name]
-        values = options[:data] if options[:data]
-        fields = options[:fields] if options[:fields]
-        headers = options[:columns] if options[:columns]
-                
-      end
-
-      model = TM.new
-      model.headers = headers
-      model.values = values
-      model.fields = fields
-      
-      table = Table.new
-      table.model = model
-      table.fields = fields
-
-      context[name.to_s] = table if name
-      table.name = name.to_s if name
-
-      add table
-      context << table
-      layout_panel table
-
-    end
-
-  end
-  
-  class Table < SwingBase
-
-    attr_accessor :fields
-    
-    def initialize
-      
-      @component = JTable.new
-      
-      @component.auto_resize_mode = JTable::AUTO_RESIZE_SUBSEQUENT_COLUMNS
-      @component.selection_model.selection_mode = javax.swing.ListSelectionModel::SINGLE_SELECTION
-      
-      scrollable
-
-    end
-    
-    def model= model
-      @component.model = model
-    end
-    
-    def model
-      @component.model
-    end
-    
-    def clear
-      model.row_count = 0
-    end
-    
-    def apply_styles styles
-      
-      set_renderers
-      
-      color = styles.resolver.find_color(:table)
-        
-      bg_color = styles.resolver.find_background_color(:table)
-      bg_color = styles.resolver.find_background_color(:container) unless bg_color
-      @component.parent.background = bg_color if bg_color
-
-      font = styles.resolver.find_font(:table_header)
-      font = styles.resolver.find_font(:table) unless font
-      @header_renderer.font = font
-      
-      header_bg_color = styles.resolver.find_background_color(:table_header)
-      header_bg_color = bg_color unless header_bg_color
-      @header_renderer.background = header_bg_color if header_bg_color
-      
-      header_color = styles.resolver.find_color(:table_header)
-      header_color = color unless header_bg_color
-      @header_renderer.foreground = header_color if header_color
-        
-      if @component.model.row_count > 0
-
-        row_bg_color = styles.resolver.find_background_color(:table_row)
-        row_bg_color = bg_color unless row_bg_color
-        @renderer.background = row_bg_color if row_bg_color
-        
-        row_color = styles.resolver.find_color(:table_row)
-        row_color = color unless row_color
-        @renderer.foreground = row_color if row_color
-        
-        @renderer.text = 'test'
-        height = @renderer.preferred_size.height
-        font = styles.resolver.find_font(:table_row)
-        font = styles.resolver.find_font(:table) unless font
-        @component.font = font if font
-        @renderer.font = font if font
-        height = @renderer.preferred_size.height - height
-        @component.row_height += height unless @component.row_height + height < 1
-        
       end
       
     end

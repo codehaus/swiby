@@ -14,19 +14,28 @@ module Swiby
   
   class SimpleLabel
     
-    def register master, controller, id, method_naming_provider
-      super
+    class LabelRegistrar < Registrar
       
-      need_getter_method
-      
-      if @getter_method
-        master.wrappers << self
-      end
+      def register
         
-    end
+        super
+        
+        need_getter_method
+        
+        if @getter_method
+          @master << self
+        end
+          
+      end
+      
+      def display new_value
+        @wrapper.text = new_value.to_s
+      end
     
-    def display new_value
-      @component.text = new_value.to_s
+    end
+  
+    def create_registrar wrapper, master, controller, id, method_naming_provider
+      LabelRegistrar.new(wrapper, master, controller, id, method_naming_provider)
     end
     
   end

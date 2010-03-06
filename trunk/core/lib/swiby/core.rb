@@ -9,10 +9,6 @@
 
 module Swiby
 
-  $SWIBY_EXT_PATHS = [] unless $SWIBY_EXT_PATHS
-  
-  $SWIBY_EXT_PATHS << File.dirname(__FILE__) + '/ext'
-  
   class ComponentOptions
 
     def initialize name, context
@@ -33,6 +29,10 @@ module Swiby
       name = actual_types[0]
       actual_types.shift
       "#{name} cannot resolve initialization signature: #{actual_types.join(', ')}"
+    end
+    
+    def self.undeclared_parameter_error name, arg_name
+      "#{name} Overload with undeclared parameter '#{arg_name}'"
     end
     
     def self.missing_option_error name, option_name_symbol
@@ -216,7 +216,21 @@ module Swiby
       
     end
     
+    def check_definition
+      
+      @overloadings.each do |overloading|
+        overloading.each do |arg_name|
+          unless @metadata.has_key?(arg_name)
+            raise ArgumentError.new(ComponentOptions.undeclared_parameter_error(@name, arg_name))
+          end
+        end
+      end
+      
+    end
+    
     def prepare args, &block_arg
+      
+      check_definition
       
       unless (args.length > 1 and args.last.is_a?(Hash)) or block_arg.nil?
 

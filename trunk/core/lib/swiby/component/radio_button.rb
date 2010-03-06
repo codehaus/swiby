@@ -11,6 +11,8 @@ require 'swiby/component/combo'
 require 'swiby/component/panel'
 require 'swiby/component/button'
 
+require 'swiby/layout/stacked'
+
 import javax.swing.ButtonGroup
 import javax.swing.JRadioButton
 
@@ -71,6 +73,7 @@ module Swiby
     
     def initialize dir = :vertical, options = nil
       
+      @listeners = []
       @radio_items = []
 
       @panel = Panel.new
@@ -85,12 +88,32 @@ module Swiby
 
       @panel.content(layout) {}
       
+      @selected_index = 0
+      
+      jcomp = @panel.java_component
+      def jcomp.removeAllItems
+        removeAll
+      end
+      
       super options
       
     end
     
     def create_list_component
       @panel.java_component
+    end
+    
+    def change_language
+      @radio_items.each { |rb| rb.change_language }
+    end
+    
+    def enabled= enabled
+      @component.enabled = enabled
+      @radio_items.each { |rb| rb.enabled = enabled }
+    end
+    
+    def selection
+      @selected_index
     end
     
     def selection=(index)
@@ -106,6 +129,18 @@ module Swiby
       @group = ButtonGroup.new unless @group
       
       radio = RadioButton.new(ButtonOptions.new(nil, value.to_s))
+      
+      index = @radio_items.length
+      
+      radio.java_component.add_action_listener do |evt|
+        
+        @selected_index = index
+      
+        @listeners.each do |listener|
+          listener.actionPerformed evt
+        end
+        
+      end
       
       @radio_items << radio
       
@@ -130,18 +165,22 @@ module Swiby
       
     end
     
+    def add_action_listener listener
+      @listeners << listener
+    end
+    
     def action(&block)
-
+      
       @radio_items.each_index do |i|
         
-        listener = ActionListener.new
-
-        @radio_items[i].java_component.addActionListener(listener)
-
-        listener.register do
+        @radio_items[i].java_component.add_action_listener do |evt|
+          
+          @selected_index = i
+          
           block.call(@values[i])
+          
         end
-
+        
       end
       
     end

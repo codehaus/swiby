@@ -94,6 +94,8 @@ class Sweb
     @history_index -= 1
     @container = @history[@history_index]
     @top_container.title @titles[@history_index]
+    @top_container.remove_child 1
+    @top_container.add_child @container
     @top_container.default_layer.remove 1
     @top_container.default_layer.add @container.java_component
     @top_container.default_layer.validate
@@ -112,6 +114,8 @@ class Sweb
     @history_index += 1
     @container = @history[@history_index]
     @top_container.title @titles[@history_index]
+    @top_container.remove_child 1
+    @top_container.add_child @container
     @top_container.default_layer.remove 1
     @top_container.default_layer.add @container.java_component
     @top_container.java_component.validate
@@ -138,6 +142,10 @@ class Sweb
   def register_title t
     @top_container.title t
     @titles[@history_index] = t
+  end
+  
+  def change_language
+    @container.change_language
   end
   
   def apply_styles styles
@@ -193,6 +201,7 @@ class Sweb
 
     end
 
+    @top_container.add_child @container
     @top_container.default_layer.add @container.java_component
 
     @source = ''
@@ -304,10 +313,6 @@ module Swiby
 
           puts "Starting remote, base is #{base}, script is #{script}" #TODO write in a log file?
 
-          $context.page_source = script
-          
-          require script
-
         else
 
           $0 = options.script
@@ -328,13 +333,17 @@ module Swiby
 
             end
           }
-
-          $context.page_source = options.script
           
-          require options.script
-
+          script = options.script
+        
         end
+      
+        Swiby::CONTEXT.default_setup
 
+        $context.page_source = script
+        
+        require script
+      
       end
       
     end

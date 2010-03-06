@@ -50,6 +50,7 @@ module Swiby
       overload :orientation
       overload :orientation, :name
       overload :orientation, :maximum, :name
+      overload :orientation, :minimum, :maximum
       overload :orientation, :minimum, :maximum, :name
       
     end

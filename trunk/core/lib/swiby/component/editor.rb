@@ -60,7 +60,7 @@ module Swiby
     
     define "Editor" do
       
-      declare :label, [String, Symbol], true
+      declare :label, [String], true
       declare :name, [String, Symbol], true
       declare :width, [Integer], true
       declare :height, [Integer], true

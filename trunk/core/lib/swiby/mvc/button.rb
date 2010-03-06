@@ -12,42 +12,80 @@ require 'swiby/component/button'
 
 module Swiby
 
+  class MethodNamingProvider
+    
+    def command_text(id)
+      "#{id}_command_text".to_sym
+    end
+    
+  end
+
   class Button
     
-    def register master, controller, id, method_naming_provider
+    class ButtonRegistrar < Registrar
       
-      super
-      
-      need_action_method
+      def register
+        
+        super
+        
+        need_command_text
+        need_action_method
 
-      if @action_method
+        if @action_method
+          
+          listener = create_listener
+          
+          if listener
+            @master << self
+            add_listener(listener)
+          end
         
-        listener = create_listener
-        
-        if listener
-          master.wrappers << self
-          add_listener(listener)
         end
-      
-      else
-        @component.enabled = false
+
       end
       
-    end
-    
-    def create_listener
-      ClickAction.new(self)
-    end
+      def create_listener
+        ClickAction.new(self)
+      end
+        
+      def add_listener listener
+        listener.install @component
+      end
       
-    def add_listener listener
-      listener.install @component
+      def update_display
+        
+        if @command_text
+          
+          text = @controller.send(@command_text)
+          
+          @wrapper.text = text
+            
+        end
+        
+      end
+      
+      def execute_action
+        
+        @controller.send @action_method
+        
+        @master.refresh
+        
+      end
+      
+      def handles_actions?
+        !@action_method.nil?
+      end
+    
     end
     
-    def execute_action
-      @controller.send @action_method
-      @master.refresh
+    def create_registrar wrapper, master, controller, id, method_naming_provider
+      ButtonRegistrar.new(wrapper, master, controller, id, method_naming_provider)
     end
 
+    def registration_done *registrars
+      @component.enabled = registrars.any? {|reg| reg.handles_actions?}
+    end
+    
     def click
       @component.doClick
     end

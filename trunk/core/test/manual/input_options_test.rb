@@ -53,11 +53,9 @@ class InputOptionsTest < ManualTest
 
       title "Syntax: input &options"
 
-      content do
-        input do
-          label "Name:"
-          text "James Bond"
-        end
+      input :more_options do
+        label "Name:"
+        text "James Bond"
       end
 
       width 300
@@ -92,10 +90,8 @@ class InputOptionsTest < ManualTest
 
       title "Syntax: input value &options"
 
-      content do
-        input "James Bond", :more_options do
-          label "Name:"
-        end
+      input "James Bond", :more_options do
+        label "Name:"
       end
 
       width 400
