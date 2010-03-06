@@ -55,8 +55,9 @@ module Swiby
       
       x.instance_eval(&block) unless block.nil?
 
+      x.refresh_tooltips
       x.apply_styles
-
+      
       x
     
     end
@@ -97,9 +98,13 @@ module Swiby
         parent.layers.each do |name, layer|
           
           rc = ev.getComponent.getBounds
-
-          unless name == :popup
-            pane = layer.java_component            
+        
+          next if name == :popup
+          
+          if name == :auto_hide
+            layer.visible false
+          else
+            pane = layer.java_component
             pane.setBounds(rc.x, rc.y, rc.width, rc.height)
           end
           
@@ -123,6 +128,14 @@ module Swiby
 
     attr_reader :default_layer, :layers
     
+    Swiby::CONTEXT.add_language_change_listener self
+    
+    def self.language_changed
+      @@frames.each do |frame|
+        frame.change_language
+      end
+    end
+
     def initialize layout = nil, as_dialog = false, parent = nil
 
       super
@@ -209,8 +222,6 @@ module Swiby
         
       end
       
-      @@frames << self
-      
       @component = JFrame.new      
       @component.layered_pane = layered_pane
 
@@ -245,6 +256,14 @@ module Swiby
     
     def layout_manager= layout
       @default_layer.layout = layout
+    end
+    
+    def glass_pane= pane
+      @component.glass_pane = pane
+    end
+    
+    def glass_pane
+      @component.glass_pane
     end
     
     def visible=(flag)
@@ -287,6 +306,8 @@ module Swiby
         end
       
       end
+   
+      glass_pane.start if glass_pane.respond_to?(:start)
       
     end
 
@@ -338,6 +359,50 @@ module Swiby
  
     end
     
+    def refresh_tooltips children = nil
+      
+      return unless @tooltip_provider
+      
+      children = @children unless children
+      
+      if children
+        
+        children.each do |kid|
+          
+          if kid.respond_to?(:each)
+            refresh_tooltips kid
+          else
+            text = @tooltip_provider.call(kid.name, kid)
+            kid.java_component(true).tool_tip_text = text if text
+          end
+        
+        end
+      
+      else
+      
+        @layers.each do |name, layer|
+          refresh_tooltips layer
+        end
+        
+      end
+      
+    end
+
+    # +provider+ block receives two parameters for each component: the name and the Swiby wrapper.
+    # It must return the tooltip text for the given component or +nil+, meaning no tooltip.
+    #
+    # If +auto+ is true, +provider+ is ignored and the tooltip is retrieved from the current language bundle
+    # using the names ofcomponents, for the components having a name only. Note that names are first
+    # converted to symbol.
+    #
+    def tooltip_provider auto = false, &provider
+      
+      provider = proc {|name, wrapper| name.to_sym.to_text if name} if auto
+        
+      @tooltip_provider = provider
+      
+    end
+    
     def toolbar &block
 
       if @tb_container.nil?
@@ -374,11 +439,12 @@ module Swiby
     end
 
     def title=(t)
-      @component.title = t
+      @en_title = t
+      @component.title = t.translate
     end
 
     def title
-      @component.title
+      @en_text
     end
 
     def title(x)
@@ -397,6 +463,10 @@ module Swiby
       
       @children << child
       
+    end
+    
+    def remove_child index
+      @children.delete_at index
     end
     
     def apply_styles
@@ -423,6 +493,24 @@ module Swiby
       @layers.each do |name, layer|
         layer.apply_styles @styles
       end
+      
+    end
+
+    def change_language
+
+      self.title = @en_title if @en_title
+      
+      if @children
+        @children.each do |kid|
+          kid.change_language
+        end
+      end
+      
+      @layers.each do |name, layer|
+        layer.change_language
+      end
+      
+      refresh_tooltips
       
     end
     

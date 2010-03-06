@@ -20,6 +20,31 @@ module Swiby
     def layout_input label, text
     end
     
+    def image_button normal_image, hover_image, disabled_image = nil, options = nil, &block
+      
+      unless options or !disabled_image.is_a?(Hash)
+        options = disabled_image
+      end
+    
+      but = button_factory(nil, normal_image, options, block) do |opt|
+        Button.new(opt)
+      end
+      
+      but.java_component.border = nil
+      but.java_component.content_area_filled = false
+      
+      but.java_component.pressed_icon = hover_image
+      but.java_component.rollover_icon = hover_image
+      but.java_component.disabled_icon = disabled_image unless disabled_image
+  
+      but.java_component.preferred_size = Dimension.new(normal_image.getIconWidth, normal_image.getIconHeight)
+      
+      layout_input nil, but
+      
+      but
+      
+    end
+    
     def command text = nil, image = nil, options = nil, &block
       
       but = button_factory(text, image, options, block) do |opt|
@@ -170,6 +195,10 @@ module Swiby
       JButton.new
     end
 
+    def change_language
+      self.text = @en_text if @en_text
+    end
+    
     def editable?
       editable
     end
@@ -189,12 +218,15 @@ module Swiby
     end
 
     def text=(t)
-      @real_text = t
-      @component.text = t
+      
+      @en_text = t
+      @real_text = t.translate
+      @component.text = @real_text
+      
     end
 
     def text
-      @real_text
+      @en_text
     end
 
     def icon(image)

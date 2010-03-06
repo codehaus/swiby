@@ -41,7 +41,9 @@ class SyntaxTest < ManualTest
       title 'All in blocks'
       
       width 600
-      height 550
+      height 620
+      
+      tooltip_provider { |name, comp| "My name is <#{comp.name}>" if name }
       
       content {
         section 'Label'
@@ -52,7 +54,6 @@ class SyntaxTest < ManualTest
               comp.vertical_alignment = SwingConstants::BOTTOM
               comp.preferred_size = Dimension.new(200, 100)
               comp.border = ::BorderFactory.createLineBorder(Color::BLACK)
-              comp.tool_tip_text = "My name is <#{comp.name}>"
             }
           }
 
@@ -64,7 +65,6 @@ class SyntaxTest < ManualTest
             swing { |comp|
               comp.editable = false
               comp.enabled = false
-              comp.tool_tip_text = "My name is <#{comp.name}>"
             }
           }
         
@@ -78,9 +78,6 @@ class SyntaxTest < ManualTest
             action { |value|
               message_box "You selected: #{value}"
             }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
           }
         section 'List'
           list {
@@ -90,9 +87,6 @@ class SyntaxTest < ManualTest
             selected initial_selection
             action { |value|
               message_box "You selected: #{value}"
-            }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
             }
           }
 
@@ -106,9 +100,6 @@ class SyntaxTest < ManualTest
             action { |value|
               message_box "You selected: #{value}"
             }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
           }
         
         next_row
@@ -117,9 +108,6 @@ class SyntaxTest < ManualTest
             name :check_name
             text 'disabled [check_name]'
             enabled false
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
           }
           check {
             name :check_name_2
@@ -128,18 +116,12 @@ class SyntaxTest < ManualTest
             action {
               message_box "Clicked!"
             }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
           }
         section 'Radio button'
           radio {
             name :radio_name
             text 'disabled [radio_name]'
             enabled false
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
           }
           radio {
             name :radio_name_2
@@ -147,9 +129,6 @@ class SyntaxTest < ManualTest
             enabled true
             action {
               message_box "Clicked!"
-            }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
             }
           }
         
@@ -161,9 +140,6 @@ class SyntaxTest < ManualTest
             enabled false
             action {
               message_box "Action executed"
-            }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
             }
           }
 
@@ -192,8 +168,10 @@ class SyntaxTest < ManualTest
       title 'Compact syntax'
       
       width 600
-      height 550
+      height 620
 
+      tooltip_provider { |name, comp| "My name is <#{comp.name}>" if name }
+      
       content {
         section 'Label'
           label 'label text at bottom', :label_name
@@ -201,7 +179,6 @@ class SyntaxTest < ManualTest
               comp.vertical_alignment = SwingConstants::BOTTOM 
               comp.preferred_size = Dimension.new(200, 100)
               comp.border = ::BorderFactory.createLineBorder(Color::BLACK)
-              comp.tool_tip_text = "My name is <#{comp.name}>"
             }
       
         section 'TextField'
@@ -209,7 +186,6 @@ class SyntaxTest < ManualTest
             swing { |comp|
               comp.editable = false
               comp.enabled = false
-              comp.tool_tip_text = "My name is <#{comp.name}>"
             }
           
         next_row
@@ -218,16 +194,10 @@ class SyntaxTest < ManualTest
             initial_selection, :name => :combo_name) { |value|
               message_box "You selected: #{value}"
             }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
         section 'List'
           list('List [list_name]', list_data, 
               initial_selection, :name => :list_name) { |value|
               message_box "You selected: #{value}"
-            }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
             }
             
         next_row
@@ -236,43 +206,25 @@ class SyntaxTest < ManualTest
             initial_selection, :name => :radio_group_name) { |value|
               message_box "You selected: #{value}"
             }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
 
         next_row
         section 'Check box'
           check 'disabled [check_name]', :check_name, :enabled => false
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
           check('enabled [check_name_2]', :check_name_2) {
             message_box "Clicked!"
           }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
             
         section 'Radio button'
           radio('disabled [radio_name]', :radio_name, :enabled => false)
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
           radio('disabled [radio_name_2]', :radio_name_2) {
             message_box "Clicked!"
           }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
         
         next_row
         section 'Button'
           button('disabled [button_name]', :button_name, :enabled => false) {
             message_box "Action executed"
           }
-            swing { |comp|
-              comp.tool_tip_text = "My name is <#{comp.name}>"
-            }
 
         command('Console') {
           open_console context

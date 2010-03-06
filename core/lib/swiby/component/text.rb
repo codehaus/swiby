@@ -127,7 +127,7 @@ module Swiby
     define "Input" do
       
       declare :name, [String, Symbol], true
-      declare :label, [String, Symbol], true
+      declare :label, [String], true
       declare :text, [Object]
       declare :type, Symbol, true # defaults to free string input
       declare :columns, [Integer], true

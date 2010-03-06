@@ -7,6 +7,8 @@
 #
 #++
 
+require 'swiby/component/label'
+
 import javax.swing.JSlider
 
 module Swiby
@@ -16,22 +18,37 @@ module Swiby
     def layout_button button
     end
     
-    def slider text = nil, image = nil, options = nil, &block
+    def slider orientation = nil, *options, &block
 
       ensure_section
 
-      x = SliderOptions.new(context, text, image, options, &block)
+      x = SliderOptions.new(context, orientation, *options, &block)
       
-      but = Slider.new(x)
+      comp = Slider.new(x)
 
-      context[x[:name].to_s] = but if x[:name]
+      label = nil
       
-      context.add_child but
+      if x[:label]
+        label = SimpleLabel.new(x)
+        add label
+        context << label
+        context.add_child label
+      end
+
+      context[x[:name].to_s] = comp if x[:name]
       
-      add but
-      context << but
+      context.add_child comp
       
-      layout_panel but
+      add comp
+      context << comp
+      
+      if label
+        layout_input label, comp
+      else
+        layout_panel comp
+      end
+      
+      comp
       
     end
   
@@ -41,6 +58,7 @@ module Swiby
     
     define "Slider" do
       
+      declare :label, [String], true
       declare :minimum, [Fixnum], true
       declare :maximum, [Fixnum], true
       declare :value, [Fixnum], true
@@ -49,8 +67,12 @@ module Swiby
       declare :swing, [Proc], true
       declare :enabled, [TrueClass, FalseClass, IncrementalValue], true
       
+      overload :label
+      overload :orientation
+      overload :label, :name
       overload :orientation, :name
       overload :orientation, :minimum, :name
+      overload :orientation, :minimum, :maximum
       overload :orientation, :minimum, :maximum, :name
       overload :orientation, :minimum, :maximum, :value, :name
       
@@ -68,16 +90,13 @@ module Swiby
 
       return unless options
       
-      args = []
-      args << map_orientation(options[:orientation]) if options[:orientation]
-      args << options[:minimum] if options[:minimum]
-      args << options[:maximum] if options[:maximum]
-      args << options[:value] if options[:value]
+      options[:orientation] = :horizontal unless options[:orientation]
       
-      if options[:orientation] and (args.length != 1 or args.length != 4)
-        raise "Must provide minimum and maximum values for slider" if options[:value] or args.length != 3
-        args << options[:minimum]
-      end
+      args = []
+      args << map_orientation(options[:orientation])
+      args << (options[:minimum] ? options[:minimum] : 0)
+      args << (options[:maximum] ? options[:maximum] : 100)
+      args << (options[:value] ? options[:value] : 0)
 
       @component = JSlider.new(*args)
       
@@ -94,6 +113,10 @@ module Swiby
       
     end
 
+    def value= val
+      @component.value = val
+    end
+    
     def apply_styles styles
 
       return unless styles
@@ -115,7 +138,7 @@ module Swiby
         @component.opaque = true
       end
       
-      ticks = styles.resolver.find(:ticks, :button, @style_id, @style_class)
+      ticks = styles.resolver.find(:display_ticks, :button, @style_id, @style_class)
       @component.paint_labels = ticks unless ticks.nil?
       
     end

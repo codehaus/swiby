@@ -28,6 +28,58 @@ module Swiby
   end
   
   ##-----
+  class TestWrongDeclaration < ComponentOptionTestCase
+    
+    class TestOptionsOneOverload < ComponentOptions
+      
+      define "Test" do
+
+        declare :label, [String, Symbol], true
+        declare :text, [String, Symbol]
+        
+        overload :width
+        
+      end
+      
+    end
+    
+    class TestOptions < ComponentOptions
+      
+      define "Test" do
+
+        declare :label, [String, Symbol], true
+        declare :text, [String, Symbol]
+        
+        overload :label, :text
+        overload :label, :text, :width
+        
+      end
+      
+    end
+    
+    def test_undeclared_parameter_only_overload
+      
+      ex = assert_raise ArgumentError do
+        TestOptionsOneOverload.new self, 77
+      end
+      
+      assert_equal ComponentOptions.undeclared_parameter_error('Test', :width), ex.message
+      
+    end
+    
+    def test_undeclared_parameter_with_valid_overloads
+      
+      ex = assert_raise ArgumentError do
+        TestOptions.new self, 77
+      end
+      
+      assert_equal ComponentOptions.undeclared_parameter_error('Test', :width), ex.message
+      
+    end
+    
+  end
+  
+  ##-----
   class TestNoArgsInitializer < ComponentOptionTestCase
     
     class TestOptions < ComponentOptions

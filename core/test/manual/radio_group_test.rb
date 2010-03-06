@@ -106,5 +106,24 @@ class RadioGroupTest < ManualTest
     }
 
   end
+
+  manual 'Radio Group test selection' do
+    
+    form {
+      
+      title "Radio Group test selection"
+      
+      width 340
+      height 200
+      
+      radio_group(:horizontal, 'Color:', ['red', 'green', 'blue'], 'blue') { |color|
+        message_box "Selected color is '#{color}'"
+      }
+      
+      visible true
+      
+    }
+
+  end
   
 end

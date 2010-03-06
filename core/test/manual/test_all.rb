@@ -17,6 +17,8 @@ require 'swiby/component/check'
 
 require 'test/manual/manual_test'
 
+Swiby::CONTEXT.missing_translation_enabled = false
+
 limit_to = []
 verbose = false
 

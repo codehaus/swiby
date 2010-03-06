@@ -16,8 +16,19 @@ module Swiby
       :popup => javax.swing.JLayeredPane::POPUP_LAYER, 
       :drag => javax.swing.JLayeredPane::DRAG_LAYER,
       :palette => javax.swing.JLayeredPane::PALETTE_LAYER, 
-      :modal => javax.swing.JLayeredPane::MODAL_LAYER
+      :modal => javax.swing.JLayeredPane::MODAL_LAYER,
+      :auto_hide => javax.swing.JLayeredPane::POPUP_LAYER
     }
+    
+    def each_layer
+      
+      return unless @layers
+      
+      @layers.each_value do |layer|
+        yield layer unless layer.is_a?(Array)
+      end
+      
+    end
     
     def layer name, options = nil, &block
       
@@ -29,20 +40,27 @@ module Swiby
       options[:name] = name
       
       pane = create_panel(options)
-      pane.instance_eval(&block) unless block.nil?
+      
+      context << pane
       
       layered = context.java_component.layered_pane
       
       z_index = name.is_a?(Integer) ? name : VALID_LAYERS[name]
       
       pane.java_component.opaque = false unless name.is_a?(Symbol)
+      pane.java_component.opaque = false if name == :palette
+      pane.java_component.layout = nil unless options[:layout]
       
       layered.add pane.java_component
       layered.set_layer pane.java_component, z_index
       
       @layers[name] = pane
       
-      pane.visible false
+      pane.instance_eval(&block) unless block.nil?
+      
+      pane.visible false unless name == :palette
+      
+      pane
       
     end
     

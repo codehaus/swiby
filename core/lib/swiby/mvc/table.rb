@@ -14,53 +14,43 @@ module Swiby
   
   class Table
     
-    def register master, controller, id, method_naming_provider
+    class TableRegistrar < Registrar
       
-      super
+      include SelectableComponendBehavior
+    
+      def selection_changed
         
-      need_getter_method
-      need_selection_handler_method
+        index = @component.getSelectedRow
+        
+        if @setter_method
+          @controller.send(@setter_method, index)
+        else
+          @controller.send(@value_index_setter_method, index)
+        end
       
-      added_self = false
-      
-      if @getter_method
-        master.wrappers << self
-        added_self = true
+        @master.refresh
+        
       end
+      
+      def handles_actions?
+        !@setter_method.nil? or !@value_index_setter_method.nil?
+      end
+      
+    end
+    
+    def create_registrar wrapper, master, controller, id, method_naming_provider
+      TableRegistrar.new(wrapper, master, controller, id, method_naming_provider)
+    end
 
-      if @selection_handler_method
-        add_listener create_listener
-        master.wrappers << self unless added_self
-      end
-      
+    def registration_done *registrars      
+        
       #TODO improve making table read-only
-      @component.setDefaultEditor(@component.getColumnClass(0), nil)
+      @component.setDefaultEditor(@component.getColumnClass(0), nil) if @component.getColumnCount() > 0
+      
+      self.enabled = registrars.any? {|reg| reg.handles_actions?}
       
     end
-    
-    def create_listener
-      SelectionAction.new(self)
-    end
-    
-    def add_listener listener
-      listener.install @component
-    end
-    
-    def display values
-      
-      clear
-      
-      return unless values
-    
-      model.values = values
-      
-    end
-    
-    def selection_changed
-      @controller.send(@selection_handler_method, @component.getSelectedRow)
-      @master.refresh
-    end
-    
+ 
   end
   
 end

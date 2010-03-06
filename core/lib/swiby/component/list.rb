@@ -82,12 +82,16 @@ module Swiby
       @component.model.clear
     end
     
+    def remove_at index
+      @values.delete_at(index)
+      @component.model.remove(index)
+    end
+    
     def remove value
       
       index = @values.index(value)
-  
-      @values.delete_at(index)
-      @component.model.remove(index)
+      
+      remove_at index
       
     end
     

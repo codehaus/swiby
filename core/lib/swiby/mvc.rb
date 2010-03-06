@@ -13,19 +13,15 @@ class Class
   
   def bindable *fields
     
-    class << self 
-      
-      def has_bindable?
-        @bindable_fields and @bindable_fields.size > 0
-      end
-      
-      def bindable_fields
-        @bindable_fields = [] unless @bindable_fields
-        @bindable_fields
-      end
-      
+    def self.has_bindable?
+      @bindable_fields and @bindable_fields.size > 0
     end
     
+    def self.bindable_fields
+      @bindable_fields = [] unless @bindable_fields
+      @bindable_fields
+    end
+
     fields.each do |field|
       self.bindable_fields << field unless self.bindable_fields.include?(field)
     end
@@ -36,6 +32,86 @@ end
 
 module Swiby
 
+  class Registrar
+    
+    attr_writer :added_to_master
+    
+    def initialize wrapper, master, controller, id, method_naming_provider
+      
+      @id = id
+      @master = master
+      @wrapper = wrapper
+      @controller = controller
+      @method_naming_provider = method_naming_provider
+      
+      @component = wrapper.java_component(true)
+      
+      @added_to_master = false
+      
+    end
+    
+    def added_to_master?
+      @added_to_master
+    end
+    
+    def register
+      
+      need_enabled_state_check_method
+      need_visible_state_check_method
+      need_readonly_check_method
+      need_value_changed_method
+      
+    end
+    
+    def enable_disable
+      
+      update_display
+      
+      if @enabled_state_check_method
+        @wrapper.enabled = @controller.send(@enabled_state_check_method) == true
+      end
+      
+      if @readonly_check_method
+        @component.editable = @controller.send(@readonly_check_method) == true
+      end
+      
+      if @visible_state_check_method
+        @component.visible = @controller.send(@visible_state_check_method) == true
+      end
+      
+    end
+    
+    def update_display
+      
+      if @getter_method
+        
+        read_value = true
+        read_value = @controller.send(@value_changed_method) if @value_changed_method
+        
+        if read_value
+          new_value = @controller.send(@getter_method)
+          display new_value
+        end
+      
+      end
+      
+    end
+    
+    def method_missing(meth, *args)
+
+      super unless meth.to_s =~ /^need_(.*)/
+      
+      name = $1
+      
+      method = @method_naming_provider.send(name, @id)
+      method = nil unless @controller.respond_to?(method)
+      
+      instance_variable_set("@#{name}".to_sym, method)
+      
+    end
+    
+  end
+  
   class MethodNamingProvider
     
     def readonly_check_method(id)
@@ -44,6 +120,10 @@ module Swiby
     
     def enabled_state_check_method(id)
       "may_#{id}?".to_sym
+    end
+    
+    def visible_state_check_method(id)
+      "show_#{id}?".to_sym
     end
   
     def action_method(id)
@@ -58,10 +138,22 @@ module Swiby
       "#{id}=".to_sym
     end
   
+    def selected_indexes_method(id)
+      "selected_#{id}=".to_sym
+    end
+    
+    def value_index_setter_method(id)
+      "#{id}_index=".to_sym
+    end
+  
     def value_changed_method(id)
       "#{id}_changed?".to_sym
     end
 
+    def remove_item_method(id)
+      "remove_#{id}".to_sym
+    end
+    
     def list_method(id)
       "list_of_#{id}".to_sym
     end
@@ -77,6 +169,36 @@ module Swiby
   end
   
   module SelectableComponendBehavior
+    
+    def register
+      
+      super
+      
+      need_getter_method
+      need_setter_method
+      
+      need_list_method
+      need_list_changed_method
+      need_value_index_setter_method
+      
+      if @getter_method
+        @master << self
+      end
+
+      if @setter_method or @value_index_setter_method
+        add_listener create_listener
+        @master << self
+      end
+      
+    end
+      
+    def create_listener
+      SelectionAction.new(self)
+    end
+    
+    def add_listener listener
+      listener.install @component
+    end
     
     def enable_disable
       
@@ -97,11 +219,29 @@ module Swiby
     end
     
     def display new_value
-      self.value = new_value
+      
+      if @selected_indexes_method or @value_index_setter_method
+        @wrapper.selection = new_value
+      else
+        @wrapper.value = new_value
+      end
+      
     end
     
     def change_list new_content
-      self.content = new_content
+      @wrapper.content = new_content
+    end
+      
+    def execute_action
+      
+      if @value_index_setter_method
+        @controller.send(@value_index_setter_method, @wrapper.selection)
+      else
+        @controller.send(@setter_method, @wrapper.value)
+      end
+    
+      @master.refresh
+      
     end
     
   end
@@ -190,23 +330,62 @@ module Swiby
     end
   
     def install component
-      component.getSelectionModel().addListSelectionListener(self)
+      component.getSelectionModel.addListSelectionListener(self)
+    end
+    
+  end
+  
+  class DataAction
+    include ActionHandler
+    include javax.swing.event.ListDataListener
+    
+    def install component
+      component.getModel.addListDataListener(self)
+    end
+    
+    def contentsChanged e
+    end
+    
+    def intervalAdded e
+    end
+    
+    def intervalRemoved e
+      @wrapper.item_removed e.getIndex0
     end
     
   end
   
   class MasterController
     
-    attr_reader :wrappers
+    attr_reader :registrars
     
-    def initialize
-      @wrappers = []
+    def initialize(window_wrapper)
+      @window_wrapper = window_wrapper
+      @refreshing = false
+      @registrars = []
+    end
+    
+    def << registrar
+      unless registrar.added_to_master?
+        @registrars << registrar
+        registrar.added_to_master = true
+      end
     end
     
     def refresh
-      @wrappers.each do |wrapper|
+      
+      return if @refreshing
+      
+      @refreshing = true
+
+      @registrars.each do |wrapper|
         wrapper.enable_disable
       end
+      
+      @refreshing = false
+      
+      @window_wrapper.java_component.validate
+      
     end
     
   end
@@ -234,7 +413,7 @@ module Swiby
       @view_definitions
     end
     
-    def self.bind_controller view, controller, method_naming_provider = nil
+    def self.bind_controller view, controller = nil, method_naming_provider = nil
       prepare_mvc view, controller, method_naming_provider
     end
     
@@ -254,13 +433,29 @@ module Swiby
       
       window = window_wrapper.java_component
       
-      master = MasterController.new
+      master = MasterController.new(window_wrapper)
       
+      controller = window_wrapper unless controller
+          
+      controller.instance_variable_set :@window, window_wrapper
+      
+      def controller.top_window_wrapper
+        @window
+      end
+        
       register_components window_wrapper, master, controller, method_naming_provider
       
-      if controller.class.respond_to?(:has_bindable?) and controller.class.has_bindable?
+      controller_class = controller.class
+      instance_class = class << controller; self; end
+      if instance_class.respond_to?(:has_bindable?) and instance_class.has_bindable?
+        controller_class = instance_class
+      else
+        controller_class = nil unless controller_class.respond_to?(:has_bindable?) and controller_class.has_bindable?
+      end
+      
+      if controller_class
 
-        controller.class.bindable_fields.each do |field|
+        controller_class.bindable_fields.each do |field|
           
           setter = method_naming_provider.setter_method(field)
           
@@ -282,19 +477,13 @@ CODE
             
             controller.instance_eval code unless controller.respond_to?(orig)
             
-            def controller.master= master
-              @master = master
-            end
-          
-            controller.master = master
+            controller.instance_variable_set :@master, master
           
           end
         
         end
       
       end
-      
-      controller.instance_variable_set :@window, window_wrapper
       
       master.refresh
       
@@ -308,16 +497,56 @@ CODE
     
     def self.register_components parent, master, controller, method_naming_provider
       
+      top_window_wrapper = controller.top_window_wrapper
+      
+      unless parent.registered?
+        
+        id = parent.name
+        
+        reg1 = parent.create_registrar(parent, master, controller, id, method_naming_provider)
+        reg1.register
+        
+        reg2 = parent.create_registrar(parent, master, parent, id, method_naming_provider)
+        reg2.register
+        
+        parent.registration_done reg1, reg2
+        parent.registered = true
+        
+      end
+      
       parent.each do |wrapper|
-
+        
         id = wrapper.name
         
         if id
-          wrapper.register(master, controller, id, method_naming_provider) unless wrapper.registered?
+          
+          top_window_wrapper.instance_variable_set "@#{id}".to_sym, wrapper
+          
+          unless wrapper.registered?
+            
+            reg1 = wrapper.create_registrar(wrapper, master, controller, id, method_naming_provider)
+            reg1.register
+            
+            reg2 = wrapper.create_registrar(wrapper, master, top_window_wrapper, id, method_naming_provider)
+            reg2.register
+            
+            wrapper.registration_done reg1, reg2
+            wrapper.registered = true
+            
+          end
+          
         end
 
         if wrapper.respond_to?(:each)
           register_components wrapper, master, controller, method_naming_provider
+        end
+        
+      end
+      
+      if parent.respond_to?(:each_layer)
+        
+        parent.each_layer do |layer|
+          register_components layer, master, controller, method_naming_provider
         end
         
       end
@@ -334,72 +563,25 @@ CODE
     view_def
   end
   
-  class SwingBase
+  module MVCBase
     
-    attr_reader :component, :master
-
-    def initialize component
-      @component = component
-      @registered = false
-      @master = nil
+    attr_accessor :registered
+    
+    def create_registrar wrapper, master, controller, id, method_naming_provider
+      Swiby::Registrar.new(wrapper, master, controller, id, method_naming_provider)
     end
-  
-    def register master, controller, id, method_naming_provider
-      
-      @id = id
-      @master = master
-      @controller = controller
-      @method_naming_provider = method_naming_provider
-      
-      @registered = true
-      
-      need_enabled_state_check_method
-      need_readonly_check_method
-      need_value_changed_method
-      
+    
+    def registration_done *registrars
     end
     
     def registered?
       @registered
     end
     
-    def enable_disable
-      
-      if @getter_method
-        
-        read_value = true
-        read_value = @controller.send(@value_changed_method) if @value_changed_method
-        
-        if read_value
-          new_value = @controller.send(@getter_method)
-          display new_value
-        end
-      
-      end
-      
-      if @enabled_state_check_method
-        @component.enabled = @controller.send(@enabled_state_check_method) == true
-      end
-      
-      if @readonly_check_method
-        @component.editable = @controller.send(@readonly_check_method) == true
-      end
-      
-    end
-    
-    def method_missing(meth, *args)
-
-      super unless meth.to_s =~ /^need_(.*)/
-      
-      name = $1
-      
-      method = @method_naming_provider.send(name, @id)
-      method = nil unless @controller.respond_to?(method)
-      
-      instance_variable_set("@#{name}".to_sym, method)
-      
-    end
-    
   end
-      
+
+  class SwingBase
+    include MVCBase
+  end
+  
 end

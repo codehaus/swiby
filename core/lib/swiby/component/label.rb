@@ -49,7 +49,7 @@ module Swiby
       declare :swing, [Proc], true
       declare :icon, [ImageIcon], true
       declare :name, [String, Symbol], true
-      declare :label, [String, Symbol, IncrementalValue], true
+      declare :label, [String, IncrementalValue], true
       declare :style_class, [String, Symbol], true
       
       overload :label
@@ -101,6 +101,10 @@ module Swiby
       
     end
 
+    def change_language
+      self.text = @en_text if @en_text
+    end
+    
     def apply_styles styles
       
       return unless styles
@@ -140,17 +144,16 @@ module Swiby
       #TODO is here the right place for this decision? (using IncrementalValue, raw value or HTML)
       if t.instance_of? IncrementalValue
         t.assign_to self, :text=
-      elsif t.instance_of? String
-        t = ERB.new(t).result #TODO use if HTML not only in Label + maybe ERB is too much if simple string?
       end
       
-      @real_text = t
-      @component.text = t
+      @en_text = t
+      @real_text = t.translate
+      @component.text = @real_text
       
     end
 
     def text
-      @real_text
+      @en_text
     end
 
     def icon= image

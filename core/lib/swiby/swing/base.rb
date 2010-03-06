@@ -106,7 +106,10 @@ module Swiby
         end
       }
     end
-
+    
+    def change_language
+    end
+    
     def gui_wrapper?
       true
     end
