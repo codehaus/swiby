@@ -7,10 +7,23 @@
 #
 #++
 
-require 'component/draw_panel'
+require 'swiby/mvc'
+require 'swiby/component/draw_panel'
 
 import javax.swing.Timer
 import java.awt.Dimension
+
+module Swiby
+
+  class MethodNamingProvider
+    
+    def found(id)
+      :found
+    end
+    
+  end
+  
+end
 
 class PuzzleBoard
   
@@ -18,11 +31,16 @@ class PuzzleBoard
   HEIGHT = 30
   DEFAULT_MARGIN = 10
   
-  def initialize panel, grid, &listener
+  attr_reader :name
+  
+  include MVCBase
+  
+  def initialize name, panel, grid, &listener
     
+    @name = name
     @listener = listener
     
-    @panel,  @grid = panel, grid
+    @panel, @grid = panel, grid
 
     @anchor_x = nil
     @anchor_y = nil
@@ -46,9 +64,31 @@ class PuzzleBoard
     
     set_painter
     set_mouse_handlers
-    
+        
   end
 
+  def register master, controller, id, method_naming_provider
+      
+    super
+    
+    need_found
+    
+    if @found
+      
+      @listener =  proc { |word|
+        controller.send(:found, word)
+      }
+      
+    end
+    
+  end
+  
+  def apply_styles styles = nil
+  end
+  
+  def change_language
+  end
+  
   def on_user_activity &listener
     
     listener.instance_eval(&listener)
@@ -193,7 +233,7 @@ class PuzzleBoard
       file = styles.resolver.find(:background_image, :table, @style_id)
       image_file = resolve_file(file)
       image_file = resolve_local_file(file) unless image_file
-      @bg_image = ImageIcon.new(image_file) if image_file
+      @bg_image = javax.swing.ImageIcon.new(image_file) if image_file
       
       color = styles.resolver.find(:found_color, :table, @style_id)
       @found_color = styles.resolver.create_color(color) if color
@@ -220,12 +260,14 @@ class PuzzleBoard
         bg.clear
         
         bg.antialias = true
-        bg.set_font "Verdana", Font::ITALIC, 14
 
-        bg.color @border_color if @border_color
+        pen = bg.create_pen
         
-        bg.move_to @center_x, @center_y
-        bg.draw_image @bg_image if @bg_image
+        pen.font "Verdana", Font::ITALIC, 14
+        pen.color @border_color if @border_color
+        
+        pen.move_to @center_x, @center_y
+        pen.draw_image @bg_image if @bg_image
         
         @grid.each_line do |line|
           
@@ -233,8 +275,8 @@ class PuzzleBoard
        
             char = @grid[row, col]
             
-            bg.move_to @center_x + col * WIDTH, @center_y + row * HEIGHT
-            bg.box WIDTH, HEIGHT, char
+            pen.move_to @center_x + col * WIDTH, @center_y + row * HEIGHT
+            pen.box WIDTH, HEIGHT, char
             
           end
           
@@ -246,20 +288,22 @@ class PuzzleBoard
      
       g.layer(:found, @new_line_found) do |found_g|
      
+        pen = found_g.create_pen
+        
         @found_lines.each do |line|
           
           if line.last == :local
-            found_g.line_style :continuous
-            found_g.color @found_color
+            pen.line_style :continuous
+            pen.color @found_color
           else
-            found_g.line_style :dash
-            found_g.color @collab_color
+            pen.line_style :dash
+            pen.color @collab_color
           end
           
-          found_g.up
-          found_g.move_to line[0], line[1]
-          found_g.down
-          found_g.move_to line[2], line[3]
+          pen.up
+          pen.move_to line[0], line[1]
+          pen.down
+          pen.move_to line[2], line[3]
           
         end
        
@@ -267,75 +311,81 @@ class PuzzleBoard
      
       end
       
-      if @backdoor_from
-      
-        g.line_style :dash
-        g.color @collab_color
+      g.layer(:top, true) do |g|
         
-        x, y = cell_to_pixel(@backdoor_from[0], @backdoor_from[1])
+        if @backdoor_from
         
-        g.up
-        g.move_to x, y
-        g.down
+          pen = g.create_pen
+          
+          pen.line_style :dash
+          pen.color @collab_color
+          
+          x, y = cell_to_pixel(@backdoor_from[0], @backdoor_from[1])
+          
+          pen.up
+          pen.move_to x, y
+          pen.down
 
-        x, y = cell_to_pixel(@backdoor_to[0], @backdoor_to[1])
-        
-        g.move_to x, y
-        
-        g.line_style :continuous
-        
-      end
-      
-      if @anchor_x
-        
-        g.color @found_color
-        
-        g.up
-        g.move_to @anchor_x, @anchor_y
-        g.down
-        g.move_to @current_x, @current_y
-        
-      end
-      
-      if @hint and @hint.slot[@hint_index]
-        
-        if @hint.reverse?
-          start = @hint.slot.length - 1
-        else
-          start = 0
-        end
-                
-        draw_hint_line g, @hint, start, @hint_index
+          x, y = cell_to_pixel(@backdoor_to[0], @backdoor_to[1])
           
-        if @hint.reverse?
-          @hint_index -= 1
-        else
-          @hint_index += 1
+          pen.move_to x, y
+          
+          pen.line_style :continuous
+          
         end
         
-      elsif @keep_hint
+        if @anchor_x
         
-        @keep_count -= 1
-        
-        if @keep_count <= 0
-          @keep_hint = nil
-          @timer.stop
-        else
+          pen = g.create_pen
           
-          if @keep_hint.reverse?
-            start = @keep_hint.slot.length - 1
-            last = 0
+          pen.color @found_color
+          
+          pen.up
+          pen.move_to @anchor_x, @anchor_y
+          pen.down
+          pen.move_to @current_x, @current_y
+          
+        end
+        
+        if @hint and @hint.slot[@hint_index]
+          
+          if @hint.reverse?
+            start = @hint.slot.length - 1
           else
             start = 0
-            last = @keep_hint.slot.length - 1
           end
+                  
+          draw_hint_line g, @hint, start, @hint_index
+            
+          if @hint.reverse?
+            @hint_index -= 1
+          else
+            @hint_index += 1
+          end
+          
+        elsif @keep_hint
+          
+          @keep_count -= 1
+          
+          if @keep_count <= 0
+            @keep_hint = nil
+            @timer.stop
+          else
+            
+            if @keep_hint.reverse?
+              start = @keep_hint.slot.length - 1
+              last = 0
+            else
+              start = 0
+              last = @keep_hint.slot.length - 1
+            end
 
-          draw_hint_line g, @keep_hint, start, last
+            draw_hint_line g, @keep_hint, start, last
+            
+          end
           
         end
-        
       end
-
       
     end
 
@@ -446,15 +496,11 @@ class PuzzleBoard
                   
     x1, y1 = cell_to_pixel(*word.slot[first])
     x2, y2 = cell_to_pixel(*word.slot[last])
+
+    g.color @hint_color    
+    g.draw_line x1, y1, x2, y2
     
-    g.color @hint_color
-    
-    g.up
-    g.move_to x1, y1
-    g.down
-    g.move_to x2, y2
-    
-end
+  end
   
   def find_word(row, col)
 
@@ -486,9 +532,11 @@ module Swiby
       
       panel = draw_panel
       
-      board = PuzzleBoard.new(panel, grid, &listener)
+      board = PuzzleBoard.new(name, panel, grid, &listener)
       
-      context[name] = board
+      context << board
+      context.add_child board
+      context[name.to_s] = board
       
       board
       

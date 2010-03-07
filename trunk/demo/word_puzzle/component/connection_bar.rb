@@ -184,7 +184,7 @@ module Swiby
         
         content :layout => :absolute, :hgap => 10, :vgap => 10  do
           at [0, 0]
-            button(@resources[:connect], :connect) {controller.connect_disconnect}
+            button(resources[:connect], :connect) {controller.connect_disconnect}
           at [10, 0], relative_to(:connect, :right, :center)
             label @red_off, :red
           at [10, 0], relative_to(:red, :right, :center)

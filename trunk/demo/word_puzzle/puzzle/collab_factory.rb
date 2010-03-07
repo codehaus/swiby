@@ -7,6 +7,9 @@
 #
 #++
 
+require 'component/connection_bar'
+require 'component/connection_controller'
+
 require 'puzzle_client'
 require 'puzzle_game'
 

@@ -13,13 +13,13 @@ create_styles {
     :font_style => :normal,
     :font_size => 10
   )
-  language {
+  switch_language {
     button(
       :font_size => 10,
       :color => 0x5C458A
     )
   }
-  list_view {
+  words {
     list(
       :color => 0x5C458A,
       :background_color => 0xD6CFE6,

@@ -8,6 +8,7 @@
 #++
 
 require 'thread'
+require 'swiby/swing/timer'
 
 class ConnectionController
   
@@ -17,7 +18,7 @@ class ConnectionController
     
     @client = client
     @game = game
-    @game_board = game.board if game
+    @game_board = game.board if game #TODO refactored!
     
     @queue = []
     @lock = Mutex.new
@@ -110,8 +111,8 @@ class ConnectionController
         end
 
         grid = @client.build_grid(grid)
-        @game.change_grid grid
-        @game.restart grid
+        @game.change_grid grid #TODO refactored!
+        @game.restart grid #TODO refactored!
         
         if @state == :connecting
           @state = :connected
