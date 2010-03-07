@@ -97,7 +97,7 @@ module Swiby
         
         @list.selected_index = row
         
-        @handler.call(@swiby_list.value)
+        @handler.call(@swiby_list.value) if @handler
         
       end
       

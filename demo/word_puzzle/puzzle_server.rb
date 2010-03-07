@@ -380,7 +380,7 @@ class EventHandler < PuzzleBaseHandler
 
   def process_for_session session, request, response
     
-    @config.log_basic "Processing event request"
+    @config.log_detail "Processing event request"
       
     other = session[:collab].other
     
@@ -389,7 +389,7 @@ class EventHandler < PuzzleBaseHandler
       ev = parameters(request)['event']
       other.push_event(ev) if ev and ev.length > 0
       
-      @config.log_basic "   event -> #{ev}"
+      @config.log_detail "   event -> #{ev}"
       
       send 'ok', session, response
       
@@ -441,15 +441,15 @@ class PuzzleServer
       @timeout_duration = timeout_duration
       
       if silent
-        def log msg
+        def self.log msg
         end
       end
       
-      def log_basic msg
+      def self.log_basic msg
         log msg
       end
       
-      def log_detail msg
+      def self.log_detail msg
         log msg if @log_level == :detail
       end
       
@@ -469,7 +469,7 @@ class PuzzleServer
         stop
       end
       
-      def connection_timeout
+      def self.connection_timeout
         @timeout_duration
       end
       
