@@ -17,9 +17,6 @@ import java.awt.RenderingHints
 
 import java.awt.BasicStroke
 
-import java.awt.event.MouseListener
-import java.awt.event.MouseMotionListener
-
 class ImagePainter
   
   include javax.swing.Icon
