@@ -10,8 +10,14 @@
 require 'swiby'
 require 'swiby/2d'
 
+import java.awt.event.KeyEvent
+import java.awt.event.KeyListener
+import java.awt.event.MouseListener
+import java.awt.event.MouseMotionListener
+
 class DrawPanel < javax.swing.JComponent
 
+  include KeyListener
   include MouseListener
   include MouseMotionListener
  
@@ -122,6 +128,59 @@ class DrawPanel < javax.swing.JComponent
     @on_over.call(ev.getX(), ev.getY()) if @on_over
   end
  
+  def on_key_pressed &block
+    addKeyListener self
+    @on_key = block
+  end
+  
+  def isFocusTraversable
+    true
+  end
+  
+  def keyTyped ev
+  end
+  
+  def keyPressed ev
+    
+    code = ev.getKeyCode
+    
+    if code >= KeyEvent::VK_COMMA and code <= KeyEvent::VK_DIVIDE
+      @on_key.call(ev.getKeyChar.chr)
+    elsif code >= KeyEvent::VK_COLON and code <= KeyEvent::VK_UNDERSCORE
+      @on_key.call(ev.getKeyChar.chr)
+    else
+      code = case code
+        when KeyEvent::VK_SPACE
+          ' '
+        when KeyEvent::VK_ENTER
+          :enter
+        when KeyEvent::VK_ESCAPE
+          :escape
+        when KeyEvent::VK_BACK_SPACE
+          :back_space
+        when KeyEvent::VK_DELETE
+          :delete
+        when KeyEvent::VK_END
+          :end
+        when KeyEvent::VK_HOME
+          :home
+        when KeyEvent::VK_LEFT
+          :left
+        when KeyEvent::VK_RIGHT
+          :right
+        else
+          nil
+      end
+        
+      @on_key.call(code) if code
+        
+    end
+    
+  end
+  
+  def keyReleased ev
+  end
+  
 end
 
 module Swiby
