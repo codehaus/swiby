@@ -1,3 +1,4 @@
+=begin
 require 'swiby'
 require 'swiby/component/frame'
 require 'swiby/component/text'
@@ -31,4 +32,8 @@ frame {
 	model.saying = text
 	sleep 2
 }
+=end
 
+puts 'Unfortunelty auto-binding does not work anymore'
+puts '(with latest JRuby versions).'
+puts 'Need to change approach to make it work again...'
