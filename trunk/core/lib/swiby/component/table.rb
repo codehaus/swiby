@@ -43,7 +43,7 @@ module Swiby
       declare :name, [String, Symbol], true
       declare :fields, [Array], true
       declare :columns, [Array], true
-      declare :values, [Array]
+      declare :values, [Array, IncrementalValue]
       
       declare :swing, [Proc], true
       declare :enabled, [TrueClass, FalseClass], true
