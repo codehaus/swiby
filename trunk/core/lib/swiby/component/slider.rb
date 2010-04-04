@@ -96,7 +96,7 @@ module Swiby
       args << map_orientation(options[:orientation])
       args << (options[:minimum] ? options[:minimum] : 0)
       args << (options[:maximum] ? options[:maximum] : 100)
-      args << (options[:value] ? options[:value] : 0)
+      args << (options[:value] ? options[:value] : args[1])
 
       @component = JSlider.new(*args)
       
