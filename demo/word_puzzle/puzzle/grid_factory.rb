@@ -40,7 +40,7 @@ class GridFactory
   def change_language lang
     
       raise "Unsupported language #{lang}" unless lang == :en or lang == :fr
-        
+      
       @dist.load "words_#{lang}.txt"
       
   end
