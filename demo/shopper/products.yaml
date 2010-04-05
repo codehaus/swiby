@@ -1,0 +1,61 @@
+--- 
+- !ruby/object:Product 
+  description: semi-skimmed milk
+  last_buy_date: 2009-11-13 18:59:26.734000 +01:00
+  name: Milk
+- !ruby/object:Product 
+  description: ""
+  last_buy_date: 2009-11-13 18:59:26.734000 +01:00
+  name: Butter
+- !ruby/object:Product 
+  description: Belgian chocolate
+  last_buy_date: 2009-11-13 18:59:26.734000 +01:00
+  name: Chocolate
+- !ruby/object:Product 
+  description: ""
+  last_buy_date: 2009-11-13 18:59:26.734000 +01:00
+  name: Cola
+- !ruby/object:Product 
+  description: ""
+  last_buy_date: 2009-11-13 18:59:26.734000 +01:00
+  name: Sugar
+- !ruby/object:Product 
+  description: ""
+  last_buy_date: 2009-11-13 18:59:26.734000 +01:00
+  name: Marmalade
+- !ruby/object:Product 
+  description: ""
+  last_buy_date: 2009-11-13 18:59:26.734000 +01:00
+  name: Cookies
+- !ruby/object:Product 
+  description: sparkling water
+  last_buy_date: 2009-11-13 18:59:26.734000 +01:00
+  name: Water
+- !ruby/object:Product 
+  description: salmon
+  last_buy_date: 2009-11-13 18:59:26.734000 +01:00
+  name: Fish
+- !ruby/object:Product 
+  description: ""
+  last_buy_date: 2009-11-13 18:59:26.734000 +01:00
+  name: Ham
+- !ruby/object:Product 
+  description: ""
+  last_buy_date: 2009-11-13 18:59:26.734000 +01:00
+  name: Bread
+- !ruby/object:Product 
+  description: ""
+  last_buy_date: 2009-11-13 18:59:26.750000 +01:00
+  name: Spaghetti
+- !ruby/object:Product 
+  description: plain
+  last_buy_date: 2009-11-13 18:59:26.750000 +01:00
+  name: Yogurt
+- !ruby/object:Product 
+  description: strawberry
+  last_buy_date: 2009-11-13 18:59:26.750000 +01:00
+  name: Jam
+- !ruby/object:Product 
+  description: Description for cereals
+  last_buy_date: 2009-11-13 18:59:26.750000 +01:00
+  name: Cereals

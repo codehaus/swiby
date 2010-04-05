@@ -1,0 +1,10 @@
+#lang:fr
+
+pour carre(:taille) {
+  repeter(4) {
+    avant @taille
+    gauche 90
+  }
+}
+
+carre 90

@@ -1,0 +1,13 @@
+to square {
+  repeat(4) {
+    forward 50
+    right 90
+  }
+}
+
+repeat(36) {
+  right 10 
+  square
+}
+
+ht
