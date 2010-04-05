@@ -75,12 +75,9 @@ class PuzzleGameController
     @switch_language_command_text = 'french'
   end
   
-  def resolve
-    @window.show_solution
-  end
-  
   def new_game
     @game.new_puzzle
+    @window.restart true
   end
   
   def switch_language
@@ -94,6 +91,8 @@ class PuzzleGameController
     end
     
     @game.change_language
+    
+    @window.restart true
     
   end
   
@@ -202,8 +201,8 @@ if $0 == __FILE__
       list_view(:words, Array.new(game.words))
 
     visible true
-    
-    def show_solution
+  
+    def resolve
       @board.show_words
     end
     
@@ -211,18 +210,18 @@ if $0 == __FILE__
       @words.remove(word)
     end
     
-    def new_game
+    def restart new_grid = false
       
-      @board.restart @game.grid
+      if new_grid
+        @board.restart @game.grid
+      else
+        @board.restart
+      end
+    
       @words.content = Array.new(@game.words)
       
       auto_size
       
-    end
-    
-    def restart
-      @board.restart
-      @words.content = Array.new(@game.words)
     end
     
     def level= level
@@ -247,10 +246,6 @@ if $0 == __FILE__
       @board.hint_for word if word and @hint_enabled
     end
     
-    def switch_language
-      new_game
-    end
-    
     def auto_size
       
       if @words.item_count == 0
@@ -269,6 +264,3 @@ if $0 == __FILE__
   ViewDefinition.bind_controller view, PuzzleGameController.new(game)
   
 end
-
-puts "BUG [#{__FILE__}] auto_size and painting on board badly refreshed"
-puts "TODO [#{__FILE__}] implement puzzle_board apply_styles, is panel.on_style necessary?"

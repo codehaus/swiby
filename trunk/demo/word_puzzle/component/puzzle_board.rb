@@ -8,7 +8,7 @@
 #++
 
 require 'swiby/mvc'
-require 'swiby/component/draw_panel'
+require 'swiby/mvc/draw_panel'
 
 import javax.swing.Timer
 import java.awt.Dimension
@@ -26,12 +26,35 @@ module Swiby
 end
 
 class PuzzleBoard
+
+  class BoardRegistrar < Registrar
+    
+    def register
+        
+      super
+      
+      need_found
+      
+      if @found
+        
+        @wrapper.listener =  proc { |word|
+          @controller.send(:found, word)
+        }
+        
+        @master << self
+        
+      end
+      
+    end
+    
+  end
   
   WIDTH = 30
   HEIGHT = 30
   DEFAULT_MARGIN = 10
   
   attr_reader :name
+  attr_accessor :listener
   
   include MVCBase
   
@@ -67,20 +90,12 @@ class PuzzleBoard
         
   end
 
-  def register master, controller, id, method_naming_provider
-      
-    super
+  def java_component force_no_scroll = false
+    @panel.java_component(force_no_scroll)
+  end
     
-    need_found
-    
-    if @found
-      
-      @listener =  proc { |word|
-        controller.send(:found, word)
-      }
-      
-    end
-    
+  def create_registrar wrapper, master, controller, id, method_naming_provider
+    BoardRegistrar.new(wrapper, master, controller, id, method_naming_provider)
   end
   
   def apply_styles styles = nil
