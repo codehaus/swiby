@@ -100,7 +100,7 @@ module Swiby
         
         result = fc.send(method, but.java_component.root_pane)
     
-        but.execute_action fc.selected_file.absolute_path if result == JFileChooser::APPROVE_OPTION
+        but.file_selected fc.selected_file.absolute_path if result == JFileChooser::APPROVE_OPTION
         
       end
       
@@ -115,18 +115,33 @@ module Swiby
     class FileDialogRegistrar < ButtonRegistrar
       
       def create_listener
+        self
       end
         
       def add_listener listener
+        @wrapper.add_file_selection_listener self
       end
       
-      def execute_action a_file
+      def file_selected a_file
         @controller.send @action_method, a_file
         @master.refresh
       end
       
     end
   
+    def add_file_selection_listener listener
+      @file_selection_listeners = [] unless @file_selection_listeners
+      @file_selection_listeners << listener
+    end
+    
+    def file_selected a_file
+      
+      @file_selection_listeners.each do |listener|
+        listener.file_selected a_file
+      end
+      
+    end
+    
     def create_registrar wrapper, master, controller, id, method_naming_provider
       FileDialogRegistrar.new(wrapper, master, controller, id, method_naming_provider)
     end

@@ -14,61 +14,68 @@ module Swiby
 
   module TextInputMVCExtensions
     
+    def create_registrar wrapper, master, controller, id, method_naming_provider
+      TextInputRegistrar.new(wrapper, master, controller, id, method_naming_provider)
+    end
+    
     INPUT_CONFIRM_LISTENER_FACTORIES = {
       :command => lambda {|comp| ClickAction.new(comp)},
       :focus_lost =>  lambda {|comp| FocusAction.new(comp)}
     }
   
-    def register master, controller, id, method_naming_provider
+    class TextInputRegistrar < Registrar
       
-      super
-      
-      need_setter_method
-      need_getter_method
-      
-      added_self = false
+      def register
+        
+        super
+        
+        need_setter_method
+        need_getter_method
+        
+        added_self = false
 
-      if @setter_method
-        
-        listener = create_listener
-        
-        if listener
-          added_self = true
-          master.wrappers << self
-          add_listener(listener)
+        if @setter_method
+          
+          listener = create_listener
+          
+          if listener
+            @master << self
+            add_listener(listener)
+          end
+          
         end
         
-      end
+        if @getter_method and not added_self
+          @master << self
+        end
       
-      if @getter_method and not added_self
-        master.wrappers << self
+      end
+    
+      def create_listener
+        
+        confirm_type = Swiby.input_confirm_on
+        
+        factory = INPUT_CONFIRM_LISTENER_FACTORIES[confirm_type]
+        
+        raise "Input confirm type not supported: #{confirm_type}" unless factory
+        
+        factory.call(self)
+        
       end
         
-    end
-    
-    def create_listener
+      def add_listener listener
+        listener.install @component
+      end
       
-      confirm_type = Swiby.input_confirm_on
+      def display new_value
+        @wrapper.value = new_value
+      end
       
-      factory = INPUT_CONFIRM_LISTENER_FACTORIES[confirm_type]
+      def execute_action
+        @controller.send @setter_method, @wrapper.value
+        @master.refresh
+      end
       
-      raise "Input confirm type not supported: #{confirm_type}" unless factory
-      
-      factory.call(self)
-      
-    end
-      
-    def add_listener listener
-      listener.install @component
-    end
-    
-    def display new_value
-      self.value = new_value
-    end
-    
-    def execute_action
-      @controller.send @setter_method, value
-      @master.refresh
     end
     
   end

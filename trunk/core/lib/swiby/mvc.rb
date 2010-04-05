@@ -520,7 +520,7 @@ CODE
         
         if id
           
-          top_window_wrapper.instance_variable_set "@#{id}".to_sym, wrapper
+          top_window_wrapper.instance_variable_set "@#{id}".to_sym, wrapper if id.to_s =~ /^[a-zA-Z]\w*$/
           
           unless wrapper.registered?
             
