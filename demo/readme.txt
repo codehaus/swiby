@@ -21,7 +21,7 @@ You need to install JRUby. Then you can run the demos.
 
 ** Animation
 
-Presents a very simple animation developed using Swiby, it show how to implement a DSL to describe the animation.
+Presents a very simple animation developed using Swiby, it shows how to implement a DSL to describe the animation.
 
 > cd animation
 > jruby -I../../core/lib smiley_player.rb sad2happy.smiley
@@ -46,11 +46,11 @@ A calculator using styles and MVC.
 
 ** Clock
 
-Demo displaying a clock with the ability to select a theme. Move the mouse to the left-border shows a list with the themes.
+Demo displaying a clock with the ability to select a theme. Moving the mouse to the left-border shows a list with the themes.
 
 Uses the 2D drawing on top of Java’2D APIs.
 
-Shows how easy to easily load plugins-like code in Ruby (the available themes get loaded from the ‘themes’ directory).
+Shows how loading plugins-like code in Ruby is easy (the available themes get loaded from the ‘themes’ directory).
 
 > cd demo/clock
 > jruby -I../core/lib clock.rb
@@ -62,9 +62,11 @@ Demo implementing the ruby quiz #229 Music Theory (see http://rubyquiz.strd6.com
 > cd demo/chord
 > jruby -I../../core/lib chord_translator_ui.rb
 
+Note: It uses a font to draw the musical symbols downloaded from http://simplythebest.net/fonts/fonts/musical_symbols.html (the font name is “MusicalSymbols”).
+
 ** Hangman Game
 
-Game where the player must find the hidden word.
+Game where the player must find a hidden word.
 
 Uses the 2D features, MVC, absolute layout and translation support.
 
@@ -73,7 +75,7 @@ Uses the 2D features, MVC, absolute layout and translation support.
 
 ** Hidden Number Game
 
-Game where the player must find the hidden number.
+Game where the player must find a hidden number.
 
 The implementation of this game was used to present a full development using Swiby (see the ‘Sweb and styles’ series at http://jroller.com/jeanlazarou/entry/sweb_and_styles_part_1).
 
@@ -100,7 +102,7 @@ MVC and experimental zooming support. Use of Swiby components implemented in Jav
 
 ** Turtle
 
-Turtle or Logo language interpreter, supporting French translated commands (MVC, floating popup layer auto-hide command bar).
+Patrial Turtle or Logo language interpreter, supporting French translated commands (MVC, floating popup layer auto-hide command bar).
 
 > cd turtle
 > jruby -I../../core/lib turtle_editor.rb examples\geometric_form.turtle
@@ -113,14 +115,16 @@ Or start and then use the ‘open’ button
 
 Implementation of the ruby quiz #159 Word Search Generator http://rubyquiz.strd6.com/quizzes/159-word-search-generator.
 
-Game where the player must find all the words hidden on a grid containing letters.
+Game where the player must find all the words hidden in a grid containing letters.
 
 > cd word_puzzle
 > jruby -I../../core/lib puzzle_game.rb
 
 ** Manual tests
 
-A lot of features are tested using manual tests in Swiny. To launch all the manual tests go to the core directory.
+A lot of features are tested using manual tests in Swiby.
+
+To launch all the manual tests go to the core directory.
 
 > cd core
 > jruby -Ilib test\manual\test_all.rb
