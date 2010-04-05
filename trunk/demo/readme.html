@@ -1,6 +1,6 @@
 <html>
 <!-- Author: Jean Lazarou-->
-<!-- Date: Apr 05, 2010 - 09:45PM-->
+<!-- Date: Apr 05, 2010 - 10:02PM-->
 <head>
 	<title>Swiby Demo Applications</title>
 	<style type="text/css">
@@ -21,7 +21,7 @@
   <td width='1'><img src='images/swiby_left.png'/></td>
   <td>
     <h1>Swiby Demo Applications</h1>
-<p>This document presents the current demos available in Swiby, a short description, the Swiby features  they cover or the points of interest.</p>
+<p>This document presents the current demos available in Swiby, a short description, the Swiby features they cover or the points of interest.</p>
 <p>It also gives the command lines to run them.</p>
 
     <h2>Introduction</h2>
@@ -32,7 +32,7 @@
 <div class='txt_source'><pre>svn co http://svn.codehaus.org/swiby/trunk/demo</pre></div>
 <p>You need to install <a href="http://jruby.org/download">JRUby</a>. Then you can run the demos.</p>
 <h2>Animation</h2>
-<p>Presents a very simple animation developed using Swiby, it show how to implement a <span class="caps">DSL</span> to describe the animation.</p>
+<p>Presents a very simple animation developed using Swiby, it shows how to implement a <span class="caps">DSL</span> to describe the animation.</p>
 <div class='txt_source'><pre>> cd animation
 > jruby -I../../core/lib smiley_player.rb sad2happy.smiley</pre></div>
 <p>Or using the default animation</p>
@@ -49,9 +49,9 @@
 > jruby -I../../core/lib calculator.rb</pre></div>
 <p><img src='images/calculator.png' /></p>
 <h2>Clock</h2>
-<p>Demo displaying a clock with the ability to select a theme. Move the mouse to the left-border shows a list with the themes.</p>
+<p>Demo displaying a clock with the ability to select a theme. Moving the mouse to the left-border shows a list with the themes.</p>
 <p>Uses the 2D drawing on top of Java&#8217;2D APIs.</p>
-<p>Shows how easy to easily load plugins-like code in Ruby (the available themes get loaded from the &#8216;themes&#8217; directory).</p>
+<p>Shows how loading plugins-like code in Ruby is easy (the available themes get loaded from the &#8216;themes&#8217; directory).</p>
 <div class='txt_source'><pre>> cd demo/clock
 > jruby -I../core/lib clock.rb</pre></div>
 <p><img src='images/clock.png' /></p>
@@ -62,14 +62,15 @@
 <div class='txt_source'><pre>> cd demo/chord
 > jruby -I../../core/lib chord_translator_ui.rb</pre></div>
 <p><img src='images/chord.png' /></p>
+<p>Note: It uses a font to draw the musical symbols downloaded from http://simplythebest.net/fonts/fonts/musical_symbols.html (the font name is &#8220;MusicalSymbols&#8221;).</p>
 <h2>Hangman Game</h2>
-<p>Game where the player must find the hidden word.</p>
+<p>Game where the player must find a hidden word.</p>
 <p>Uses the 2D features, <span class="caps">MVC</span>, absolute layout and translation support.</p>
 <div class='txt_source'><pre>> cd demo/hangman
 > jruby -I../../core/lib ../../core/lib/swiby/sweb.rb hangman_ui.rb</pre></div>
 <p><img src='images/hangman.png' /></p>
 <h2>Hidden Number Game</h2>
-<p>Game where the player must find the hidden number.</p>
+<p>Game where the player must find a hidden number.</p>
 <p>The implementation of this game was used to present a full development using Swiby (see the &#8216;Sweb and styles&#8217; series at <a href="http://jroller.com/jeanlazarou/entry/sweb_and_styles_part_1">http://jroller.com/jeanlazarou/entry/sweb_and_styles_part_1</a>).</p>
 <div class='txt_source'><pre>> cd hidden_number
 > jruby -I../../core/lib ../../core/lib/swiby/sweb.rb hidden_number_ui.rb</pre></div>
@@ -90,7 +91,7 @@
 <p>After zooming&#8230;</p>
 <p><img src='images/shopping_board_zooming.png' /></p>
 <h2>Turtle</h2>
-<p>Turtle or Logo language interpreter, supporting French translated commands (<span class="caps">MVC</span>, floating popup layer auto-hide command bar).</p>
+<p>Patrial <em>Turtle</em> or <em>Logo</em> language interpreter, supporting French translated commands (<span class="caps">MVC</span>, floating popup layer auto-hide command bar).</p>
 <div class='txt_source'><pre>> cd turtle
 > jruby -I../../core/lib turtle_editor.rb examples\geometric_form.turtle</pre></div>
 <p><img src='images/turtle.png' /></p>
@@ -99,12 +100,13 @@
 </pre></div>
 <h2>Word Puzzle Game</h2>
 <p>Implementation of the ruby quiz #159 Word Search Generator <a href="http://rubyquiz.strd6.com/quizzes/159-word-search-generator">http://rubyquiz.strd6.com/quizzes/159-word-search-generator</a>.</p>
-<p>Game where the player must find all the words hidden on a grid containing letters.</p>
+<p>Game where the player must find all the words hidden in a grid containing letters.</p>
 <div class='txt_source'><pre>> cd word_puzzle
 > jruby -I../../core/lib puzzle_game.rb</pre></div>
 <p><img src='images/word_puzzle.png' /></p>
 <h2>Manual tests</h2>
-<p>A lot of features are tested using manual tests in Swiny. To launch all the manual tests go to the core directory.</p>
+<p>A lot of features are tested using manual tests in Swiby.</p>
+<p>To launch all the manual tests go to the core directory.</p>
 <div class='txt_source'><pre>> cd core
 > jruby -Ilib test\manual\test_all.rb</pre></div>
 <p><img src='images/manual_tests.png' /></p>
