@@ -5,6 +5,20 @@ This document presents the current demos available in Swiby, a short description
 
 It also gives the command lines to run them.
 
+** Introduction
+
+The demos are available from the trunk in Swiby’s repository.
+
+Check out the Swiby core from Codehaus:
+
+svn co http://svn.codehaus.org/swiby/trunk/core
+
+Chekout the demo applications:
+
+svn co http://svn.codehaus.org/swiby/trunk/demo
+
+You need to install JRUby. Then you can run the demos.
+
 ** Animation
 
 Presents a very simple animation developed using Swiby, it show how to implement a DSL to describe the animation.
