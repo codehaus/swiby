@@ -1,0 +1,8 @@
+back 40
+
+repeat(12) {
+  fd 160
+  rt 150
+}
+
+ht

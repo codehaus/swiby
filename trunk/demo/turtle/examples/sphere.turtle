@@ -1,0 +1,9 @@
+repeat(72) {
+  repeat(360) {
+    fd 1
+    rt 1
+  }
+  rt 5
+}
+
+ht

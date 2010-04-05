@@ -1,0 +1,12 @@
+
+repeat(8) {
+  repeat(8) {
+	fd 50
+	rt 45
+  } 
+  
+  rt 45
+}
+
+hideturtle
+

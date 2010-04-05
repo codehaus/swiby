@@ -1,0 +1,9 @@
+to spiral(:size, :angle) {
+  forward @size
+  right @angle
+  spiral @size +2, @angle unless @size > 200
+}
+
+spiral 0, 90
+
+ht

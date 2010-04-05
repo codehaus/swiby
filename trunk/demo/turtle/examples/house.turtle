@@ -1,0 +1,82 @@
+to square(:size) {
+  repeat(4) {
+	fd @size
+	rt 90
+  }
+}
+
+to rectangle(:width, :height) {
+  fd @height
+  rt 90
+  fd @width
+  rt 90
+  fd @height
+  rt 90
+  fd @width
+  rt 90
+}
+
+up
+back 120
+left 90
+forward 140
+right 90
+down
+
+rectangle 300, 150
+
+up
+forward 150
+down
+right 45
+forward 60
+right 45
+forward 217
+right 45
+forward 60
+
+up
+right 45
+fd 150
+right 90
+fd 260
+right 90
+down
+
+fd 60
+rt 90
+fd 30
+rt 90
+fd 60
+
+up
+back 120
+left 90
+back 30
+down
+
+rectangle 30, 60
+
+up
+fd 80
+down
+
+rectangle 30, 60
+
+up
+fd 80
+down
+
+rectangle 30, 60
+
+up
+rt 90
+fd 62
+right 90
+fd 100
+rt 180
+down
+
+rectangle 40,120
+
+ht

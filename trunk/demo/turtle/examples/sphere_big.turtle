@@ -1,0 +1,17 @@
+to n_eck(:ne, :sz) {
+  repeat(@ne) {
+    rt 360 / @ne
+	fd @sz
+  }
+}
+
+to mn_eck(:ne, :sz) {
+  repeat(@ne) {
+    rt 360 / @ne
+	n_eck @ne, @sz
+  }
+}
+
+mn_eck 36, 20
+
+ht
