@@ -7,6 +7,7 @@
 #
 #++
 
+require 'java'
 require 'swiby/context'
 
 Swiby::CONTEXT.default_setup
