@@ -53,7 +53,7 @@ Uses the 2D drawing on top of Java’2D APIs.
 Shows how loading plugins-like code in Ruby is easy (the available themes get loaded from the ‘themes’ directory).
 
 > cd demo/clock
-> jruby -I../core/lib clock.rb
+> jruby -I../../core/lib clock.rb
 
 ** Music Chords
 
