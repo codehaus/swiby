@@ -15,6 +15,8 @@ module Swiby
 
       @component = JPanel.new
       
+      @component.border = nil
+      
       unless title.nil?
         
         @component.border = javax.swing.BorderFactory.createTitledBorder(title)
