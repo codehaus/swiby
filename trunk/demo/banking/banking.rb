@@ -79,8 +79,8 @@ end
 
 title "Banking System"
 
-width 500
-height 300
+width 520
+height 380
 
 content(:layout => :border) {
   section nil, :layout => :stacked, :vgap => 10, :hgap => 10
