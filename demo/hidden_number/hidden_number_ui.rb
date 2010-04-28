@@ -21,7 +21,7 @@ require 'hidden_number'
 title "Hidden Number Game"
 
 width 640
-height 380
+height 470
 
 panel = content(:layout => :flow) {
 
