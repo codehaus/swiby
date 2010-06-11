@@ -81,6 +81,25 @@ SRC
     
   end
 
+  def test_does_not_confuse_document_string
+    
+    script = <<SRC
+      each_address(name) {|address| ret << address}
+SRC
+    
+    tokens = RubyTokenizer.tokenize(script)
+    
+    assert_equal 5, tokens.length
+    
+    names = ['each_address', 'name', 'address', 'ret', 'address']
+    
+    tokens.each_index do |i|
+      assert_equal :name, tokens[i].type
+      assert_equal names[i], tokens[i].value
+    end
+    
+  end
+
   def test_find_symbols
     
     script = <<SRC
