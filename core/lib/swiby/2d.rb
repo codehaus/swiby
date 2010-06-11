@@ -454,6 +454,10 @@ class Graphics
     @gr.drawGlyphVector(glyphs, x, y)
       
   end
+    
+  def draw_glyphed_text glyphed_text, x, y
+    @gr.drawGlyphVector(glyphed_text, x, y)
+  end
   
   def centered_string text, x, y
     
