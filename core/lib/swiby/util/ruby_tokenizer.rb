@@ -37,7 +37,7 @@ class RubyTokenizer
     'yield'
   ]
 
-  TOKEN_TYPE = [nil, :comment, :comment, :comment, :string, :string, :string, :string, :number, :keyword]
+  TOKEN_TYPE = [nil, :comment, :comment, :string, :string, :string, :string, :number, :keyword]
   
   def tokenize script
     RubyTokenizer.tokenize(script)
@@ -45,18 +45,17 @@ class RubyTokenizer
   
   def self.tokenize script
 
-    script = script.gsub(/\r\n/, " \n") # replace <cr> with a space so that offsets correct
+    script = script.gsub(/\r\n/, " \n") # replace <cr> with a space so that offset is correct
     script = script.gsub(/\r/, "\n")
     
     tokens = []
     
-    block_comment_end = /\n=end.*/
+    block_comment_end = /^=end.*/
     
     rxp = Regexp.union(
-      /(=begin)/, 
-      /\n(=begin)/, 
+      /^(=begin)/, 
       /(#.*)\n?/,
-      /(<<.*)\n/, 
+      /(<<\w[\w\d]*)$/, 
       /(\".*\")/, 
       /(\'.*\')/, 
       /(\/.*\/)/,
@@ -78,7 +77,7 @@ class RubyTokenizer
 
           type = TOKEN_TYPE[i]
 
-          if i == 9
+          if i == 8
             type = :name unless KEYWORDS.include?(m[i])
             type = :symbol if m[i][0] == ?:
           end
@@ -87,7 +86,7 @@ class RubyTokenizer
           
           token = Token.new(offset + m.offset(i)[0], end_pos - m.offset(i)[0], type, m[i])
 
-          if i == 1 or i == 2
+          if i == 1
             
             end_m = block_comment_end.match(script)
             
@@ -99,7 +98,7 @@ class RubyTokenizer
               token.length = end_pos - m.offset(i)[0]
             end
             
-          elsif i == 4
+          elsif i == 3
             
             document_end = Regexp.new("\n#{token.value[2..-1]}").match(script)
             
