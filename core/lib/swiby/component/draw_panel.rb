@@ -24,6 +24,7 @@ class DrawPanel < javax.swing.JComponent
   attr_accessor :style_class, :resize_always
   
   def initialize
+    super
     @resize_always = false
     @mouse_installed = false
     @mouse_motion_installed = false
