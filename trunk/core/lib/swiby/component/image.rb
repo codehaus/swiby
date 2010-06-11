@@ -37,6 +37,7 @@ module Swiby
     attr_accessor :gradient_color_from, :gradient_color_to, :gradient_direction
     
     def initialize
+      super
       @margin_top = 20
       @relection_gap = 20
       @gradient_direction  = :vertical

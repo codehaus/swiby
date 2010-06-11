@@ -7,8 +7,6 @@
 #
 #++
 
-require 'turtle'
-
 require 'swiby'
 require 'swiby/mvc/frame'
 require 'swiby/mvc/editor'
@@ -18,6 +16,8 @@ require 'swiby/mvc/auto_hide'
 require 'swiby/mvc/draw_panel'
 
 require 'swiby/swing/timer'
+
+require 'turtle'
 
 turtle = Turtle.new
 
