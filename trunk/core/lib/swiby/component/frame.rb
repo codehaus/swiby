@@ -494,6 +494,8 @@ module Swiby
         layer.apply_styles @styles
       end
       
+      java_component.repaint
+      
     end
 
     def change_language
