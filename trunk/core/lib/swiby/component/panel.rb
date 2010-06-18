@@ -16,6 +16,9 @@ module Swiby
     def layout_panel panel
     end
       
+    def layout_list label, list
+    end
+    
     def group *args, &block
       panel(*args, &block)
     end
@@ -107,10 +110,13 @@ module Swiby
       
       return unless options
       
+      scrollable if options[:scrollbars]
+      options.delete(:scrollbars)
+      
       self.name = options[:name].to_s if options[:name]
       
       if options[:layout]
-        java_component.layout = create_layout(options)
+        java_component(true).layout = create_layout(options)
       end
       
       @style_id = self.name.to_sym if self.name
