@@ -42,7 +42,7 @@ module Swiby
 
         def component.add x
           jc = swiby_grid__actual_add x
-          java_component.get_layout.addLayoutComponent x.java_component, "growx#{", span #{@pending_colspan}" if @pending_colspan}"
+          java_component(true).get_layout.addLayoutComponent x.java_component, "growx#{", span #{@pending_colspan}" if @pending_colspan}"
           @pending_colspan = nil
           jc
         end
