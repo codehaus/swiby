@@ -93,9 +93,17 @@ Or with a directory containing image as argument
 
 > jruby -I../../core/lib image_viewer.rb ../images
 
+** MP3 metadata viewer
+
+Displays MP3 files metadata and renames the files using the title from the metadata.
+Uses the experimental zooming support.
+
+> cd mp3_metadata
+> jruby -I../../core/lib mp3_viewer.rb
+
 ** Shopping board
 
-MVC and experimental zooming support. Use of Swiby components implemented in Java (sliding buttons)
+MVC and experimental zooming support. Use of Swiby components implemented in Java (sliding buttons).
 
 > cd shopper
 > jruby -I../../core/lib shopping_board.rb
