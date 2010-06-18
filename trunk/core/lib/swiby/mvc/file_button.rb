@@ -98,9 +98,17 @@ module Swiby
         
         end
         
+        fc.current_directory = @current_directory if @current_directory
+        
         result = fc.send(method, but.java_component.root_pane)
     
-        but.file_selected fc.selected_file.absolute_path if result == JFileChooser::APPROVE_OPTION
+        if result == JFileChooser::APPROVE_OPTION
+          
+          @current_directory = fc.selected_file.parent_file
+          
+          but.file_selected fc.selected_file.absolute_path
+          
+        end
         
       end
       
