@@ -194,6 +194,8 @@ module Swiby
         
       end
     
+      java_component.repaint
+      
     end
     
   end
