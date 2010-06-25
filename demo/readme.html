@@ -1,6 +1,6 @@
 <html>
 <!-- Author: Jean Lazarou-->
-<!-- Date: Jun 19, 2010 - 12:28AM-->
+<!-- Date: Jun 25, 2010 - 11:18PM-->
 <head>
 	<title>Swiby Demo Applications</title>
 	<style type="text/css">
@@ -31,7 +31,9 @@
 <div class='txt_source'><pre>svn co http://svn.codehaus.org/swiby/trunk/core</pre></div>
 <p>Chekout the demo applications:</p>
 <div class='txt_source'><pre>svn co http://svn.codehaus.org/swiby/trunk/demo</pre></div>
-<p>You need to install <a href="http://jruby.org/download">JRUby</a>. Then you can run the demos.</p>
+<p>You need to install <a href="http://jruby.org/download">JRuby</a>. Then you can run the demos.</p>
+<h2>Recent demos</h2>
+<p>The most recent demos published are: <em>Matrix Code Screen</em> and <em>MP3 metadata viewer</em>.</p>
 <h2>Animation</h2>
 <p>Presents a very simple animation developed using Swiby, it shows how to implement a <span class="caps">DSL</span> to describe the animation.</p>
 <div class='txt_source'><pre>> cd animation
@@ -84,6 +86,12 @@
 <p>Or with a directory containing image as argument</p>
 <div class='txt_source'><pre>> jruby -I../../core/lib image_viewer.rb ../images</pre></div>
 <p><img src='images/image_viewer_02.png' /></p>
+<h2>Matrix Code Screen</h2>
+<p>Ruby source viewer scrolling automatically from top to bottom. It implements the ruby quiz #230 The Matrix: Code Screen (<a href="http://rubyquiz.strd6.com/quizzes/230-the-matrix-code-screen">http://rubyquiz.strd6.com/quizzes/230-the-matrix-code-screen</a>).</p>
+<p><img src='images/screen_code.png' /><br />
+It uses the Swiby layer for the <em>Java2D</em> APIs. I wrote the summary of the quiz presenting the implementation.</p>
+<div class='txt_source'><pre>> cd code_screen
+> jruby -I../../core/lib code_screen.rb</pre></div>
 <h2>MP3 metadata viewer</h2>
 <p>Displays MP3 files metadata and renames the files using the title from the metadata.<br />
 Uses the experimental zooming support.</p>
@@ -123,7 +131,7 @@ After renaming</p>
 <p><img src='images/manual_tests.png' /></p>
 
     >>><br><br>
-    Jean Lazarou	<div class='pdate'>Last update: Jun 19, 2010 - 12:28AM</div><br>
+    Jean Lazarou	<div class='pdate'>Last update: Jun 25, 2010 - 11:18PM</div><br>
   </td>
 </tr>
 </table>
