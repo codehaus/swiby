@@ -212,7 +212,7 @@ module Swiby
               
           end
 
-addColumn '' if getColumnCount() == 0 #TODO what is better for default table header?
+          addColumn '' if getColumnCount() == 0 #TODO what is better for default table header?
           addRow vector
 
         end
@@ -221,6 +221,10 @@ addColumn '' if getColumnCount() == 0 #TODO what is better for default table hea
       
       def fields= fields
         @fields = fields
+      end
+      
+      def isCellEditable row, column
+        false
       end
       
     end
