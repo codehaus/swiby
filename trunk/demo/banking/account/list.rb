@@ -17,7 +17,7 @@ title "Account List"
 
 content {
   section "Accounts"
-  table(["Owner", "Number", "Address"], bind {accounts}) {
+  table(["Owner", "Type", "Number", "Address"], bind {accounts}) {
     height 100
   }
 }
