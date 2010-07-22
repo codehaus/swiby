@@ -25,9 +25,9 @@ class Account
 
     return @from_list if not @from_list.nil?
 
-    acc1 = Account.new :current, 'Jean / Current', '555123456733', 'Somewhere 200'
-    acc2 = Account.new :current, 'Jean / Current (2)', '555765432136', 'Somewhere 200'
-    acc3 = Account.new :savings, 'Jean / Savings', '111765943218', 'Somewhere 200'
+    acc1 = Account.new :current, 'Jean', '555123456733', 'Somewhere 200'
+    acc2 = Account.new :current, 'Jean', '555765432136', 'Somewhere 200'
+    acc3 = Account.new :savings, 'Jean', '111765943218', 'Somewhere 200'
 
     @from_list = [acc1, acc2, acc3]
 

@@ -68,7 +68,7 @@ class Account
   end
   
   def table_row
-    [@owner.to_s, humanize, @address.to_s]
+    [@owner.to_s, @type.to_s.capitalize, humanize, @address.to_s]
   end
 
   def self.update_existing_instances
