@@ -90,6 +90,9 @@ content(:layout => :border) {
     command("Transfers [#{Transfer.count}]") {
       $context.goto "transfer/list.rb"
     }
+    command("New Account") {
+      $context.goto "account/new_account.rb"
+    }
     bottom
       align :right
       hover_button('settings') {
