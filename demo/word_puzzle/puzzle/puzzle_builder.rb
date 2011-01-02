@@ -25,6 +25,18 @@ end
 
 class PuzzleBuilder
   
+  class UsageCountArray < Array
+    
+    attr_accessor :usage_count
+    
+    def initialize *args
+      super
+      
+      @usage_count = 0
+    end
+
+  end
+  
   def initialize cols, rows
     @cols, @rows = cols, rows
     
@@ -32,13 +44,13 @@ class PuzzleBuilder
   
     @solution = []
     
-    cells = Array.new(@rows) do |i| 
+    cells = UsageCountArray.new(@rows) do |i| 
       Array.new(@cols) {|j|  [i, j]}
     end
 
     @horizontal_lines = cells
     
-    @vertical_lines = Array.new(@cols) { [] }
+    @vertical_lines = UsageCountArray.new(@cols) { [] }
     
     (0...@cols).each do |col|
       (0...@rows).each do |row|
@@ -48,7 +60,7 @@ class PuzzleBuilder
   
     number_diag = @rows + @cols - 1
     
-    @diagonal_lines = Array.new(number_diag) { [] }
+    @diagonal_lines = UsageCountArray.new(number_diag) { [] }
     
     offset = @rows - 1
     
@@ -61,7 +73,7 @@ class PuzzleBuilder
       offset -= 1
       
     end
-    @forward_diagonal_lines = Array.new(number_diag) { [] }
+    @forward_diagonal_lines = UsageCountArray.new(number_diag) { [] }
     
     offset = 0
     
@@ -74,18 +86,26 @@ class PuzzleBuilder
       offset += 1
       
     end
+    
+    @recently_used = []
+    
+    @all_line_types = [@horizontal_lines, @vertical_lines, @diagonal_lines, @forward_diagonal_lines]
+    
   end
   
   def add word
   
-    line_types = [@horizontal_lines, @vertical_lines, @diagonal_lines, @forward_diagonal_lines]
-
+    line_types = @all_line_types - @recently_used
     line_types = line_types.sort_by {rand}
     
     line_types.each do |lines|
       
       if add_word lines, word
+
+        register_as_recently_used lines
+
         return true
+        
       end
       
     end
@@ -134,6 +154,20 @@ class PuzzleBuilder
   end
   
   private
+  
+  def register_as_recently_used lines
+    
+    lines.usage_count += 1
+
+    @recently_used.push lines unless @recently_used.include?(lines)
+
+    less_used = @all_line_types.min_by {|lines| lines.usage_count}
+    
+    min_used_count = less_used.usage_count
+
+    @recently_used.delete_if {|lines| lines.usage_count <= min_used_count}
+    
+  end
   
   def add_word lines, word
    
