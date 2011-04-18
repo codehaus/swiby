@@ -110,4 +110,31 @@ class StackedLayoutTest < ManualTest
     create_test('vgap = 40 and hgap = 70', :vgap => 40, :hgap => 70)
   end
   
+  manual 'takes into account border size' do
+
+    frame {
+
+      title "stacked width border"
+      
+      use_styles {
+        my_panel {
+          container(
+            :margin => 60,
+            :padding => 30,
+            :border_color => :black
+          )
+        }
+      }
+
+      panel(:layout => :stacked, :style_class => :my_panel) {
+        check 'One'
+        check 'Two'
+      }
+
+      visible true
+
+    }
+    
+  end
+  
 end
