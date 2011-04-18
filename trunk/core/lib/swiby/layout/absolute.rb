@@ -100,7 +100,11 @@ module Swiby
         end
 
         def component.relative_to comp_name, h_relation, v_relation
-          [self[comp_name], h_relation, v_relation]
+          if comp_name == :parent
+            [:parent, h_relation, v_relation]
+          else
+            [self[comp_name], h_relation, v_relation]
+          end
         end
         
     end
@@ -148,8 +152,14 @@ module Swiby
       
         if lay.relative_to
           
+          if lay.relative_to == :parent
+            relative_to = parent
+          else
+            relative_to = lay.relative_to.java_component
+          end
+          
           d = lay.comp.getPreferredSize()
-          relative = lay.relative_to.bounds
+          relative = relative_to.bounds
           
           x = y = 0
           
@@ -199,7 +209,7 @@ module Swiby
         
         @h_relation = h_relation
         @v_relation = v_relation
-        @relative_to = relative_to.java_component if relative_to
+        @relative_to = relative_to
         
       end
       
