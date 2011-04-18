@@ -40,6 +40,15 @@ class AbsoluteLayoutTest < ManualTest
         at [0, 0], relative_to(:world_but, :left, :align)
           label "2"
           
+        at [0, 0], relative_to(:parent, :align_right_edge, :align)
+          label 'top-right'
+          
+        at [0, 0], relative_to(:parent, :align, :align_bottom_edge)
+          label 'bottom-left'
+          
+        at [0, 0], relative_to(:parent, :align_right_edge, :align_bottom_edge)
+          label 'bottom-right'
+        
       }
       
       visible true
