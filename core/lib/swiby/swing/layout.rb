@@ -11,6 +11,7 @@ require 'java'
 
 import java.awt.Dimension
 import java.awt.LayoutManager
+import javax.swing.border.Border
 
 require 'miglayout-3.6.3-swing.jar'
 
@@ -269,6 +270,21 @@ module Swiby
       y = @vgap
 
       width = parent.width - 2 * @hgap
+    
+      border_x = @hgap
+      
+      if parent.border
+        
+        insets = parent.border.getBorderInsets(parent)
+        
+        width -= insets.left + insets.right
+        
+        x += insets.left
+        y += insets.top
+        
+        border_x = x
+        
+      end
       
       if @sizing == :maximum
         
@@ -314,11 +330,11 @@ module Swiby
         dim.width = max_width if max_width
         
         if alignment == :center
-          x = @hgap + (width - dim.width) / 2
+          x = border_x + (width - dim.width) / 2
         elsif alignment == :right
-          x = @hgap + width - dim.width
+          x = border_x + width - dim.width
         else
-          x = @hgap
+          x = border_x
         end
 
         comp.setBounds(x, y, dim.width, dim.height)
@@ -355,6 +371,21 @@ module Swiby
       y = @vgap
 
       height = parent.height - 2 * @vgap
+      
+      border_y = @vgap
+      
+      if parent.border
+        
+        insets = parent.border.getBorderInsets(parent)
+
+        height -= insets.top + insets.bottom
+        
+        x += insets.left
+        y += insets.top
+        
+        border_y = @vgap
+        
+      end
       
       if @sizing == :maximum
         
@@ -399,11 +430,11 @@ module Swiby
         dim.height = max_height if max_height
 
         if @alignment == :center
-          y = @vgap + (height - dim.height) / 2
+          y = border_y + (height - dim.height) / 2
         elsif @alignment == :right
-          y = @vgap + height - dim.height
+          y = border_y + height - dim.height
         else
-          y = @vgap
+          y = border_y
         end
 
         comp.setBounds(x, y, dim.width, dim.height)
@@ -450,6 +481,15 @@ module Swiby
       end
 
       maxWidth += 2 * @hgap
+      
+      if parent.border
+        
+        insets = parent.border.getBorderInsets(parent)
+
+        maxWidth += insets.left + insets.right
+        height += insets.top + insets.bottom
+        
+      end
 
       Dimension.new(maxWidth, height)
        
@@ -471,6 +511,15 @@ module Swiby
       end
 
       maxHeight += 2 * @vgap
+      
+      if parent.border
+        
+        insets = parent.border.getBorderInsets(parent)
+        
+        width += insets.left + insets.right
+        maxHeight += insets.top + insets.bottom
+        
+      end
 
       Dimension.new(width, maxHeight)
        
