@@ -39,6 +39,15 @@ module Swiby
       
       context.glass_pane.add_target position, pane, hint_text, options[:bg_color], options[:color]
       
+      pane.instance_variable_set :@glass_pane, context.glass_pane
+      
+      def pane.swipe_out
+        @glass_pane.animate_hide
+      end
+      def pane.swipe_in
+        @glass_pane.animate_show
+      end
+      
       pane
       
      end
@@ -79,7 +88,7 @@ module Swiby
     def start
       show_hints
     end
-    
+
     def add_target position, target, hint_text, bg_color, color
 
       painter = "paint_#{position}".to_sym
@@ -273,6 +282,8 @@ module Swiby
       return x, y, w, h
       
     end
+    
+    public
     
     def animate_show auto_info
       
