@@ -166,9 +166,8 @@ module Swiby
       
       keys = bundle.keys
       
-      while keys.hasMoreElements
+      keys.each do |key|
         
-        key = keys.nextElement
         text = bundle.getProperty(key)
         
         if key =~ /^no_translate_pattern/
