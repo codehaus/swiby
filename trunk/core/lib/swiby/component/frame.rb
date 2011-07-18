@@ -42,16 +42,6 @@ module Swiby
       def x.context()
         self
       end
-
-      if options[:controller]
-        
-        controller = options[:controller]
-          
-        controller.view = x
-          
-        x.instance_variable_set(:@controller, controller)
-        
-      end
       
       x.instance_eval(&block) unless block.nil?
 
@@ -70,6 +60,7 @@ module Swiby
 
     def do_initialize parent, layout
       
+      @parent = parent
       @default_layer_panel = Panel.new
       
       @default_layer = @default_layer_panel.java_component
@@ -104,8 +95,12 @@ module Swiby
           if name == :auto_hide
             layer.visible false
           else
+            
+            y = @parent.menu_bar ? @parent.menu_bar.size.height : 0
+            
             pane = layer.java_component
-            pane.setBounds(rc.x, rc.y, rc.width, rc.height)
+            pane.setBounds(rc.x, y + rc.y, rc.width, rc.height)
+            
           end
           
         end
@@ -117,7 +112,11 @@ module Swiby
     end
     
     def doLayout
-      @default_layer.setBounds(0, 0, getWidth(), getHeight())
+      
+      y = @parent.menu_bar ? @parent.menu_bar.size.height : 0
+      
+      @default_layer.setBounds(0, y, getWidth(), getHeight())
+      
     end
     
   end
@@ -126,6 +125,7 @@ module Swiby
 
     @@frames = []
 
+    attr_reader :menu_bar
     attr_reader :default_layer, :layers
     
     Swiby::CONTEXT.add_language_change_listener self

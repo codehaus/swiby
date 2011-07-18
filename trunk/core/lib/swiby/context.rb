@@ -195,10 +195,12 @@ module Swiby
   end
   
   class SwibyContext
-  
+
+    attr_accessor :image_dir
+
     attr_accessor :language, :translations_enabled
     attr_accessor :missing_translation_enabled
-    
+
     def initialize language = :en
       @language_change_listeners = []
       @language = language
@@ -208,11 +210,13 @@ module Swiby
       @no_translate_patterns = []
       @missing_translation_enabled = true
     end
-    
+
     def default_setup
       
       languages = []
-      
+
+      @image_dir = "#{File.dirname($0)}/images"
+
       resource_name = "resource/#{File.basename($0, '.rb')}"
       
       file_pattern = "#{resource_name}_[a-z][a-z].properties"
@@ -264,6 +268,11 @@ module Swiby
         listener.language_changed
       end
       
+    end
+
+    def load_icon name
+      file = File.expand_path(name, @image_dir)
+      Swiby::create_icon(file)
     end
     
     # +bundle_name+ either a string, used as a resource bundle name (see java.util.Properties)

@@ -32,8 +32,6 @@ module Swiby
         need_setter_method
         need_getter_method
         
-        added_self = false
-
         if @setter_method
           
           listener = create_listener
@@ -44,11 +42,9 @@ module Swiby
           end
           
         end
-        
-        if @getter_method and not added_self
-          @master << self
-        end
-      
+
+        @master << self if @getter_method
+
       end
     
       def create_listener

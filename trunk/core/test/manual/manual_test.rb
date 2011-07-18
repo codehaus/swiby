@@ -9,6 +9,8 @@
 
 class TestSuite
   
+  attr_reader :name
+  
   def initialize name
     @name = name
     @all_tests = []
@@ -90,6 +92,8 @@ class ManualTest
     @@all_suites.each_value do |set|
       sets << set
     end
+    
+    sets.sort! {|suite1, suite2| suite1.name <=> suite2.name }
     
     sets
     
