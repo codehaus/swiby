@@ -104,14 +104,28 @@ class DrawPanel < javax.swing.JComponent
     @mouse_installed = true
   end
  
+  def on_mouse_exit &block
+    addMouseListener self unless @mouse_installed
+    @on_exit = block
+    @mouse_installed = true
+  end
+ 
+  def on_mouse_enter &block
+    addMouseListener self unless @mouse_installed
+    @on_enter = block
+    @mouse_installed = true
+  end
+ 
   def mouseClicked ev
     @on_click.call(ev.getX(), ev.getY()) if @on_click
   end
 
   def mouseEntered ev
+    @on_enter.call(ev.getX(), ev.getY()) if @on_enter
   end
 
   def mouseExited ev
+    @on_exit.call(ev.getX(), ev.getY()) if @on_exit
   end
 
   def mousePressed ev
@@ -197,7 +211,8 @@ module Swiby
         declare :name, [String, Symbol], true
         declare :painter, [Proc], true
         declare :resize_always, [TrueClass, FalseClass], true
-        
+        declare :actual_class, [Class], true
+
         overload :name
         overload :painter
 
@@ -210,9 +225,17 @@ module Swiby
       ensure_section
       
       x = DrawPanelOptions.new(context, name, options, &painter)
-      
-      panel = DrawPanel.new
-      
+
+      if x[:actual_class]
+
+        panel = x[:actual_class].new
+
+        raise "Given class '#{x[:actual_class]}' is not a DrawPanel" unless panel.is_a?(DrawPanel)
+
+      else
+        panel = DrawPanel.new
+      end
+
       panel.preferred_size = Dimension.new(x[:width], x[:height]) if x[:width] and x[:height]
       
       panel.on_paint &x[:action] if x[:action]

@@ -11,9 +11,10 @@ require 'swiby'
 
 require 'swiby/layout/table'
 
-require 'swiby/component/list'
-require 'swiby/component/form'
-require 'swiby/component/check'
+require 'swiby/mvc/frame'
+require 'swiby/mvc/list'
+require 'swiby/mvc/form'
+require 'swiby/mvc/check'
 
 require 'test/manual/manual_test'
 
@@ -55,74 +56,19 @@ Dir.open(dir).each do |file|
   
 end
 
-Defaults.auto_sizing_frame = true
-
 class TestRunnerController
   
-  def initialize
-    @test_suites = ManualTest.suites
+  def test_suites= suite
+    change_test_suite suite
   end
   
-  def view= view
-    @view = view
-  end
-  
-  def test_suites
+  def list_of_test_suites
+    @test_suites = ManualTest.suites unless @test_suites
     @test_suites
   end
   
-  def change_test_suite suite
-    
-    cb_run = {}
-    cb_result = {}
-    
-    @view[:detail].change_content {
-        suite.each { |test|
-          row
-            cell
-              cb_run[test] = check(test.executed?, :enabled => false)
-            cell
-              label test.description
-            cell
-              button("Test") { @controller.execute(test, cb_run[test], cb_result[test]) }
-            cell
-              cb_result[test] = check("Succeeded?", test.succeeded?, :enabled => false) { @controller.done(test, cb_result[test].selected?) }
-              
-        }
-        
-    }
-    
-  end
-  
-  def execute test, cb_run, cb_result
-    
-    @report = @view.find(:report) unless @report
-
-    begin
-        test.execute
-    rescue => err
-      cb_result.enabled = false
-      puts err.message, err.backtrace
-    else
-      cb_result.enabled = true
-    end
-    
-    cb_run.selected = true
-    
-    cb_result.selected = false
-    
-    @report.text = report
-    
-  end
-  
-  def done test, result
-    
-    return unless test.executed?
-    
-    test.succeeded = result
-    
-    @report.text = report
-    
+  def list_of_test_suites_changed?
+    @test_suites.nil?
   end
   
   def report
@@ -142,31 +88,81 @@ class TestRunnerController
 REPORT
 
   end
+  
+  def change_test_suite suite
 
+    cb_run = {}
+    cb_result = {}
+    
+    controller = self
+    
+    @window[:detail].change_content {
+        suite.each { |test|
+          row
+            cell
+              cb_run[test] = check(test.executed?, :enabled => false)
+            cell
+              label test.description
+            cell
+              button("Test") { controller.execute(test, cb_run[test], cb_result[test]) }
+            cell
+              cb_result[test] = check("Succeeded?", test.succeeded?, :enabled => false) { controller.done(test, cb_result[test].selected?) }
+              
+        }
+        
+    }
+    
+  end
+  
+  def execute test, cb_run, cb_result
+    
+    begin
+        test.execute
+    rescue => err
+      cb_result.enabled = false
+      puts err.message, err.backtrace
+    else
+      cb_result.enabled = true
+    end
+    
+    cb_run.selected = true
+    
+    cb_result.selected = false
+
+    @master.refresh
+    
+  end
+  
+  def done test, result
+    
+    return unless test.executed?
+    
+    test.succeeded = result
+    
+    @master.refresh
+    
+  end
+  
 end
 
-runner = TestRunnerController.new
+Defaults.auto_sizing_frame = true
 
-f = frame(:controller => runner) {
+f = frame(:controller => TestRunnerController.new) {
   
   width 550
   height 400
     
   title "Manual tests suite"
   
-  content {
- 
-    west
-      list(@controller.test_suites) { |suite| @controller.change_test_suite suite }
+  west
+    list :name => :test_suites
 
-    center
-      panel(:layout => :table, :hgap => 8, :vgap => 3, :name => :detail)
-      
-    south
-      label @controller.report, :name => :report
-      
-  }
-  
+  center
+    panel :layout => :table, :hgap => 8, :vgap => 3, :name => :detail
+
+  south
+    label :name => :report
+
   visible true
   
 }

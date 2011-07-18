@@ -47,6 +47,8 @@ module Swiby
       @component = wrapper.java_component(true)
       
       @added_to_master = false
+
+      @has_refresh_method = @wrapper.respond_to?(:refresh)
       
     end
     
@@ -60,7 +62,7 @@ module Swiby
       need_visible_state_check_method
       need_readonly_check_method
       need_value_changed_method
-      
+
     end
     
     def enable_disable
@@ -78,7 +80,7 @@ module Swiby
       if @visible_state_check_method
         @component.visible = @controller.send(@visible_state_check_method) == true
       end
-      
+
     end
     
     def update_display
@@ -94,7 +96,9 @@ module Swiby
         end
       
       end
-      
+
+      @wrapper.refresh if @has_refresh_method
+
     end
     
     def method_missing(meth, *args)
@@ -189,6 +193,8 @@ module Swiby
         add_listener create_listener
         @master << self
       end
+      
+      @master << self if @list_method
       
     end
       
@@ -445,6 +451,8 @@ module Swiby
         
       register_components window_wrapper, master, controller, method_naming_provider
       
+      controller.instance_variable_set :@master, master
+      
       controller_class = controller.class
       instance_class = class << controller; self; end
       if instance_class.respond_to?(:has_bindable?) and instance_class.has_bindable?
@@ -477,8 +485,6 @@ CODE
             
             controller.instance_eval code unless controller.respond_to?(orig)
             
-            controller.instance_variable_set :@master, master
-          
           end
         
         end
@@ -492,8 +498,6 @@ CODE
       window_wrapper
       
     end
-    
-    private
     
     def self.register_components parent, master, controller, method_naming_provider
       
@@ -539,6 +543,28 @@ CODE
 
         if wrapper.respond_to?(:each)
           register_components wrapper, master, controller, method_naming_provider
+        end
+        
+        if wrapper.respond_to?(:change_content) and !wrapper.respond_to?(:swiby_hooked_change_content)
+          
+          wrapper.instance_variable_set :@mvc_master, master
+          wrapper.instance_variable_set :@mvc_controller, controller
+          wrapper.instance_variable_set :@mvc_method_naming_provider, method_naming_provider
+          
+          class << wrapper
+            
+            alias :swiby_hooked_change_content :change_content
+            
+            def change_content
+              
+              super
+              
+              ViewDefinition.register_components self, @mvc_master, @mvc_controller, @mvc_method_naming_provider
+              
+            end
+            
+          end
+          
         end
         
       end

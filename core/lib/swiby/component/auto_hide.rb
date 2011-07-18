@@ -423,12 +423,16 @@ module Swiby
       
       attr_reader :painter
       attr_reader :position, :target
-      attr_reader :hint_text, :hint_bg_color, :hint_color
+      attr_reader :hint_bg_color, :hint_color
       
       def initialize position, target, hint_text, bg_color, color, painter
         @painter = painter
         @position, @target = position, target
         @hint_text, @hint_bg_color, @hint_color = hint_text, bg_color, color
+      end
+      
+      def hint_text
+        @hint_text.translate
       end
       
     end

@@ -98,7 +98,7 @@ module Swiby
       
       declare :name, [String, Symbol], true
       declare :label, [String, Symbol], true
-      declare :values, [Array, AccessorPath]
+      declare :values, [Array, AccessorPath], true
       declare :selected, [Object], true
       declare :swing, [Proc], true
       declare :action, [Proc], true
@@ -144,7 +144,7 @@ module Swiby
         values = values.get_value
       end
       
-      @values = values
+      @values = values ? values : []
       
       fill_list
 

@@ -8,31 +8,13 @@
 #++
 
 require 'swiby/mvc'
-require 'swiby/component/frame'
+require 'swiby/component/form'
 
 module Swiby
-
-  alias :swiby_no_mvc_frame :frame
-  
-  def frame options = nil, &block
-    
-    f = swiby_no_mvc_frame(options, &block)
-  
-    if options and options[:controller]
-      
-      controller = options[:controller]
-        
-      ViewDefinition.bind_controller f, controller
-      
-    end
-
-    f
-    
-  end
   
   class Frame
     
-    class FrameRegistrar < Registrar
+    class FormRegistrar < Registrar
       
       # use 'on_window_close' has MVC handler instead of 'on_close' to
       # avoid conflicting with 'on_close' when the view it self
@@ -54,7 +36,7 @@ module Swiby
     end
     
     def create_registrar wrapper, master, controller, id, method_naming_provider
-      FrameRegistrar.new(wrapper, master, controller, id, method_naming_provider)
+      FormRegistrar.new(wrapper, master, controller, id, method_naming_provider)
     end
     
     def bindable *args
